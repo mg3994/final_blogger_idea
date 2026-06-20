@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html b:css="false" b:defaultwidgetversion="2" b:layoutsversion="3" b:responsive="true" expr:dir="data:blog.languageDirection" expr:lang="data:blog.locale" xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://www.google.com/2005/gml/b" xmlns:data="http://www.google.com/2005/gml/data" xmlns:expr="http://www.google.com/2005/gml/expr">
+<head>
+<script type="text/javascript">//<![CDATA[
+(function() {
+  var cachedTheme = localStorage.getItem('antinna-theme');
+  var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (cachedTheme === 'dark' || (!cachedTheme && systemPrefersDark)) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+})();
+//]]></script>
+<script>//<![CDATA[
+cookieOptions = {
+close:" Got it! ",
+learn: "Privacy Policy",
+link: "<data:blog.canonicalHomepageUrl/>p/privacy.html"
+};
+//]]></script>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<b:include name="all-head-content" data="blog"/>
+<title><data:blog.title.escaped/></title>
+
+<b:skin><![CDATA[
+  :root {
+  --bg-app: #ffffff;
+  --bg-surface: #f8f9fa;
+  --bg-panel: #1e293b;
+  --border-ui: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #ffffff;
+  --color-accent: #2563eb;
+  --header-height: 64px;
+  --sidebar-width: 280px;
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  }
+
+html.dark {
+--bg-app: #0f172a;
+--bg-surface: #1e293b;
+--bg-panel: #0f172a;
+--border-ui: #334155;
+--text-main: #f8fafc;
+--text-muted: #94a3b8;
+--color-accent: #3b82f6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg-app); color: var(--text-main); overflow: hidden; height: 100vh; }
+.app-container { display: flex; width: 100vw; height: 100vh; position: relative; }
+
+#sidebar-drawer {
+width: var(--sidebar-width);
+min-width: var(--sidebar-width);
+background-color: var(--bg-panel);
+color: var(--text-light);
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+height: 100vh;
+border-right: 1px solid var(--border-ui);
+z-index: 100;
+overflow: hidden;
+transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 992px) {
+  #sidebar-drawer { position: fixed; left: calc(var(--sidebar-width) * -1); top: 0; }
+  #sidebar-drawer.drawer-open { left: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.2); }
+  #sidebar-backdrop.backdrop-active { position: fixed; top: 0; left: 0; width:100vw; height:100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); z-index: 90; }
+}
+
+.sidebar-header { height: var(--header-height); padding: 0 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.brand-logo { display: flex; align-items: center; gap: 0.75rem; }
+.brand-icon { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; display: block; }
+.brand-text { font-size: 1.15rem; font-weight: 700; }
+
+.sidebar-scroll-content { flex: 1; overflow-y: auto; padding-bottom: 1.5rem; }
+.sidebar-static-links { list-style: none; padding: 1rem; }
+.sidebar-static-links li a { display: block; color: rgba(255, 255, 255, 0.65); text-decoration: none; padding: 0.65rem 0.85rem; border-radius: 8px; font-size: 0.95rem; margin-bottom: 0.5rem; }
+.sidebar-static-links li a:hover { background: rgba(255,255,255,0.04); color:#fff; }
+.sidebar-static-links li a.active { background-color: var(--color-accent); color: #fff !important; }
+
+.main-view-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-surface); overflow: hidden; position: relative; }
+.top-navbar-header { height: var(--header-height); background-color: var(--bg-app); border-bottom: 1px solid var(--border-ui); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+.scrollable-main-content { flex: 1; overflow-y: auto; padding: 1.5rem; }
+
+.btn-hamburger { display: none; background:none; border:none; color:var(--text-main); font-size:1.4rem; cursor:pointer; width:40px; height:40px; align-items:center; justify-content:center; }
+@media (max-width: 992px) { .btn-hamburger { display: flex; } }
+
+/* Grid & Card */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+.card { background: var(--bg-app); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s; text-decoration: none; color: inherit; display: block; position: relative; }
+.card:hover { transform: translateY(-5px); }
+.card-img { width: 100%; height: 200px; background: #eee; object-fit: cover; }
+.card-body { padding: 15px; }
+.card-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; background: var(--bg-surface); margin-bottom: 8px; font-weight: 700; color: var(--text-muted); }
+
+/* Schema Layouts */
+.product-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; background: var(--bg-app); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
+@media (max-width: 768px) { .product-layout { grid-template-columns: 1fr; } }
+.carousel { position: relative; aspect-ratio: 1; background: #f0f0f0; border-radius: var(--radius); overflow: hidden; }
+.carousel-inner { display: flex; height: 100%; transition: transform 0.5s ease; }
+.carousel-item { min-width: 100%; height: 100%; }
+.carousel-item img { width: 100%; height: 100%; object-fit: contain; }
+.carousel-btn { position: absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.9); border:none; width:44px; height:44px; border-radius:50%; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+.price { font-size: 1.8rem; font-weight: 800; color: var(--color-accent); }
+.v-btn { padding: 10px 15px; border: 2px solid var(--border-ui); border-radius: 8px; background: var(--bg-app); color: var(--text-main); cursor: pointer; font-weight: 600; transition: all 0.2s; }
+.v-btn.active { border-color: var(--color-accent); background: var(--color-accent); color: #fff; }
+.v-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.v-color { width: 35px; height: 35px; border-radius: 50%; padding: 0; border: 2px solid #ddd; }
+.stock-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; }
+.in-stock { background: #e8f5e9; color: #2e7d32; }
+.out-stock { background: #ffebee; color: #c62828; }
+
+/* Auth UI */
+.avatar-footer-row { min-height: 68px; background: rgba(15, 23, 42, 0.4); border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 0 1.15rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.avatar-left-info { display: flex; align-items: center; gap: 0.75rem; overflow: hidden; }
+.user-avatar-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; overflow: hidden; }
+.user-meta-strings { display: flex; flex-direction: column; overflow: hidden; }
+.user-display-name { font-size: 0.875rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-display-role { font-size: 0.75rem; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-google-login { background: #fff; color: #0f172a; border: 1.5px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center; }
+
+/* Modals */
+.settings-modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+.settings-modal-backdrop.active { display: flex; opacity: 1; }
+.settings-modal { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border-ui); width: 95%; max-width: 420px; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transform: scale(0.95); transition: transform 0.3s; }
+.settings-modal-backdrop.active .settings-modal { transform: scale(1); }
+.settings-modal-header { padding: 1.25rem; border-bottom: 1px solid var(--border-ui); display: flex; justify-content: space-between; align-items: center; }
+.settings-modal-title { font-weight: 700; font-size: 1.1rem; }
+.settings-modal-close { cursor: pointer; font-size: 1.5rem; background: none; border: none; color: var(--text-muted); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.settings-modal-body { padding: 1.25rem; flex: 1; overflow-y: auto; }
+.settings-modal-footer { padding: 1.25rem; border-top: 1px solid var(--border-ui); }
+
+/* Toasts */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2500; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.toast { color: white; padding: 12px 24px; border-radius: 10px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; animation: slideUp 0.3s forwards; }
+@keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+.hidden { display: none !important; }
+]]></b:skin>
+</head>
+<body>
+<div id="sidebar-backdrop" onclick="toggleSidebarDrawer()"></div>
+<div class="app-container">
+  <aside id="sidebar-drawer">
+    <div class="sidebar-header">
+      <div class="brand-logo">
+        <img class="brand-icon" alt="Antinna" expr:src="data:blog.blogspotFaviconUrl"/>
+        <span class="brand-text">Antinna</span>
+      </div>
+      <button class="v-btn" style="border:none;" onclick="toggleSidebarDrawer()">×</button>
+    </div>
+    <div class="sidebar-scroll-content">
+      <b:section id="sidebar-nav" maxwidgets="1" showaddelement="yes">
+        <b:widget id='LinkList1' locked='false' title='Navigation' type='LinkList'>
+          <b:includable id='main'>
+            <ul class="sidebar-static-links">
+              <b:loop values='data:links' var='link'>
+                <li><a class="nav-route-link" expr:href='data:link.target'><data:link.name/></a></li>
+              </b:loop>
+            </ul>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+    <div class="avatar-footer-row" id="auth-footer">
+      <!-- Reactive Auth Row -->
+    </div>
+  </aside>
+
+  <div class="main-view-wrapper">
+    <header class="top-navbar-header">
+      <button class="btn-hamburger" onclick="toggleSidebarDrawer()">☰</button>
+      <div class="header-center-search" style="flex:1; max-width:400px; margin:0 20px;">
+        <form expr:action="data:blog.searchUrl" method="get" style="position:relative;">
+          <input class="v-btn" name="q" placeholder="Search items &amp; services..." style="width:100%; padding-left:40px; text-align:left; border-radius:8px;" type="search"/>
+          <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:0.5;">🔍</span>
+        </form>
+      </div>
+      <div class="header-right">
+        <button id="theme-mode-switcher" class="v-btn" style="border:none; font-size:1.25rem;">☾</button>
+      </div>
+    </header>
+
+    <main class="scrollable-main-content">
+      <b:section id="main-feed-stream" class="main-feed-section" showaddelement="yes">
+        <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'>
+          <b:includable id='main' var='top'>
+            <b:if cond='data:view.isSingleItem'>
+              <b:loop values='data:posts' var='post'>
+                <div id='main-renderer'>
+                  <div style="padding:100px; text-align:center;">
+                    <div class="v-btn" style="cursor:default; border:none; font-size:1.2rem; animation: pulse 1.5s infinite;">Initializing Engine...</div>
+                  </div>
+                </div>
+                <div id='post-body-raw' style="display:none;"><data:post.body/></div>
+              </b:loop>
+            <b:else/>
+              <b:if cond='data:view.isHomepage'>
+                <h2 style="margin-bottom:20px; font-weight:800; border-left:5px solid var(--color-accent); padding-left:15px;">Latest Arrivals</h2>
+              </b:if>
+              <div class="grid" id="app-grid">
+                <b:loop values='data:posts' var='post'>
+                  <a class="card" expr:href='data:post.url' expr:id='"card-" + data:post.id'>
+                    <img class="card-img" expr:src='data:post.featuredImage ?: "https://via.placeholder.com/400x300?text=Antinna"' loading="lazy"/>
+                    <div class="card-body">
+                      <div class="card-badge">Loading...</div>
+                      <h3 style="margin:0 0 10px; font-size:1.1rem;"><data:post.title/></h3>
+                      <div class="card-price" style="font-weight:800; color:var(--color-accent);">--</div>
+                    </div>
+                    <div class="hidden grid-data"><data:post.body/></div>
+                  </a>
+                </b:loop>
+              </div>
+            </b:if>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </main>
+  </div>
+</div>
+
+<div class="settings-modal-backdrop" id="account-settings-modal-backdrop">
+  <div class="settings-modal">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">Session Settings</span>
+      <button class="settings-modal-close" onclick="closeSettingsModal()">×</button>
+    </div>
+    <div class="settings-modal-body" id="modal-content-auth"></div>
+    <div class="settings-modal-footer">
+      <button class="v-btn" id="modal-signout-btn" style="width:100%; background:#ef4444; color:#fff; border:none; padding:12px;">Logout Session</button>
+    </div>
+  </div>
+</div>
+
+<div class="settings-modal-backdrop" id="cart-modal-backdrop">
+  <div class="settings-modal" style="max-height:85vh;">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">Your Order (Schema.org Order)</span>
+      <button class="settings-modal-close" onclick="document.getElementById('cart-modal-backdrop').classList.remove('active')">×</button>
+    </div>
+    <div class="settings-modal-body" id="cart-items-list" style="padding:0;"></div>
+    <div class="settings-modal-footer">
+      <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:15px; font-size:1.2rem;">
+        <span>Estimated Total:</span>
+        <span id="cart-total-price">--</span>
+      </div>
+      <button class="v-btn active" style="width:100%; padding:15px; border-radius:12px;" onclick="window.CartManager.placeOrder()">Place Order</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script type="module">//<![CDATA[
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import * as SchemaTypes from 'https://unpkg.com/@antinna/schema-ld-types@1.0.0/dist/index.mjs';
+
+const firebaseConfig = { apiKey: "AIzaSyDtRB-0S8VNgY-HoQYAAvkLX7iOAK-K-i0", authDomain: "antinnamain.firebaseapp.com", projectId: "antinnamain", storageBucket: "antinnamain.appspot.com", messagingSenderId: "907520801915", appId: "1:907520801915:web:5a99962f7ce400da54b6de" };
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence);
+const provider = new GoogleAuthProvider();
+
+function sanitize(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+window.showToast = (msg, type = 'info') => {
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast`;
+  t.style.background = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#1e293b');
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+};
+
+const engine = {
+  decodeEntities(text) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+  },
+  extractJsonLd(sourceText) {
+    if (!sourceText) return null;
+    const scriptMatch = sourceText.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+    let jsonStr = scriptMatch ? scriptMatch[1] : sourceText;
+    let decoded = this.decodeEntities(jsonStr);
+    if (decoded && decoded.includes('&quot;')) decoded = this.decodeEntities(decoded);
+    try {
+      const cleanJson = (decoded || "").replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
+      return JSON.parse(cleanJson);
+    } catch (e) {
+      const jsonBlock = decoded.match(/\{[\s\S]*\}/);
+      if (jsonBlock) try { return JSON.parse(jsonBlock[0]); } catch (e2) {}
+      return null;
+    }
+  },
+  async TypeRouter(data, SchemaTypes, renderers) {
+    if (!data || !data['@type']) return;
+    const type = data['@type'];
+    let hydrated = data;
+    if (SchemaTypes && SchemaTypes[type]) {
+      const v = SchemaTypes[type];
+      try { if (v.validate(data)) hydrated = v.deserialize(data); } catch(e) {}
+    }
+    if (type === 'ProductGroup') renderers.renderProductGroup(hydrated);
+    else if (['Service', 'LocalBusiness', 'ProfessionalService', 'Product', 'Plumber', 'Electrician'].includes(type)) renderers.renderProduct(hydrated);
+    else renderers.renderGeneric(hydrated);
+  }
+};
+
+const renderers = {
+  renderProductGroup(pg) {
+    const container = document.getElementById('main-renderer');
+    container.innerHTML = `
+      <div class="product-layout">
+        <div>
+          <div class="carousel" id="carousel-outer">
+            <div class="carousel-inner" id="carousel-inner"></div>
+            <button class="carousel-btn" style="left:10px;" id="prev-btn">&#10094;</button>
+            <button class="carousel-btn" style="right:10px;" id="next-btn">&#10095;</button>
+          </div>
+          <div class="h-scroll" id="thumb-row" style="margin-top:15px;"></div>
+        </div>
+        <div class="details-container">
+          <h1 style="margin-bottom:5px;">${sanitize(pg.name)}</h1>
+          <div id="p-brand" style="color:var(--text-muted); margin-bottom:15px; font-weight:600;">${sanitize(pg.brand?.name || pg.brand || '')}</div>
+          <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+             <div id="p-price" class="price">--</div>
+             <div id="p-stock" class="stock-badge"></div>
+          </div>
+          <p style="line-height:1.7; color:var(--text-muted); margin-bottom:25px;">${sanitize(pg.description || '')}</p>
+          <div id="p-variants"></div>
+          <button class="v-btn active" id="add-to-cart-btn" style="width:100%; padding:18px; font-size:1.1rem; border-radius:12px; margin-top:20px;">Add to Cart</button>
+          <div id="p-specs" style="margin-top:30px; border-top:1px solid var(--border-ui); padding-top:20px;"></div>
+        </div>
+      </div>
+    `;
+    let selected = {};
+    const vars = pg.hasVariant || [];
+    const update = () => {
+      const v = vars.find(v => Object.entries(selected).every(([k, val]) => v[k] === val)) || vars[0];
+      if (!v) return;
+      const off = v.offers || {};
+      document.getElementById('p-price').textContent = `${off.priceCurrency || ''} ${off.price || ''}`;
+      const stock = document.getElementById('p-stock');
+      const invVal = off.inventoryLevel?.value ?? v.inventoryLevel?.value ?? Infinity;
+      const isOut = off.availability === 'https://schema.org/OutOfStock' || invVal <= 0;
+      stock.className = 'stock-badge ' + (isOut ? 'out-stock' : 'in-stock');
+      stock.textContent = isOut ? 'Out of Stock' : 'In Stock';
+      document.getElementById('add-to-cart-btn').disabled = isOut;
+      const inner = document.getElementById('carousel-inner');
+      inner.innerHTML = '';
+      const imgs = Array.isArray(v.image || pg.image) ? (v.image || pg.image) : [v.image || pg.image];
+      imgs.filter(Boolean).forEach(img => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-item';
+        slide.innerHTML = `<img src="${img.url || img}"/>`;
+        inner.appendChild(slide);
+      });
+
+      let slideIdx = 0;
+      const moveSlide = (dir) => {
+        const count = inner.querySelectorAll('.carousel-item').length;
+        slideIdx = (slideIdx + dir + count) % count;
+        inner.style.transform = `translateX(-${slideIdx * 100}%)`;
+      };
+      document.getElementById('prev-btn').onclick = () => moveSlide(-1);
+      document.getElementById('next-btn').onclick = () => moveSlide(1);
+
+      document.getElementById('add-to-cart-btn').onclick = () => window.CartManager.addItem(v, pg);
+      const specs = document.getElementById('p-specs');
+      specs.innerHTML = '<h4>Specifications</h4>';
+      ['material', 'color', 'size', 'sku', 'gtin13'].forEach(f => {
+        const val = v[f] || pg[f];
+        if (val) specs.innerHTML += `<div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.9rem; border-bottom:1px dashed var(--border-ui); padding-bottom:5px;">
+          <span style="color:var(--text-muted); text-transform:capitalize;">${f}</span>
+          <span style="font-weight:700;">${sanitize(val)}</span>
+        </div>`;
+      });
+    };
+    if (pg.variesBy) {
+      pg.variesBy.forEach(vUrl => {
+        const attr = vUrl.split(/[\/#]/).pop();
+        const vals = [...new Set(vars.map(v => v[attr]).filter(Boolean))];
+        const group = document.createElement('div'); group.className = 'v-group';
+        group.innerHTML = `<span style="font-size:0.85rem; font-weight:800; margin-bottom:10px; display:block; text-transform:uppercase; color:var(--text-muted);">Select ${sanitize(attr)}</span>`;
+        const opts = document.createElement('div'); opts.className = 'v-options';
+        vals.forEach(val => {
+          const btn = document.createElement('button'); btn.className = 'v-btn';
+          if (attr.toLowerCase() === 'color') { btn.classList.add('v-color'); btn.style.background = val; btn.title = val; }
+          else { btn.textContent = val; }
+          btn.onclick = () => { selected[attr] = val; opts.querySelectorAll('.v-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); update(); };
+          opts.appendChild(btn);
+        });
+        group.appendChild(opts); document.getElementById('p-variants').appendChild(group);
+        selected[attr] = vals[0]; if (opts.firstChild) opts.firstChild.classList.add('active');
+      });
+    }
+    update();
+  },
+  renderProduct(p) {
+    const container = document.getElementById('main-renderer');
+    const img = Array.isArray(p.image) ? p.image[0] : p.image;
+    container.innerHTML = `
+      <div class="product-layout" style="display:block; max-width:800px; margin:0 auto;">
+         <img src="${(img?.url || img || 'https://via.placeholder.com/600x400')}" style="width:100%; border-radius:16px; margin-bottom:30px; box-shadow:var(--shadow);"/>
+         <h1 style="font-size:2rem; margin-bottom:10px;">${sanitize(p.name)}</h1>
+         <div class="price" style="margin:20px 0;">${p.offers?.priceCurrency || ''} ${p.offers?.price || ''}</div>
+         <p style="color:var(--text-muted); line-height:1.8; font-size:1.1rem;">${sanitize(p.description || '')}</p>
+         <button class="v-btn active" id="add-to-cart-btn" style="width:100%; margin-top:40px; padding:20px; font-size:1.2rem; border-radius:12px;">Add to Order</button>
+      </div>
+    `;
+    document.getElementById('add-to-cart-btn').onclick = () => window.CartManager.addItem(p, p.provider || p);
+  },
+  renderGeneric(data) {
+    const container = document.getElementById('main-renderer');
+    const div = document.createElement('div');
+    div.style.background = 'var(--bg-app)'; div.style.padding = '40px'; div.style.borderRadius = '16px'; div.style.boxShadow = 'var(--shadow)';
+    div.innerHTML = `<h1 style="margin-bottom:20px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">${sanitize(data.name || data['@type'])}</h1>`;
+    const renderDeep = (val, key = '') => {
+      if (!val) return '';
+      if (typeof val === 'string') {
+        if (val.startsWith('http')) {
+           if (val.match(/\.(jpg|jpeg|png|gif|webp)$/i) || key.toLowerCase().includes('image') || key.toLowerCase().includes('logo')) {
+             return `<img src="${val}" style="max-width:100%; border-radius:8px; margin: 10px 0; display:block; border: 1px solid var(--border-ui);"/>`;
+           }
+           return `<a href="${val}" target="_blank" style="color:var(--color-accent); word-break: break-all;">${sanitize(val)}</a>`;
+        }
+        return sanitize(val);
+      }
+      if (Array.isArray(val)) {
+        return `<div style="display:flex; flex-direction:column; gap:10px; margin-top:5px;">${val.map(v => `<div style="padding:10px; background:var(--bg-surface); border-radius:8px; border-left:4px solid var(--color-accent);">${renderDeep(v)}</div>`).join('')}</div>`;
+      }
+      if (typeof val === 'object') {
+        return `<div style="display:grid; gap:8px; margin-top:5px; padding:12px; background:rgba(0,0,0,0.02); border-radius:10px; border: 1px solid var(--border-ui);">
+          ${Object.entries(val).map(([k,v]) => `<div><span style="font-weight:700; color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">${sanitize(k)}:</span> <div style="margin-top:4px;">${renderDeep(v, k)}</div></div>`).join('')}
+        </div>`;
+      }
+      return sanitize(String(val));
+    };
+    const propsGrid = document.createElement('div');
+    propsGrid.style.display = 'grid'; propsGrid.style.gap = '20px'; propsGrid.style.marginTop = '20px';
+    Object.entries(data).forEach(([k,v]) => {
+      if (k.startsWith('@') || k === 'name' || k === 'description') return;
+      const propWrap = document.createElement('div');
+      propWrap.innerHTML = `<div style="font-weight:800; font-size:0.9rem; color:var(--color-accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">${sanitize(k)}</div>
+                            <div style="font-size:1rem;">${renderDeep(v, k)}</div>`;
+      propsGrid.appendChild(propWrap);
+    });
+    if (data.description) {
+      const desc = document.createElement('p');
+      desc.style.lineHeight = '1.7'; desc.style.color = 'var(--text-muted)'; desc.style.marginTop = '20px';
+      desc.textContent = data.description;
+      div.insertBefore(desc, propsGrid);
+    }
+    div.appendChild(propsGrid);
+    container.innerHTML = '';
+    container.appendChild(div);
+  }
+};
+
+window.CartManager = {
+  storageKey: 'antinna_cart_order',
+  order: { "@context": "https://schema.org", "@type": "Order", "orderedItem": [], "totalPrice": 0, "priceCurrency": "INR" },
+  init() {
+    const saved = localStorage.getItem(this.storageKey);
+    if (saved) try { this.order = JSON.parse(saved); } catch(e){}
+    this.createFab();
+  },
+  addItem(item, seller) {
+    const inv = item.offers?.inventoryLevel?.value ?? item.inventoryLevel?.value ?? Infinity;
+    const existing = this.order.orderedItem.find(i => i.orderedItem.name === item.name);
+    if (existing) {
+      if (existing.orderQuantity + 1 > inv) { window.showToast("Inventory limit reached!", "error"); return; }
+      existing.orderQuantity++;
+    } else {
+      if (inv <= 0 || item.offers?.availability === 'https://schema.org/OutOfStock') { window.showToast("Out of stock!", "error"); return; }
+      this.order.orderedItem.push({
+        "@type": "OrderItem",
+        "orderedItem": { "@type": item["@type"] || "Product", "name": item.name, "image": item.image, "sku": item.sku, "offers": item.offers },
+        "orderQuantity": 1,
+        "seller": { "@type": (seller?.["@type"] || "Organization"), "name": seller?.name || "Seller", "url": seller?.url }
+      });
+    }
+    this.save(); this.updateFab(); window.showToast("Added to Cart", "success");
+  },
+  removeItem(idx) { this.order.orderedItem.splice(idx, 1); this.save(); this.updateFab(); this.showModal(); },
+  save() {
+    this.order.totalPrice = this.order.orderedItem.reduce((sum, i) => sum + (parseFloat(i.orderedItem.offers?.price || 0) * i.orderQuantity), 0);
+    localStorage.setItem(this.storageKey, JSON.stringify(this.order));
+  },
+  createFab() {
+    const fab = document.createElement('div'); fab.id = 'cart-fab';
+    fab.style.cssText = 'position:fixed; bottom:30px; right:30px; width:64px; height:64px; background:var(--color-accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.3); z-index:1000; font-size:1.5rem;';
+    fab.innerHTML = '🛒 <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; border-radius:50%; width:24px; height:24px; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid #fff;">0</span>';
+    fab.onclick = () => this.showModal();
+    document.body.appendChild(fab); this.updateFab();
+  },
+  updateFab() {
+    const countEl = document.getElementById('cart-count');
+    if (countEl) countEl.textContent = this.order.orderedItem.reduce((s,i)=>s+i.orderQuantity, 0);
+  },
+  showModal() {
+    const m = document.getElementById('cart-modal-backdrop');
+    const list = document.getElementById('cart-items-list');
+    list.innerHTML = this.order.orderedItem.map((i, idx) => `
+      <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid var(--border-ui); align-items:center;">
+        <img src="${(Array.isArray(i.orderedItem.image) ? i.orderedItem.image[0] : (i.orderedItem.image?.url || i.orderedItem.image || ''))}" style="width:60px; height:60px; border-radius:8px; object-fit:cover;"/>
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:1rem;">${sanitize(i.orderedItem.name)}</div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">${i.orderedItem.offers?.priceCurrency || 'INR'} ${i.orderedItem.offers?.price || '0'} x ${i.orderQuantity}</div>
+        </div>
+        <button onclick="window.CartManager.removeItem(${idx})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem; padding:10px;">×</button>
+      </div>
+    `).join('') || '<div style="text-align:center; padding:50px; color:var(--text-muted); font-weight:600;">Your cart is currently empty.</div>';
+    document.getElementById('cart-total-price').textContent = `${this.order.priceCurrency} ${this.order.totalPrice}`;
+    m.classList.add('active');
+  },
+  placeOrder() { alert("Ready to serialize order: " + JSON.stringify(this.order)); }
+};
+
+function renderAuth(user) {
+  const footer = document.getElementById('auth-footer');
+  if (!user) {
+    footer.innerHTML = `<button class="btn-google-login" id="login-btn">Continue with Google</button>`;
+    document.getElementById('login-btn').onclick = () => signInWithPopup(auth, provider);
+  } else {
+    footer.innerHTML = `
+      <div class="avatar-left-info">
+        <div class="user-avatar-circle"><img src="${user.photoURL}" style="width:100%; height:100%; object-fit:cover;"/></div>
+        <div class="user-meta-strings">
+          <span class="user-display-name">${sanitize(user.displayName)}</span>
+          <span class="user-display-role">${sanitize(user.email)}</span>
+        </div>
+      </div>
+      <button class="v-btn" style="border:none; background:none; font-size:1.2rem; color:rgba(255,255,255,0.6);" id="settings-trigger">⚙</button>
+    `;
+    document.getElementById('settings-trigger').onclick = () => document.getElementById('account-settings-modal-backdrop').classList.add('active');
+    document.getElementById('modal-content-auth').innerHTML = `
+      <div style="text-align:center; margin-bottom:25px;">
+        <img src="${user.photoURL}" style="width:90px; height:90px; border-radius:50%; margin-bottom:15px; border:3px solid var(--color-accent); padding:3px;"/>
+        <h2 style="margin:0;">${sanitize(user.displayName)}</h2>
+        <p style="color:var(--text-muted); margin-top:5px;">${sanitize(user.email)}</p>
+      </div>
+      <div style="background:var(--bg-surface); padding:15px; border-radius:12px; font-family:monospace; font-size:0.85rem; border:1px solid var(--border-ui);">
+        <div style="color:var(--text-muted); font-weight:700; margin-bottom:5px; font-size:0.7rem; text-transform:uppercase;">Account ID</div>
+        <div style="word-break:break-all;">${user.uid}</div>
+      </div>
+    `;
+    document.getElementById('modal-signout-btn').onclick = () => signOut(auth).then(() => location.reload());
+  }
+}
+
+function initGrid() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    const raw = card.querySelector('.grid-data');
+    const data = engine.extractJsonLd(raw.textContent);
+    if (data) {
+      const type = data['@type'];
+      card.querySelector('.card-badge').textContent = (type === 'ProductGroup' || type === 'Product') ? 'Product' : (['Service', 'LocalBusiness'].includes(type) ? 'Service' : type);
+      const v = data.hasVariant ? data.hasVariant[0] : data;
+      if (v.offers) card.querySelector('.card-price').textContent = `${v.offers.priceCurrency || ''} ${v.offers.price || ''}`;
+      const img = Array.isArray(data.image) ? data.image[0] : data.image;
+      if (img) card.querySelector('.card-img').src = img.url || img;
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.CartManager.init();
+  onAuthStateChanged(auth, renderAuth);
+  const raw = document.getElementById('post-body-raw');
+  if (raw) {
+    const data = engine.extractJsonLd(raw.textContent);
+    if (data) engine.TypeRouter(data, SchemaTypes, renderers);
+  }
+  if (document.getElementById('app-grid')) initGrid();
+  document.getElementById('theme-mode-switcher').onclick = () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('antinna-theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-mode-switcher').textContent = isDark ? '☼' : '☾';
+  };
+});
+
+window.toggleSidebarDrawer = () => {
+  document.getElementById('sidebar-drawer').classList.toggle('drawer-open');
+  document.getElementById('sidebar-backdrop').classList.toggle('backdrop-active');
+};
+window.closeSettingsModal = () => document.getElementById('account-settings-modal-backdrop').classList.remove('active');
+//]]></script>
+</body>
+</html>
