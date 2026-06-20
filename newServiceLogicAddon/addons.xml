@@ -187,7 +187,17 @@
           <b:else/>
             <b:loop values='data:posts' var='post'>
               <div id='app-item'>
-                 <div class='breadcrumb' style='margin-bottom:20px; font-size:0.9rem;'><a expr:href='data:blog.homepageUrl'>Home</a> / <data:post.title/></div>
+                 <div class='breadcrumb' style='margin-bottom:20px; font-size:0.9rem;'>
+                   <a expr:href='data:blog.homepageUrl'>Home</a> /
+                   <b:if cond='data:post.labels'>
+                     <b:loop index='i' values='data:post.labels' var='label'>
+                       <a expr:href='data:label.url'><data:label.name/></a>
+                       <b:if cond='data:i &lt; data:post.labels.size - 1'>, </b:if>
+                     </b:loop>
+                     /
+                   </b:if>
+                   <data:post.title/>
+                 </div>
                  <div class='product-layout' id='main-renderer'>
                     <div id='initializing-state' style='padding:40px; text-align:center; grid-column: 1 / -1;'>
                        <div class='v-btn' style='display:inline-block; cursor:default; animation: pulse 1.5s infinite;'>Preparing Data Engine...</div>
