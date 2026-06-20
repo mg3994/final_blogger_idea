@@ -102,12 +102,13 @@
     }
     .card:hover { transform: translateY(-5px); }
 
-    .card-img {
-      width: 100%;
-      height: 200px;
-      background: #eee;
-      object-fit: cover;
-    }
+    .card-img-wrapper { width: 100%; height: 220px; position: relative; overflow: hidden; background: #eee; }
+    .card-img-scroll { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
+    .card-img-scroll::-webkit-scrollbar { display: none; }
+    .card-img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: start; }
+    .card-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; pointer-events: none; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: all 0.2s; }
+    .dot.active { background: #fff; width: 12px; border-radius: 4px; }
     .card-body { padding: 15px; }
     .card-title { font-weight: 700; margin: 0 0 10px; font-size: 1.1rem; height: 2.8em; overflow: hidden; }
     .card-badge {
@@ -267,13 +268,14 @@
     .qty-controls { display: flex; align-items: center; gap: 15px; margin: 25px 0; }
     .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
-    /* Cart Modal */
-    .cart-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
-    .cart-backdrop.active { display: flex; }
-    .cart-modal { background: #fff; border-radius: 20px; width: 95%; max-width: 480px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; }
-    .cart-header { padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .cart-body { padding: 20px; flex: 1; overflow-y: auto; }
-    .cart-footer { padding: 20px 25px; border-top: 1px solid #eee; }
+    /* Cart Drawer */
+    .cart-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 2000; display: none; opacity: 0; transition: opacity 0.3s; }
+    .cart-backdrop.active { display: block; opacity: 1; }
+    .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100vh; background: #fff; box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 2001; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+    .cart-backdrop.active + .cart-drawer, .cart-drawer.active { right: 0; }
+    .cart-header { padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .cart-body { padding: 20px; flex: 1; overflow-y: auto; scrollbar-width: thin; }
+    .cart-footer { padding: 20px 25px; border-top: 1px solid #eee; background: #fff; flex-shrink: 0; }
 
     .cart-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 25px rgba(230, 126, 34, 0.4); z-index: 1000; font-size: 1.5rem; transition: transform 0.3s; }
     .cart-count { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; display: flex; align-items: center; justify-content: center; border: 2.5px solid #fff; font-weight: 900; }
@@ -305,7 +307,7 @@
         <b:if cond='data:view.isMultipleItems'>
           <div class='cat-bar'>
             <div class='cat-inner'>
-              <a expr:class='data:view.isHomepage ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl'>All Collections</a>
+              <a expr:class='data:blog.url == data:blog.homepageUrl.canonical + &quot;search&quot; ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl + &quot;search&quot;'>ALL</a>
               <b:loop values='data:labels' var='label'>
                 <a expr:class='data:view.search.label == data:label.name ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:label.url'><data:label.name/></a>
               </b:loop>
@@ -321,7 +323,12 @@
       <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'>
         <b:includable id='postCard' var='post'>
           <a class='card' expr:href='data:post.url' expr:id='"card-" + data:post.id'>
-            <img class='card-img' expr:src='data:post.featuredImage ?: "https://via.placeholder.com/400x300?text=Antinna"' loading='lazy'/>
+            <div class="card-img-wrapper">
+               <div class="card-img-scroll" onscroll="syncDots(this)">
+                  <img class='card-img' expr:src='data:post.featuredImage ?: "https://via.placeholder.com/400x300?text=Antinna"' loading='lazy'/>
+               </div>
+               <div class="card-dots"></div>
+            </div>
             <div class='card-body'>
               <div class='card-badge'>Loading...</div>
               <h3 class='card-title'><data:post.title/></h3>
@@ -429,11 +436,11 @@
     </b:section>
   </div>
 
-  <div class="cart-backdrop" id="cart-modal-backdrop">
-    <div class="cart-modal">
+  <div class="cart-backdrop" id="cart-modal-backdrop" onclick="window.CartManager.hideModal()"></div>
+  <div class="cart-drawer" id="cart-drawer">
       <div class="cart-header">
-        <h3 style="margin:0;">Your Bag</h3>
-        <button class="qty-btn" style="border:none; font-size:1.5rem;" onclick="document.getElementById('cart-modal-backdrop').classList.remove('active')">×</button>
+        <h3 style="margin:0;">Shopping Bag</h3>
+        <button class="qty-btn" style="border:none; font-size:1.5rem;" onclick="window.CartManager.hideModal()">×</button>
       </div>
       <div class="cart-body" id="cart-items-list"></div>
       <div class="cart-footer">
@@ -441,9 +448,8 @@
           <span>Estimated Total</span>
           <span id="cart-total-price">--</span>
         </div>
-        <button class="v-btn active" style="width:100%; padding:18px; font-size:1.1rem; border-radius:15px;" onclick="window.CartManager.placeOrder()">Place Order</button>
+        <button class="v-btn active" style="width:100%; padding:18px; font-size:1.1rem; border-radius:12px;" onclick="window.CartManager.placeOrder()">Place Order</button>
       </div>
-    </div>
   </div>
 
   <div id="cart-fab-container"></div>
@@ -510,17 +516,30 @@
     function renderCardData(card, data) {
       const badge = card.querySelector('.card-badge');
       const price = card.querySelector('.card-price');
-      const img = card.querySelector('.card-img');
+      const scroll = card.querySelector('.card-img-scroll');
+      const dotCont = card.querySelector('.card-dots');
+
       const isProduct = data['@type'] === 'ProductGroup' || data['@type'] === 'Product';
       if (badge) badge.textContent = isProduct ? 'Product' : (data['@type'] || 'Item');
+
       const v = data.hasVariant ? data.hasVariant[0] : data;
       if (v.offers && price) price.textContent = (v.offers.priceCurrency || 'INR') + ' ' + (v.offers.price || '');
+
       const imageSource = v.image || data.image;
-      if (imageSource && img) {
-        const url = Array.isArray(imageSource) ? imageSource[0] : (imageSource.url || imageSource);
-        img.src = url;
+      if (imageSource && scroll) {
+        const list = Array.isArray(imageSource) ? imageSource : [imageSource];
+        scroll.innerHTML = list.map(img => `<img class="card-img" src="${img.url || img}" loading="lazy"/>`).join('');
+        if (dotCont && list.length > 1) {
+          dotCont.innerHTML = list.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('');
+        }
       }
     }
+
+    window.syncDots = (el) => {
+      const idx = Math.round(el.scrollLeft / el.offsetWidth);
+      const dots = el.parentElement.querySelectorAll('.dot');
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    };
 
     /** ITEM **/
     function initItem() {
@@ -747,8 +766,28 @@
       },
       addItem(item, seller) {
         const existing = this.order.orderedItem.find(i => i.orderedItem.name === item.name);
-        if (existing) existing.orderQuantity++;
-        else this.order.orderedItem.push({ "@type": "OrderItem", "orderedItem": { name: item.name, image: item.image, offers: item.offers }, "orderQuantity": 1, "seller": seller });
+        if (existing) {
+          existing.orderQuantity++;
+        } else {
+          // Extract specifications
+          const specs = {};
+          ['material', 'color', 'size', 'gtin13', 'sku', 'weight', 'height', 'width', 'depth'].forEach(f => {
+            if (item[f]) specs[f] = item[f];
+          });
+
+          this.order.orderedItem.push({
+            "@type": "OrderItem",
+            "orderedItem": {
+              "@type": item["@type"] || "Product",
+              "name": item.name,
+              "image": item.image,
+              "offers": item.offers,
+              ...specs
+            },
+            "orderQuantity": 1,
+            "seller": seller
+          });
+        }
         this.save(); this.updateUI();
         window.showToast?.("Added to Bag", "success");
       },
@@ -780,7 +819,8 @@
         if (fabEl) fabEl.style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
       },
       showModal() {
-        const m = document.getElementById('cart-modal-backdrop');
+        const b = document.getElementById('cart-modal-backdrop');
+        const d = document.getElementById('cart-drawer');
         const list = document.getElementById('cart-items-list');
         if (!list) return;
         list.innerHTML = this.order.orderedItem.map((i, idx) => `
@@ -795,11 +835,16 @@
                    <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx}, 1)">+</button>
                 </div>
              </div>
+             <button onclick="window.CartManager.updateQty(${idx}, -${i.orderQuantity})" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-size:1.2rem; padding:10px;">×</button>
           </div>
         `).join('') || '<div style="text-align:center; padding:50px; opacity:0.5; font-weight:700;">Bag is empty</div>';
         const totalEl = document.getElementById('cart-total-price');
         if (totalEl) totalEl.textContent = `${this.order.priceCurrency} ${this.order.totalPrice}`;
-        m?.classList.add('active');
+        b?.classList.add('active'); d?.classList.add('active');
+      },
+      hideModal() {
+        document.getElementById('cart-modal-backdrop')?.classList.remove('active');
+        document.getElementById('cart-drawer')?.classList.remove('active');
       },
       placeOrder() { alert("Confirming Order Schema: " + JSON.stringify(this.order)); }
     };

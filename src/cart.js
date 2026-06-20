@@ -1,5 +1,5 @@
 /**
- * src/cart.js - Defensive Order Management
+ * src/cart.js - Defensive Order Management with Drawer UI
  */
 
 export class CartManager {
@@ -30,12 +30,24 @@ export class CartManager {
     if (!item) return;
     const items = this.order.orderedItem || [];
     const existing = items.find(i => i.orderedItem?.name === item.name);
+
     if (existing) {
       existing.orderQuantity++;
     } else {
+      const specs = {};
+      ['material', 'color', 'size', 'gtin13', 'sku', 'weight', 'height', 'width', 'depth'].forEach(f => {
+        if (item[f]) specs[f] = item[f];
+      });
+
       items.push({
         "@type": "OrderItem",
-        "orderedItem": { name: item.name, image: item.image, offers: item.offers },
+        "orderedItem": {
+          "@type": item["@type"] || "Product",
+          "name": item.name,
+          "image": item.image,
+          "offers": item.offers,
+          ...specs
+        },
         "orderQuantity": 1,
         "seller": seller
       });
@@ -79,31 +91,38 @@ export class CartManager {
   }
 
   showModal() {
-    const m = document.getElementById('cart-modal-backdrop');
-    if (!m) return;
+    const b = document.getElementById('cart-modal-backdrop');
+    const d = document.getElementById('cart-drawer');
     const list = document.getElementById('cart-items-list');
-    if (list) {
-      list.innerHTML = (this.order.orderedItem || []).map((i, idx) => `
-        <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid #eee; align-items:center;">
-           <img src="${(Array.isArray(i.orderedItem?.image) ? i.orderedItem.image[0] : (i.orderedItem?.image?.url || i.orderedItem?.image || ''))}" style="width:60px; height:60px; border-radius:10px; object-fit:cover;"/>
-           <div style="flex:1;">
-              <div style="font-weight:700;">${i.orderedItem?.name || 'Item'}</div>
-              <div style="color:var(--accent); font-weight:800; font-size:0.9rem; margin-top:4px;">${i.orderedItem?.offers?.priceCurrency || 'INR'} ${i.orderedItem?.offers?.price || '0'}</div>
-              <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-                 <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx}, -1)">-</button>
-                 <span style="font-weight:800;">${i.orderQuantity}</span>
-                 <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx}, 1)">+</button>
-              </div>
-           </div>
-        </div>
-      `).join('') || '<div style="text-align:center; padding:50px; opacity:0.5; font-weight:700;">Bag is empty</div>';
-    }
+    if (!list) return;
+
+    list.innerHTML = (this.order.orderedItem || []).map((i, idx) => `
+      <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid #eee; align-items:center;">
+         <img src="${(Array.isArray(i.orderedItem?.image) ? i.orderedItem.image[0] : (i.orderedItem?.image?.url || i.orderedItem?.image || ''))}" style="width:60px; height:60px; border-radius:10px; object-fit:cover;"/>
+         <div style="flex:1;">
+            <div style="font-weight:700;">${i.orderedItem?.name || 'Item'}</div>
+            <div style="color:var(--accent); font-weight:800; font-size:0.9rem; margin-top:4px;">${i.orderedItem?.offers?.priceCurrency || 'INR'} ${i.orderedItem?.offers?.price || '0'}</div>
+            <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
+               <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx}, -1)">-</button>
+               <span style="font-weight:800;">${i.orderQuantity}</span>
+               <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx}, 1)">+</button>
+            </div>
+         </div>
+         <button onclick="window.CartManager.updateQty(${idx}, -${i.orderQuantity})" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-size:1.2rem; padding:10px;">×</button>
+      </div>
+    `).join('') || '<div style="text-align:center; padding:50px; opacity:0.5; font-weight:700;">Bag is empty</div>';
+
     const totalEl = document.getElementById('cart-total-price');
     if (totalEl) totalEl.textContent = `${this.order.priceCurrency || 'INR'} ${this.order.totalPrice || 0}`;
-    m.classList.add('active');
+    b?.classList.add('active'); d?.classList.add('active');
+  }
+
+  hideModal() {
+    document.getElementById('cart-modal-backdrop')?.classList.remove('active');
+    document.getElementById('cart-drawer')?.classList.remove('active');
   }
 
   placeOrder() {
-    alert("Confirming Order Schema: " + JSON.stringify(this.order));
+    alert("Confirming Order Schema: " + JSON.stringify(this.order, null, 2));
   }
 }
