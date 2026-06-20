@@ -1,5 +1,5 @@
 /**
- * src/cart.js - Defensive Order Management with Drawer UI
+ * src/cart.js - Defensive Order Management with Drawer UI and Specifications
  */
 
 export class CartManager {
@@ -20,7 +20,11 @@ export class CartManager {
   }
 
   save() {
-    this.order.totalPrice = (this.order.orderedItem || []).reduce((s, i) => s + (parseFloat(i.orderedItem?.offers?.price || 0) * i.orderQuantity), 0);
+    this.order.totalPrice = (this.order.orderedItem || []).reduce((sum, item) => {
+      const price = parseFloat(item.orderedItem?.offers?.price || 0);
+      return sum + (price * (item.orderQuantity || 1));
+    }, 0);
+
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(this.storageKey, JSON.stringify(this.order));
     }
@@ -83,7 +87,9 @@ export class CartManager {
 
   updateUI() {
     const count = (this.order.orderedItem || []).reduce((s,i)=>s+i.orderQuantity, 0);
+    const countEl = document.getElementById('cart-count');
     const fab = document.getElementById('cart-fab');
+    if (countEl) countEl.textContent = count;
     if (fab) {
       fab.innerHTML = `🛒 <span class="cart-count">${count}</span>`;
       fab.style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
@@ -94,7 +100,7 @@ export class CartManager {
     const b = document.getElementById('cart-modal-backdrop');
     const d = document.getElementById('cart-drawer');
     const list = document.getElementById('cart-items-list');
-    if (!list) return;
+    if (!b || !d || !list) return;
 
     list.innerHTML = (this.order.orderedItem || []).map((i, idx) => `
       <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid #eee; align-items:center;">
@@ -114,7 +120,7 @@ export class CartManager {
 
     const totalEl = document.getElementById('cart-total-price');
     if (totalEl) totalEl.textContent = `${this.order.priceCurrency || 'INR'} ${this.order.totalPrice || 0}`;
-    b?.classList.add('active'); d?.classList.add('active');
+    b.classList.add('active'); d.classList.add('active');
   }
 
   hideModal() {

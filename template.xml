@@ -102,10 +102,10 @@
     }
     .card:hover { transform: translateY(-5px); }
 
-    .card-img-wrapper { width: 100%; height: 220px; position: relative; overflow: hidden; background: #eee; }
+    .card-img-wrapper { width: 100%; height: 240px; position: relative; overflow: hidden; background: #f0f0f0; }
     .card-img-scroll { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
     .card-img-scroll::-webkit-scrollbar { display: none; }
-    .card-img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: start; }
+    .card-img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: start; background: #f0f0f0; }
     .card-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; pointer-events: none; }
     .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: all 0.2s; }
     .dot.active { background: #fff; width: 12px; border-radius: 4px; }
@@ -269,12 +269,12 @@
     .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
     /* Cart Drawer */
-    .cart-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 2000; display: none; opacity: 0; transition: opacity 0.3s; }
-    .cart-backdrop.active { display: block; opacity: 1; }
-    .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100vh; background: #fff; box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 2001; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
-    .cart-backdrop.active + .cart-drawer, .cart-drawer.active { right: 0; }
+    .cart-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 2000; display: none; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .cart-backdrop.active { display: block; opacity: 1; pointer-events: auto; }
+    .cart-drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: #fff; box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 2001; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+    .cart-drawer.active { right: 0; }
     .cart-header { padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-    .cart-body { padding: 20px; flex: 1; overflow-y: auto; scrollbar-width: thin; }
+    .cart-body { padding: 0; flex: 1; overflow-y: auto; scrollbar-width: thin; height: 0; }
     .cart-footer { padding: 20px 25px; border-top: 1px solid #eee; background: #fff; flex-shrink: 0; }
 
     .cart-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 25px rgba(230, 126, 34, 0.4); z-index: 1000; font-size: 1.5rem; transition: transform 0.3s; }
@@ -307,7 +307,7 @@
         <b:if cond='data:view.isMultipleItems'>
           <div class='cat-bar'>
             <div class='cat-inner'>
-              <a expr:class='data:blog.url == data:blog.homepageUrl.canonical + &quot;search&quot; ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl + &quot;search&quot;'>ALL</a>
+              <a expr:class='data:view.isSearch and !data:view.search.label ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl + &quot;search&quot;'>ALL</a>
               <b:loop values='data:labels' var='label'>
                 <a expr:class='data:view.search.label == data:label.name ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:label.url'><data:label.name/></a>
               </b:loop>
@@ -677,11 +677,10 @@
         if (html) { specs.style.display = 'block'; list.innerHTML = html; } else { specs.style.display = 'none'; }
       }
 
-      document.querySelectorAll('.v-btn').forEach(btn => {
+      document.querySelectorAll('.v-btn[data-attr]').forEach(btn => {
         const attr = btn.dataset.attr;
         const val = btn.dataset.val || btn.textContent;
         btn.classList.toggle('active', state.selected[attr] === val);
-        if (attr && attr.toLowerCase()==='color') btn.classList.toggle('active', state.selected[attr] === val);
       });
 
       const finalAddBtn = document.getElementById('add-to-cart-btn');
