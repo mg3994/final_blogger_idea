@@ -56,6 +56,7 @@
       white-space: nowrap;
       scrollbar-width: none;
     }
+    .cat-bar::-webkit-scrollbar { display: none; }
     .cat-inner {
       max-width: 1100px;
       margin: 0 auto;
@@ -97,6 +98,7 @@
       transition: transform 0.3s;
       text-decoration: none;
       color: inherit;
+      display: block;
     }
     .card:hover { transform: translateY(-5px); }
 
@@ -107,7 +109,7 @@
       object-fit: cover;
     }
     .card-body { padding: 15px; }
-    .card-title { font-weight: 700; margin: 0 0 10px; }
+    .card-title { font-weight: 700; margin: 0 0 10px; font-size: 1.1rem; height: 2.8em; overflow: hidden; }
     .card-badge {
       display: inline-block;
       padding: 2px 8px;
@@ -115,7 +117,9 @@
       font-size: 0.7rem;
       background: #eee;
       margin-bottom: 8px;
+      font-weight: 700;
     }
+    .card-price { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
 
     /* Single Page Components */
     .product-layout {
@@ -169,7 +173,7 @@
     /* Variants */
     .variants { margin: 20px 0; }
     .v-group { margin-bottom: 15px; }
-    .v-label { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; display: block; }
+    .v-label { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; display: block; text-transform: uppercase; color: #777; }
     .v-options { display: flex; gap: 10px; flex-wrap: wrap; }
     .v-btn {
       padding: 10px 15px;
@@ -178,6 +182,7 @@
       background: #fff;
       cursor: pointer;
       font-weight: 600;
+      transition: all 0.2s;
     }
     .v-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; }
     .v-btn:disabled { opacity: 0.3; cursor: not-allowed; border-style: dashed; }
@@ -226,6 +231,7 @@
       padding: 10px 0;
       scrollbar-width: none;
     }
+    .h-scroll::-webkit-scrollbar { display: none; }
     .h-card {
       min-width: 240px;
       background: #fff;
@@ -246,21 +252,21 @@
     }
     .thumb.active { border-color: var(--accent); }
 
-    .price { font-size: 1.5rem; font-weight: 800; color: var(--accent); transition: filter 0.3s; }
+    .price { font-size: 2.2rem; font-weight: 800; color: var(--accent); transition: filter 0.3s; }
     .price.blurry { filter: blur(4px); opacity: 0.5; pointer-events: none; }
     .stock-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; margin-left: 10px; }
     .in-stock { background: #e8f5e9; color: #2e7d32; }
     .out-stock { background: #ffebee; color: #c62828; }
     .instore-only { background: #fffde7; color: #fbc02d; }
     .pre-order { background: #e3f2fd; color: #1976d2; }
-    .section-title { font-size: 1.3rem; margin: 30px 0 15px; border-left: 5px solid var(--accent); padding-left: 15px; }
+    .section-title { font-size: 1.3rem; margin: 30px 0 15px; border-left: 5px solid var(--accent); padding-left: 15px; font-weight: 800; }
     .hidden { display: none !important; }
 
-    /* Cart UI */
-    .qty-controls { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
-    .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+    /* Quantity */
+    .qty-controls { display: flex; align-items: center; gap: 15px; margin: 25px 0; }
+    .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
+    /* Cart Modal */
     .cart-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
     .cart-backdrop.active { display: flex; }
     .cart-modal { background: #fff; border-radius: 20px; width: 95%; max-width: 480px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; }
@@ -285,6 +291,7 @@
         <nav class='nav'>
           <div class='nav-inner'>
             <a class='brand' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
+            <button id="theme-toggle" class="qty-btn" style="border:none; background:none; font-size:1.4rem;">☾</button>
           </div>
         </nav>
       </b:includable>
@@ -297,7 +304,7 @@
         <b:if cond='data:view.isMultipleItems'>
           <div class='cat-bar'>
             <div class='cat-inner'>
-              <a expr:class='data:view.isHomepage ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl'>All</a>
+              <a expr:class='data:view.isHomepage ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl'>All Collections</a>
               <b:loop values='data:labels' var='label'>
                 <a expr:class='data:view.search.label == data:label.name ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:label.url'><data:label.name/></a>
               </b:loop>
@@ -312,8 +319,8 @@
     <b:section id='main-section' showaddelement='yes'>
       <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'>
         <b:includable id='postCard' var='post'>
-          <a class='card' expr:href='data:post.url' expr:id='&quot;card-&quot; + data:post.id'>
-            <img class='card-img' expr:src='data:post.featuredImage ?: &quot;https://via.placeholder.com/400x300?text=Antinna&quot;' loading='lazy'/>
+          <a class='card' expr:href='data:post.url' expr:id='"card-" + data:post.id'>
+            <img class='card-img' expr:src='data:post.featuredImage ?: "https://via.placeholder.com/400x300?text=Antinna"' loading='lazy'/>
             <div class='card-body'>
               <div class='card-badge'>Loading...</div>
               <h3 class='card-title'><data:post.title/></h3>
@@ -325,16 +332,6 @@
 
         <b:includable id='main' var='top'>
           <b:if cond='data:view.isHomepage'>
-             <b:if cond='data:posts and data:posts any (p => p.labels and p.labels any (l => l.name == "featured" or l.name == "popular"))'>
-               <h2 class='section-title'>Featured Selection</h2>
-               <div class='grid' id='featured-grid'>
-                 <b:loop values='data:posts' var='post'>
-                   <b:if cond='data:post.labels and data:post.labels any (l => l.name == "featured" or l.name == "popular")'>
-                     <b:include data='post' name='postCard'/>
-                   </b:if>
-                 </b:loop>
-               </div>
-             </b:if>
              <h2 class='section-title'>Latest Arrivals</h2>
           </b:if>
 
@@ -376,47 +373,43 @@
                     <div class='carousel-container hidden' id='carousel-section'>
                        <div class='carousel' id='main-carousel'>
                           <div class='carousel-inner' id='carousel-inner'></div>
-                          <button class='carousel-btn' onclick='prevSlide()' style='left:10px;'>&#10094;</button>
-                          <button class='carousel-btn' onclick='nextSlide()' style='right:10px;'>&#10095;</button>
+                          <button class='carousel-btn' onclick='window.prevSlide()' style='left:10px;'>&#10094;</button>
+                          <button class='carousel-btn' onclick='window.nextSlide()' style='right:10px;'>&#10095;</button>
                        </div>
-                       <div class='h-scroll' id='thumbnail-row' style='margin-top:10px; gap:10px;'></div>
+                       <div class='h-scroll' id='thumbnail-row' style='margin-top:20px; gap:10px;'></div>
                     </div>
 
                     <div class='details-container hidden' id='details-section'>
-                       <h1 id='p-name'><data:post.title/></h1>
-                       <div id='p-sku' style='font-size:0.75rem; color:#888; margin-bottom:10px;'></div>
-                       <div class='price' id='p-price'>--</div>
-                       <p id='p-desc' style='color:#666;'></p>
+                       <div id='p-sku' style='font-size:0.75rem; color:#888; font-weight:800; margin-bottom:5px;'></div>
+                       <h1 id='p-name' style='margin-top:0;'><data:post.title/></h1>
+                       <div id='p-brand' style='font-weight:700; color:#777; margin-bottom:15px;'></div>
+                       <div style='display:flex; align-items:center; margin-bottom:20px;'>
+                         <div class='price' id='p-price'>--</div>
+                         <div id='stock-badge-container'></div>
+                       </div>
+                       <p id='p-desc' style='color:#666; font-size:0.95rem; line-height:1.7;'></p>
 
                        <div class='variants' id='p-variants'></div>
 
                        <div class='qty-controls'>
                          <button class='qty-btn' id='qty-minus'>-</button>
-                         <span id='qty-val' style='font-weight:900; font-size:1.2rem; min-width:30px; text-align:center;'>1</span>
+                         <span id='qty-val' style='font-weight:900; font-size:1.4rem; min-width:30px; text-align:center;'>1</span>
                          <button class='qty-btn' id='qty-plus'>+</button>
                        </div>
 
                        <button class='v-btn active' id='add-to-cart-btn' style='width:100%; padding:18px; font-size:1.1rem; border-radius:12px; margin-top:25px;'>Add to Shopping Bag</button>
 
-                       <div id='p-order-info' style='margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px; display:none;'>
-                          <h4 style='margin:0 0 10px;'>Order & Delivery Information</h4>
-                          <div id='order-info-list' style='font-size:0.85rem; line-height:1.8;'></div>
-                       </div>
-
-                       <div id='p-specs' style='margin-top:20px; display:none;'>
-                          <h4 style='margin:0 0 10px; border-bottom:1px solid #eee; padding-bottom:5px;'>Product Specifications</h4>
-                          <div id='specs-list' style='font-size:0.9rem;'></div>
-                       </div>
-
-                       <div class='seller-box' id='p-seller'>
-                          <h4 style='margin:0 0 10px;'>Seller Details</h4>
+                       <div class='seller-box' id='p-seller' style='display:none;'>
+                          <h4 style='margin:0 0 10px; opacity:0.6; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px;'>Seller Details</h4>
                           <div id='seller-info'></div>
                           <div style='display:flex; align-items:center; gap:10px; flex-wrap:wrap;'>
-                             <div class='geo-badge' id='geo-info'>
-                                &#128205; <span id='geo-text'>GEO Points Present</span>
-                             </div>
-                             <a class='social-link' id='maps-link' style='background:#34495e; display:none;' target='_blank'>Open in Maps</a>
+                             <a class='geo-badge' id='maps-link' style='display:none;' target='_blank'>📍 Map Location</a>
                           </div>
+                       </div>
+
+                       <div id='p-specs' style='margin-top:30px; border-top:1px solid #eee; padding-top:20px; display:none;'>
+                          <h4 style='margin:0 0 15px; text-transform:uppercase; font-size:0.8rem; letter-spacing:1px;'>Specifications</h4>
+                          <div id='specs-list' style='font-size:0.95rem;'></div>
                        </div>
                     </div>
                  </div>
@@ -457,7 +450,6 @@
   <script type='text/javascript'>//<![CDATA[
     let state = {
       product: null,
-      service: null,
       selected: {},
       slide: 0,
       qty: 1
@@ -471,11 +463,33 @@
       }, 100);
     });
 
+    /** UTILS **/
+    function decodeEntities(text) {
+      const textArea = document.createElement('textarea');
+      textArea.innerHTML = text || '';
+      return textArea.value;
+    }
+
+    function parseJSON(text) {
+      if (!text) return null;
+      const scriptMatch = String(text).match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+      let jsonStr = scriptMatch ? scriptMatch[1] : text;
+      let decoded = decodeEntities(jsonStr);
+      if (decoded.includes('&quot;')) decoded = decodeEntities(decoded);
+      try {
+        const clean = decoded.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
+        return JSON.parse(clean);
+      } catch (e) {
+        const block = decoded.match(/\{[\s\S]*\}/);
+        if (block) try { return JSON.parse(block[0]); } catch (e2) {}
+        return null;
+      }
+    }
+
+    /** GRID **/
     function initGrid() {
       const cards = document.querySelectorAll('.card');
-      if (cards.length === 0) return;
       const feedUrl = '/feeds/posts/default?alt=json&max-results=50';
-
       fetch(feedUrl).then(r => r.json()).then(feedData => {
         const entries = feedData.feed.entry || [];
         cards.forEach(card => {
@@ -496,161 +510,92 @@
       const badge = card.querySelector('.card-badge');
       const price = card.querySelector('.card-price');
       const img = card.querySelector('.card-img');
-
-      if (data['@type'] === 'ProductGroup' || data['@type'] === 'Product') {
-        badge.textContent = 'Product';
-        const variants = data.hasVariant || [data];
-        const first = variants[0];
-        if (first.offers) price.textContent = (first.offers.priceCurrency || 'INR') + ' ' + (first.offers.price || '');
-        const imageSource = data.image || first.image;
-        if (imageSource) img.src = Array.isArray(imageSource) ? imageSource[0] : (imageSource.url || imageSource);
-      } else if (data['@type'] === 'Service' || data['@type'] === 'LocalBusiness') {
-        badge.textContent = 'Service';
-        if (data.offers) price.textContent = (data.offers.priceCurrency || 'INR') + ' ' + (data.offers.price || '');
-        if (data.image) img.src = Array.isArray(data.image) ? data.image[0] : (data.image.url || data.image);
+      const isProduct = data['@type'] === 'ProductGroup' || data['@type'] === 'Product';
+      if (badge) badge.textContent = isProduct ? 'Product' : (data['@type'] || 'Item');
+      const v = data.hasVariant ? data.hasVariant[0] : data;
+      if (v.offers && price) price.textContent = (v.offers.priceCurrency || 'INR') + ' ' + (v.offers.price || '');
+      const imageSource = v.image || data.image;
+      if (imageSource && img) {
+        const url = Array.isArray(imageSource) ? imageSource[0] : (imageSource.url || imageSource);
+        img.src = url;
       }
     }
 
+    /** ITEM **/
     function initItem() {
       const rawEl = document.getElementById('post-body-raw');
       let data = parseJSON(rawEl.textContent);
-
       if (!data) {
         const allScripts = document.querySelectorAll('script[type="application/ld+json"]');
         for (let s of allScripts) {
-          data = parseJSON(s.textContent);
-          if (data && (data['@type'] === 'ProductGroup' || data['@type'] === 'Service' || data['@type'] === 'LocalBusiness' || data['@type'] === 'Product')) break;
+          const d = parseJSON(s.textContent);
+          if (d && (d['@type'] === 'ProductGroup' || d['@type'] === 'Service' || d['@type'] === 'Product')) { data = d; break; }
         }
       }
-
       if (!data) {
         const initEl = document.getElementById('initializing-state');
-        if (initEl) initEl.innerHTML = '<div style="color:red; font-weight:bold;">Error: No valid Data Engine source found.</div>';
+        if (initEl) initEl.innerHTML = '<div style="color:red; font-weight:bold;">Error: Valid Schema.org data not found.</div>';
         return;
       }
-
-      if (data['@type'] === 'ProductGroup') {
-        state.product = data;
-        renderProduct();
-      } else if (data['@type'] === 'Service' || data['@type'] === 'LocalBusiness') {
-        state.service = data;
-        renderService();
-      } else if (data['@type'] === 'Product') {
-        state.product = data;
-        renderProduct();
-      }
-
+      state.product = data;
+      renderProduct();
       document.getElementById('initializing-state')?.classList.add('hidden');
       document.getElementById('carousel-section')?.classList.remove('hidden');
       document.getElementById('details-section')?.classList.remove('hidden');
     }
 
-    function decodeEntities(text) {
-      const textArea = document.createElement('textarea');
-      textArea.innerHTML = text;
-      return textArea.value;
-    }
-
-    function parseJSON(text) {
-      if (!text) return null;
-      const scriptMatch = text.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
-      let jsonStr = scriptMatch ? scriptMatch[1] : text;
-      let decoded = decodeEntities(jsonStr);
-      if (decoded.includes('&quot;')) decoded = decodeEntities(decoded);
-      try {
-        const cleanJson = decoded.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
-        return JSON.parse(cleanJson);
-      } catch (e) {
-        const jsonBlock = decoded.match(/\{[\s\S]*\}/);
-        if (jsonBlock) try { return JSON.parse(jsonBlock[0]); } catch (e2) {}
-        return null;
-      }
-    }
-
     function renderProduct() {
       const p = state.product;
-      document.getElementById('p-name').textContent = p.name;
-      document.getElementById('p-desc').textContent = p.description || '';
+      const el = (id) => document.getElementById(id);
+      if (el('p-name')) el('p-name').textContent = p.name || '';
+      if (el('p-desc')) el('p-desc').textContent = p.description || '';
+      if (el('p-brand')) el('p-brand').textContent = typeof p.brand === 'string' ? p.brand : (p.brand?.name || '');
 
-      const brandDiv = document.getElementById('p-brand');
-      brandDiv.textContent = typeof p.brand === 'string' ? p.brand : (p.brand?.name || '');
-
-      const vars = document.getElementById('p-variants');
-      vars.innerHTML = '';
-
-      if (p.variesBy) {
-        p.variesBy.forEach(vUrl => {
-          const attr = vUrl.split(/[\/#]/).pop();
-          const values = [...new Set(p.hasVariant.map(v => v[attr]).filter(Boolean))];
-
-          const group = document.createElement('div');
-          group.className = 'v-group';
-          group.innerHTML = `<span class="v-label">Select ${attr}:</span>`;
-          const opts = document.createElement('div');
-          opts.className = 'v-options';
-
-          values.forEach(val => {
-            const btn = document.createElement('button');
-            btn.className = 'v-btn';
-            btn.dataset.attr = attr;
-            btn.dataset.val = val;
-
-            if (attr.toLowerCase() === 'color') {
-              btn.classList.add('v-color');
-              btn.style.backgroundColor = val;
-              btn.title = val;
-            } else {
-              btn.textContent = val;
-            }
-            btn.onclick = () => {
-              state.selected[attr] = val;
-              updateProductView(attr);
-              checkAvailability();
-            };
-            opts.appendChild(btn);
+      const vars = el('p-variants');
+      if (vars) {
+        vars.innerHTML = '';
+        if (p.variesBy) {
+          p.variesBy.forEach(vUrl => {
+            const attr = vUrl.split(/[\/#]/).pop();
+            const values = [...new Set(p.hasVariant.map(v => v[attr]).filter(Boolean))];
+            const group = document.createElement('div');
+            group.className = 'v-group';
+            group.innerHTML = `<span class="v-label">Select ${attr}</span>`;
+            const opts = document.createElement('div');
+            opts.className = 'v-options';
+            values.forEach(val => {
+              const btn = document.createElement('button');
+              btn.className = 'v-btn';
+              btn.dataset.attr = attr;
+              btn.dataset.val = val;
+              if (attr.toLowerCase() === 'color') { btn.classList.add('v-color'); btn.style.backgroundColor = val; }
+              else { btn.textContent = val; }
+              btn.onclick = () => {
+                state.selected[attr] = val;
+                updateProductView(attr);
+                checkAvailability();
+              };
+              opts.appendChild(btn);
+            });
+            group.appendChild(opts);
+            vars.appendChild(group);
+            if (!state.selected[attr]) state.selected[attr] = values[0];
           });
-          group.appendChild(opts);
-          vars.appendChild(group);
-          state.selected[attr] = values[0];
-        });
+        }
       }
 
-      document.getElementById('qty-plus').onclick = () => { state.qty++; document.getElementById('qty-val').textContent = state.qty; };
-      document.getElementById('qty-minus').onclick = () => { if(state.qty > 1) { state.qty--; document.getElementById('qty-val').textContent = state.qty; } };
+      const qP = el('qty-plus'); const qM = el('qty-minus'); const qV = el('qty-val');
+      if (qP) qP.onclick = () => { state.qty++; if(qV) qV.textContent = state.qty; };
+      if (qM) qM.onclick = () => { if(state.qty > 1) { state.qty--; if(qV) qV.textContent = state.qty; } };
 
       updateProductView();
       checkAvailability();
     }
 
-    function checkAvailability() {
-      const p = state.product;
-      if (!p.hasVariant) return;
-      document.querySelectorAll('.v-btn[data-attr]').forEach(btn => {
-        const attr = btn.dataset.attr;
-        const val = btn.dataset.val;
-        const testSelected = { ...state.selected, [attr]: val };
-        const matchingVariant = p.hasVariant.find(v =>
-          Object.entries(testSelected).every(([k, vVal]) => !v[k] || v[k] === vVal)
-        );
-        const outOfStock = matchingVariant && matchingVariant.offers && matchingVariant.offers.availability === 'https://schema.org/OutOfStock';
-        btn.style.opacity = !matchingVariant ? '0.3' : (outOfStock ? '0.6' : '1');
-        btn.style.borderStyle = !matchingVariant ? 'dashed' : 'solid';
-      });
-    }
-
-    function formatValue(v) {
-      if (!v) return '';
-      if (typeof v === 'string') return v;
-      if (v['@type'] === 'QuantitativeValue') return `${v.value} ${v.unitCode || v.unitText || ''}`;
-      return v.value || '';
-    }
-
     function updateProductView(pivotAttr) {
       const p = state.product;
       const variants = p.hasVariant || [p];
-      let variant = variants.find(v =>
-        Object.entries(state.selected).every(([key, val]) => v[key] === val)
-      );
+      let variant = variants.find(v => Object.entries(state.selected).every(([key, val]) => v[key] === val));
 
       if (!variant && pivotAttr) {
          variant = variants.find(v => v[pivotAttr] === state.selected[pivotAttr]) || variants[0];
@@ -664,108 +609,81 @@
         variant = variants[0];
       }
 
-      document.getElementById('p-sku').textContent = variant.sku ? 'SKU: ' + variant.sku : '';
+      if (document.getElementById('p-sku')) document.getElementById('p-sku').textContent = variant.sku ? 'SKU: ' + variant.sku : '';
       const off = variant.offers || p.offers;
-      if (off) {
-        const priceEl = document.getElementById('p-price');
+      const priceEl = document.getElementById('p-price');
+      if (off && priceEl) {
         priceEl.textContent = (off.priceCurrency || 'INR') + ' ' + (off.price || '');
         priceEl.classList.toggle('blurry', off.availability === 'https://schema.org/OutOfStock');
-
-        let badge = document.getElementById('stock-indicator');
-        if (!badge) {
-          badge = document.createElement('span'); badge.id = 'stock-indicator';
-          document.getElementById('stock-badge-container').appendChild(badge);
+        const stCont = document.getElementById('stock-badge-container');
+        if (stCont) {
+          const av = off.availability;
+          const isIn = av === 'https://schema.org/InStock';
+          stCont.innerHTML = `<span class="stock-badge ${isIn?'in-stock':'out-stock'}">${isIn?'In Stock':'Out of Stock'}</span>`;
         }
-        badge.className = 'stock-badge ' + (off.availability === 'https://schema.org/InStock' ? 'in-stock' : 'out-stock');
-        badge.textContent = off.availability === 'https://schema.org/InStock' ? 'In Stock' : 'Out of Stock';
-
-        // Order Info
-        const orderSection = document.getElementById('p-order-info');
-        const orderList = document.getElementById('order-info-list');
-        let orderHtml = '';
-        if (off.deliveryLeadTime) orderHtml += `<div>&#128666; <b>Delivery:</b> ~${formatValue(off.deliveryLeadTime)}</div>`;
-        if (off.acceptedPaymentMethod) orderHtml += `<div>&#128179; <b>Payments:</b> ${Array.isArray(off.acceptedPaymentMethod) ? off.acceptedPaymentMethod.map(pm => pm.split('/').pop()).join(', ') : off.acceptedPaymentMethod.split('/').pop()}</div>`;
-        if (orderHtml) { orderSection.style.display = 'block'; orderList.innerHTML = orderHtml; } else { orderSection.style.display = 'none'; }
-
+        const addBtn = document.getElementById('add-to-cart-btn');
+        if (addBtn) addBtn.disabled = off.availability === 'https://schema.org/OutOfStock';
         renderSeller(off.seller || p.seller || p.provider);
       }
 
-      const vImgs = Array.isArray(variant.image) ? variant.image : (variant.image ? [variant.image] : []);
-      const pImgs = Array.isArray(p.image) ? p.image : (p.image ? [p.image] : []);
-      renderCarousel(vImgs.length > 0 ? vImgs : pImgs);
+      const imgs = Array.isArray(variant.image || p.image) ? (variant.image || p.image) : [variant.image || p.image];
+      renderCarousel(imgs.filter(Boolean));
 
       const specs = document.getElementById('p-specs');
       const list = document.getElementById('specs-list');
-      const fields = { 'Model': variant.model || p.model, 'Material': variant.material || p.material, 'GTIN': variant.gtin13 || variant.gtin8 || '', 'Weight': formatValue(variant.weight || p.weight), 'Color': variant.color || p.color };
-      let specsHtml = '';
-      for (let [label, val] of Object.entries(fields)) {
-        if (val) specsHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;"><span style="color:#888;">${label}</span><span style="font-weight:600;">${val}</span></div>`;
+      if (specs && list) {
+        const fields = { 'Model': variant.model || p.model, 'Material': variant.material || p.material, 'GTIN': variant.gtin13 || variant.gtin8 || '', 'Weight': (variant.weight || p.weight)?.value || (variant.weight || p.weight), 'Color': variant.color || p.color };
+        let html = '';
+        for (let [label, val] of Object.entries(fields)) {
+          if (val) html += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;"><span style="opacity:0.6; text-transform:capitalize;">${label}</span><span style="font-weight:700;">${val}</span></div>`;
+        }
+        if (html) { specs.style.display = 'block'; list.innerHTML = html; } else { specs.style.display = 'none'; }
       }
-      if (specsHtml) { specs.style.display = 'block'; list.innerHTML = specsHtml; } else { specs.style.display = 'none'; }
 
       document.querySelectorAll('.v-btn').forEach(btn => {
         const attr = btn.dataset.attr;
         const val = btn.dataset.val || btn.textContent;
         btn.classList.toggle('active', state.selected[attr] === val);
+        if (attr && attr.toLowerCase()==='color') btn.classList.toggle('active', state.selected[attr] === val);
       });
 
-      document.getElementById('add-to-cart-btn').onclick = () => {
-         for(let i=0; i<state.qty; i++) window.CartManager.addItem(variant, off?.seller || p.seller || p.provider);
-      };
+      const finalAddBtn = document.getElementById('add-to-cart-btn');
+      if (finalAddBtn) {
+        finalAddBtn.onclick = () => {
+          for(let i=0; i<state.qty; i++) window.CartManager.addItem(variant, off?.seller || p.seller || p.provider);
+        };
+      }
     }
 
-    function renderService() {
-      const s = state.service;
-      document.getElementById('p-name').textContent = s.name;
-      document.getElementById('p-desc').textContent = s.description;
-
-      if (s.areaServed) {
-        const area = typeof s.areaServed === 'string' ? s.areaServed : (s.areaServed.name || 'Local');
-        const badge = document.createElement('div');
-        badge.className = 'geo-badge';
-        badge.innerHTML = '&#127760; Area Served: ' + area;
-        document.getElementById('p-desc').after(badge);
-      }
-
-      if (s.hasOfferCatalog) {
-        const vars = document.getElementById('p-variants');
-        vars.innerHTML = '<h4>Available Options</h4>';
-        const opts = document.createElement('div');
-        opts.className = 'v-options';
-        s.hasOfferCatalog.itemListElement.forEach(offer => {
-          const btn = document.createElement('button');
-          btn.className = 'v-btn';
-          btn.innerHTML = `${offer.itemOffered.name} <br/> <b>${offer.priceCurrency} ${offer.price}</b>`;
-          btn.onclick = () => {
-            document.getElementById('p-price').textContent = `${offer.priceCurrency} ${offer.price}`;
-            document.querySelectorAll('.v-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-          };
-          opts.appendChild(btn);
-        });
-        vars.appendChild(opts);
-        opts.firstChild.click();
-      }
-
-      renderCarousel(s.image);
-      renderSeller(s.provider || s);
+    function checkAvailability() {
+      const p = state.product;
+      if (!p.hasVariant) return;
+      document.querySelectorAll('.v-btn[data-attr]').forEach(btn => {
+        const attr = btn.dataset.attr;
+        const val = btn.dataset.val;
+        const testSelected = { ...state.selected, [attr]: val };
+        const match = p.hasVariant.find(v => Object.entries(testSelected).every(([k,vVal]) => !v[k] || v[k] === vVal));
+        const out = match && match.offers && match.offers.availability === 'https://schema.org/OutOfStock';
+        btn.style.opacity = !match ? '0.3' : (out ? '0.6' : '1');
+        btn.style.borderStyle = !match ? 'dashed' : 'solid';
+      });
     }
 
     function renderCarousel(images) {
       const inner = document.getElementById('carousel-inner');
       const thumbRow = document.getElementById('thumbnail-row');
+      if (!inner) return;
       inner.innerHTML = ''; if (thumbRow) thumbRow.innerHTML = '';
-      const list = images.filter(Boolean);
-      list.forEach((src, idx) => {
+      images.forEach((src, idx) => {
         const url = src.url || src;
         const div = document.createElement('div'); div.className = 'carousel-item';
         div.innerHTML = `<img src="${url}"/>`;
         inner.appendChild(div);
-        if (thumbRow && list.length > 1) {
+        if (thumbRow && images.length > 1) {
           const thumb = document.createElement('img');
           thumb.className = 'thumb' + (idx === 0 ? ' active' : '');
           thumb.src = url;
-          thumb.onclick = () => goToSlide(idx);
+          thumb.onclick = () => window.goToSlide(idx);
           thumbRow.appendChild(thumb);
         }
       });
@@ -780,25 +698,24 @@
       if (inner) inner.style.transform = `translateX(-${idx * 100}%)`;
       document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
     };
-    window.nextSlide = () => goToSlide(state.slide + 1);
-    window.prevSlide = () => goToSlide(state.slide - 1);
+    window.nextSlide = () => window.goToSlide(state.slide + 1);
+    window.prevSlide = () => window.goToSlide(state.slide - 1);
 
     function renderSeller(s) {
       const box = document.getElementById('p-seller');
       const info = document.getElementById('seller-info');
-      if (!s) { box.style.display = 'none'; return; }
+      const maps = document.getElementById('maps-link');
+      if (!s || !box) { if(box) box.style.display = 'none'; return; }
       box.style.display = 'block';
-      let html = `<strong>${s.name || 'Official Seller'}</strong><br/>`;
+      let html = `<strong>${s.name || 'Antinna'}</strong><br/>`;
       if (s.telephone) html += `&#128222; ${s.telephone}<br/>`;
       if (s.email) html += `&#128231; <a href="mailto:${s.email}">${s.email}</a><br/>`;
-      if (s.address) html += `&#128205; ${s.address.streetAddress || ''}, ${s.address.addressLocality || ''}`;
-      info.innerHTML = html;
-
-      const maps = document.getElementById('maps-link');
-      if (s.geo) {
-        maps.style.display = 'inline-flex';
-        maps.href = `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`;
-      } else maps.style.display = 'none';
+      if (s.address) html += `📍 ${s.address.streetAddress || ''}, ${s.address.addressLocality || ''}`;
+      if (info) info.innerHTML = html;
+      if (maps) {
+        if (s.geo) { maps.style.display = 'inline-flex'; maps.href = `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`; }
+        else { maps.style.display = 'none'; }
+      }
     }
 
     /** CART **/
@@ -829,23 +746,28 @@
         localStorage.setItem(this.storageKey, JSON.stringify(this.order));
       },
       renderFab() {
+        const container = document.getElementById('cart-fab-container');
+        if (!container) return;
         const fab = document.createElement('div'); fab.className = 'cart-fab'; fab.id = 'cart-fab';
         fab.innerHTML = '🛒 <span class="cart-count" id="cart-count">0</span>';
         fab.onclick = () => this.showModal();
-        document.getElementById('cart-fab-container').appendChild(fab);
+        container.appendChild(fab);
         this.updateUI();
       },
       updateUI() {
         const count = this.order.orderedItem.reduce((s,i)=>s+i.orderQuantity, 0);
-        document.getElementById('cart-count').textContent = count;
-        document.getElementById('cart-fab').style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
+        const cntEl = document.getElementById('cart-count');
+        const fabEl = document.getElementById('cart-fab');
+        if (cntEl) cntEl.textContent = count;
+        if (fabEl) fabEl.style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
       },
       showModal() {
         const m = document.getElementById('cart-modal-backdrop');
         const list = document.getElementById('cart-items-list');
+        if (!list) return;
         list.innerHTML = this.order.orderedItem.map((i, idx) => `
           <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid #eee; align-items:center;">
-             <img src="${i.orderedItem.image?.url || i.orderedItem.image || ''}" style="width:60px; height:60px; border-radius:10px; object-fit:cover;"/>
+             <img src="${(Array.isArray(i.orderedItem.image) ? i.orderedItem.image[0] : (i.orderedItem.image?.url || i.orderedItem.image || ''))}" style="width:60px; height:60px; border-radius:10px; object-fit:cover;"/>
              <div style="flex:1;">
                 <div style="font-weight:700;">${i.orderedItem.name}</div>
                 <div style="color:var(--accent); font-weight:800; font-size:0.9rem; margin-top:4px;">${i.orderedItem.offers?.priceCurrency || 'INR'} ${i.orderedItem.offers?.price || '0'}</div>
@@ -857,19 +779,24 @@
              </div>
           </div>
         `).join('') || '<div style="text-align:center; padding:50px; opacity:0.5; font-weight:700;">Bag is empty</div>';
-        document.getElementById('cart-total-price').textContent = `${this.order.priceCurrency} ${this.order.totalPrice}`;
-        m.classList.add('active');
+        const totalEl = document.getElementById('cart-total-price');
+        if (totalEl) totalEl.textContent = `${this.order.priceCurrency} ${this.order.totalPrice}`;
+        m?.classList.add('active');
       },
       placeOrder() { alert("Confirming Order Schema: " + JSON.stringify(this.order)); }
     };
 
     window.showToast = (msg, type) => {
-       const t = document.createElement('div'); t.className = 'toast';
-       t.style.background = type === 'success' ? '#10b981' : '#ef4444';
-       t.style.cssText = `position:fixed; bottom:24px; right:24px; color:white; padding:12px 24px; border-radius:10px; font-weight:600; z-index:3000; transition: opacity 0.3s;`;
+       const t = document.createElement('div'); t.style.cssText = `position:fixed; bottom:24px; right:24px; color:white; padding:12px 24px; border-radius:10px; font-weight:600; z-index:3000; background: ${type==='success'?'#10b981':'#ef4444'};`;
        t.textContent = msg;
        document.body.appendChild(t);
        setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+    };
+
+    document.getElementById('theme-toggle').onclick = () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('antinna-theme', isDark ? 'dark' : 'light');
+      document.getElementById('theme-toggle').textContent = isDark ? '☼' : '☾';
     };
   //]]></script>
 </body>
