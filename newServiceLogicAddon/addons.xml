@@ -25,9 +25,54 @@
     /* Navbar */
     .nav { background: #fff; padding: 15px 0; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
     html.dark .nav { background: #1e293b; border-bottom: 1px solid #334155; }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-    .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding: 0 20px; gap: 20px; }
+    .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; flex-shrink: 0; }
     html.dark .brand { color: #fff; }
+
+    /* Enhanced Search Header */
+    .header-center-search { flex: 1; display: flex; align-items: center; gap: 0; max-width: 700px; background: #f0f0f0; border-radius: 12px; padding: 4px; border: 2px solid transparent; transition: all 0.2s; }
+    html.dark .header-center-search { background: #334155; }
+    .header-center-search:focus-within { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.1); }
+    html.dark .header-center-search:focus-within { background: #0f172a; }
+
+    .location-picker { display: flex; align-items: center; gap: 8px; padding: 6px 15px; border-right: 1px solid #ddd; cursor: pointer; transition: all 0.2s; white-space: nowrap; font-size: 0.85rem; font-weight: 700; color: var(--accent); }
+    html.dark .location-picker { border-color: #475569; }
+    .location-picker:hover { opacity: 0.8; }
+
+    .search-container { flex: 1; display: flex; align-items: center; }
+    .search-form { display: flex; align-items: center; width: 100%; padding-left: 10px; }
+    .search-input { border: none; background: transparent; padding: 8px 10px; width: 100%; outline: none; font-size: 0.9rem; color: inherit; font-weight: 500; }
+    .search-icon { background: none; border: none; cursor: pointer; color: #888; display: flex; align-items: center; padding: 5px; transition: color 0.2s; }
+    .search-icon:hover { color: var(--accent); }
+    .search-icon svg { width: 20px; height: 20px; }
+
+    /* Responsive Header Logic */
+    .pin-input-mode { display: none; width: 60px; border: none; background: transparent; outline: none; font-weight: 800; color: inherit; font-size: 0.85rem; }
+    @media (max-width: 768px) {
+      .brand { font-size: 1.1rem; letter-spacing: -1px; }
+      .location-text { display: none; }
+      .pin-input-mode { display: inline-block; }
+      .location-picker { padding: 6px 10px; gap: 4px; }
+      .header-center-search { border-radius: 10px; }
+    }
+
+    /* Awesome Location Modal */
+    .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+    .modal-backdrop.active { display: flex; opacity: 1; }
+    .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s; }
+    .modal-backdrop.active .modal-content { transform: translateY(0); }
+    .modal-header { margin-bottom: 20px; text-align: center; }
+    .modal-header h3 { margin: 0; font-size: 1.4rem; font-weight: 800; }
+    .modal-header p { margin: 10px 0 0; font-size: 0.9rem; color: #777; }
+    .loc-btn { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #eee; background: #f8f9fa; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; transition: all 0.2s; color: var(--text); }
+    html.dark .loc-btn { background: #334155; border-color: #475569; }
+    .loc-btn:hover { background: #eef2f7; border-color: var(--accent); }
+    .modal-divider { display: flex; align-items: center; text-align: center; color: #bbb; font-size: 0.8rem; margin-bottom: 20px; }
+    .modal-divider::before, .modal-divider::after { content: ""; flex: 1; border-bottom: 1px solid #eee; }
+    .modal-divider span { padding: 0 10px; }
+    .pin-field { display: flex; gap: 10px; }
+    .pin-field input { flex: 1; padding: 12px 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 1rem; font-weight: 700; background: transparent; color: inherit; }
+    .pin-field button { padding: 0 20px; border-radius: 10px; border: none; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
 
     .cat-bar { background: #fff; border-top: 1px solid #eee; padding: 10px 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
     html.dark .cat-bar { background: #1e293b; border-color: #334155; }
@@ -134,7 +179,28 @@
         <nav class='nav'>
           <div class='nav-inner'>
             <a class='brand' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
-            <button id="theme-toggle" class="qty-btn" style="border:none; background:none; font-size:1.4rem;">☾</button>
+
+            <div class='header-center-search'>
+              <div class='location-picker' id='location-trigger' onclick='window.LocationManager.showModal()'>
+                <span id='loc-icon'>📍</span>
+                <span class='location-text' id='loc-display'>Set Location</span>
+                <input class='pin-input-mode' id='pin-input' maxlength='6' placeholder='PIN' type='text'/>
+              </div>
+
+              <div class='search-container'>
+                <form class='search-form' expr:action='data:blog.searchUrl' id='search-form' method='get'>
+                  <b:attr cond='not data:view.isPreview' name='target' value='_top'/>
+                  <input autocomplete='off' class='search-input' id='search-q' name='q' placeholder='Search products &amp; services...' type='search'/>
+                  <button aria-label='Search' class='search-icon' type='submit'>
+                    <svg fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                      <path d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <button class='qty-btn' id='theme-toggle' style='border:none; background:none; font-size:1.4rem;'>☾</button>
           </div>
         </nav>
       </b:includable>
@@ -264,6 +330,26 @@
       </div>
   </div>
   <div id="cart-fab-container"></div>
+
+  <!-- Awesome Location Modal -->
+  <div class='modal-backdrop' id='loc-modal-backdrop' onclick='if(event.target===this) window.LocationManager.hideModal()'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h3>Select Location</h3>
+        <p>This helps us show products and services available in your area.</p>
+      </div>
+      <button class='loc-btn' onclick='window.LocationManager.request()'>
+        <span>🎯</span> Detect My Location
+      </button>
+      <div class='modal-divider'>
+        <span>OR</span>
+      </div>
+      <div class='pin-field'>
+        <input id='modal-pin-input' maxlength='6' placeholder='Enter PIN Code' type='text'/>
+        <button onclick='window.LocationManager.setPin()'>Apply</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module">//<![CDATA[
     let state = { product: null, selected: {}, slide: 0, qty: 1, lastClickedAttr: null };
@@ -407,6 +493,79 @@
       }
     };
 
+    window.LocationManager = {
+      data: { lat: null, lon: null, pin: null, city: null },
+      init() {
+        const s = localStorage.getItem("antinna_location");
+        if (s) {
+          try {
+            this.data = JSON.parse(s);
+            this.updateUI();
+          } catch(e) {}
+        }
+        // If location not set, show modal after delay
+        if (!this.data.pin && !this.data.city) {
+          setTimeout(() => this.showModal(), 2000);
+        }
+      },
+      showModal() { document.getElementById('loc-modal-backdrop')?.classList.add('active'); },
+      hideModal() { document.getElementById('loc-modal-backdrop')?.classList.remove('active'); },
+      setPin() {
+        const p = document.getElementById('modal-pin-input');
+        if (p && p.value.length === 6) {
+          this.data.pin = p.value;
+          this.save();
+          this.updateUI();
+          this.hideModal();
+          window.showToast("Location updated!","success");
+        } else {
+          window.showToast("Enter a valid 6-digit PIN","error");
+        }
+      },
+      request() {
+        if (!navigator.geolocation) {
+          window.showToast("Geolocation not supported","error");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            this.data.lat = pos.coords.latitude;
+            this.data.lon = pos.coords.longitude;
+            this.reverseGeocode();
+          },
+          (err) => {
+            window.showToast("Location access denied","error");
+          }
+        );
+      },
+      async reverseGeocode() {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${this.data.lat}&lon=${this.data.lon}&format=json`);
+          const d = await res.json();
+          if (d.address) {
+            this.data.pin = d.address.postcode || this.data.pin;
+            this.data.city = d.address.city || d.address.town || d.address.village || d.address.state_district;
+            this.save();
+            this.updateUI();
+            this.hideModal();
+            window.showToast(`Location set to ${this.data.city}`,"success");
+          }
+        } catch(e) {
+          console.error("Geocoding failed", e);
+        }
+      },
+      save() { localStorage.setItem("antinna_location", JSON.stringify(this.data)); },
+      updateUI() {
+        const d = document.getElementById('loc-display');
+        const p = document.getElementById('pin-input');
+        const mp = document.getElementById('modal-pin-input');
+        const text = this.data.city ? (this.data.pin ? `${this.data.city}, ${this.data.pin}` : this.data.city) : (this.data.pin || "Set Location");
+        if (d) d.textContent = text;
+        if (p) p.value = this.data.pin || "";
+        if (mp) mp.value = this.data.pin || "";
+      }
+    };
+
     window.CartManager = {
       order: { "@context": "https://schema.org", "@type": "Order", "orderedItem": [], "totalPrice": 0, "priceCurrency": "INR" },
       init() { const s=localStorage.getItem("antinna_cart_order"); if(s)try{this.order=JSON.parse(s)}catch(e){} this.renderFab(); },
@@ -460,6 +619,7 @@
 
     document.addEventListener("DOMContentLoaded",()=>{
       const savedTheme = localStorage.getItem('antinna-theme'); if(savedTheme==='dark') document.documentElement.classList.add('dark');
+      window.LocationManager.init();
       window.CartManager.init();
       setTimeout(()=>{
         const r=document.getElementById("post-body-raw"); if(r){const d=engine.extractJsonLd(r.textContent); if(d){state.product=d; renderers.renderProduct(d, state); renderers.checkAvailability();}}
@@ -479,6 +639,21 @@
         });
       },100);
       document.getElementById("theme-toggle").onclick=()=>{const d=document.documentElement.classList.toggle("dark"); localStorage.setItem("antinna-theme",d?"dark":"light"); document.getElementById("theme-toggle").textContent=d?"☼":"☾"};
+
+      document.getElementById("search-form").onsubmit=(e)=>{
+        const q = document.getElementById("search-q");
+        const loc = window.LocationManager.data;
+        const extra = loc.pin || loc.city || "";
+        if (extra && !q.value.includes(extra)) {
+          q.value = q.value + " " + extra;
+        }
+      };
+
+      document.getElementById("pin-input").onchange=(e)=>{
+        window.LocationManager.data.pin = e.target.value;
+        window.LocationManager.save();
+        window.LocationManager.updateUI();
+      };
       document.getElementById("qty-plus").onclick=()=>{state.qty++; document.getElementById("qty-val").textContent=state.qty};
       document.getElementById("qty-minus").onclick=()=>{if(state.qty>1){state.qty--; document.getElementById("qty-val").textContent=state.qty}};
       document.getElementById("add-to-cart-btn").onclick=()=>{
