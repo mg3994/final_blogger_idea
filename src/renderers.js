@@ -1,5 +1,5 @@
 /**
- * src/renderers.js - High-fidelity Renderers with Swatches and Carousel
+ * src/renderers.js - Refined Pivot-based Renderers with Swatches and Carousel
  */
 
 function sanitize(text) {
@@ -13,7 +13,21 @@ export const renderers = {
   renderProduct(p, state) {
     if (!p) return;
     const variants = p.hasVariant || [p];
-    const variant = variants.find(x => Object.entries(state.selected || {}).every(([k, v]) => x[k] === v)) || variants[0];
+
+    // Robust Pivot-based Matching Logic
+    let variant = variants.find(v => Object.entries(state.selected || {}).every(([k, val]) => v[k] === val));
+    if (!variant && state.lastClickedAttr) {
+       variant = variants.find(v => v[state.lastClickedAttr] === state.selected[state.lastClickedAttr]) || variants[0];
+       // Sync selected state to this new variant to avoid broken state
+       if (p.variesBy) {
+         p.variesBy.forEach(u => {
+           const attr = u.split(/[\/#]/).pop();
+           if (variant[attr]) state.selected[attr] = variant[attr];
+         });
+       }
+    } else if (!variant) {
+      variant = variants[0];
+    }
 
     const el = (id) => document.getElementById(id);
     const setText = (id, v) => { const e = el(id); if (e) e.textContent = v || "" };
@@ -51,6 +65,7 @@ export const renderers = {
       p.variesBy.forEach(u => {
         const a = u.split(/[\/#]/).pop();
         const vals = [...new Set(p.hasVariant.map(x => x[a]).filter(Boolean))];
+        if (vals.length === 0) return;
         const g = document.createElement("div");
         g.className = "v-group";
         g.innerHTML = `<span class="v-label">Select ${sanitize(a)}</span>`;
@@ -73,7 +88,9 @@ export const renderers = {
           }
           btn.onclick = () => {
             state.selected[a] = vl;
+            state.lastClickedAttr = a;
             this.renderProduct(p, state);
+            this.checkAvailability(p, state);
           };
           os.appendChild(btn);
         });
@@ -90,6 +107,20 @@ export const renderers = {
     });
 
     this.renderSeller(off?.seller || p.seller || p.provider);
+    this.renderSpecs(variant, p);
+  },
+
+  checkAvailability(p, state) {
+    if (!p || !p.hasVariant) return;
+    document.querySelectorAll('.v-btn[data-attr]').forEach(btn => {
+      const a = btn.dataset.attr;
+      const v = btn.dataset.val || btn.textContent;
+      const test = { ...state.selected, [a]: v };
+      const match = p.hasVariant.find(x => Object.entries(test).every(([k, val]) => !x[k] || x[k] === val));
+      const out = match && match.offers && match.offers.availability === 'https://schema.org/OutOfStock';
+      btn.style.opacity = !match ? '0.3' : (out ? '0.6' : '1');
+      btn.style.borderStyle = !match ? 'dashed' : 'solid';
+    });
   },
 
   renderCarousel(imgs, state) {
@@ -108,7 +139,7 @@ export const renderers = {
         const t = document.createElement("img");
         t.className = "thumb" + (i === 0 ? " active" : "");
         t.src = url;
-        t.onclick = () => { window.goToSlide(i) };
+        t.onclick = () => { if(window.goToSlide) window.goToSlide(i) };
         tR.appendChild(t);
       }
     });
@@ -119,7 +150,7 @@ export const renderers = {
   renderSeller(s) {
     const box = document.getElementById('p-seller');
     const inf = document.getElementById('seller-info');
-    const maps = el('maps-link');
+    const maps = document.getElementById('maps-link');
     if (!box || !inf) return;
     if (!s) { box.style.display = "none"; return }
     box.style.display = "block";
@@ -129,6 +160,25 @@ export const renderers = {
         maps.style.display = "inline-flex";
         maps.href = s.hasMap || `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`;
       } else maps.style.display = "none";
+    }
+  },
+
+  renderSpecs(variant, p) {
+    const sp = document.getElementById("p-specs");
+    const sl = document.getElementById("specs-list");
+    if (sp && sl) {
+      const flds = {
+        'Model': variant.model || p.model,
+        'Material': variant.material || p.material,
+        'GTIN': variant.gtin13 || variant.gtin8 || '',
+        'Weight': (variant.weight || p.weight)?.value || (variant.weight || p.weight),
+        'Color': variant.color || p.color
+      };
+      let h = '';
+      for (let [l, k] of Object.entries(flds)) {
+        if (k) h += `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);"><span style="opacity:0.6;">${l}</span><span style="font-weight:700;">${k}</span></div>`;
+      }
+      if (h) { sp.style.display = "block"; sl.innerHTML = h } else { sp.style.display = "none" }
     }
   }
 };

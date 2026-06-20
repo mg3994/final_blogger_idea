@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Mock Verification</title>
+    <style>
+        /* Extracting core CSS from addons.xml for verification */
+        :root { --accent: #e67e22; --bg: #f8f9fa; --card: #ffffff; --text: #333333; --radius: 12px; }
+        html.dark { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
+        body { background-color: var(--bg); color: var(--text); font-family: sans-serif; }
+        .carousel { width: 300px; height: 300px; background: #eee; position: relative; overflow: hidden; }
+        .carousel-inner { display: flex; transition: transform 0.3s; }
+        .carousel-item { min-width: 100%; height: 300px; }
+        .carousel-item img { width: 100%; height: 100%; object-fit: contain; }
+        .v-btn { padding: 10px; margin: 5px; border: 1px solid #ccc; cursor: pointer; }
+        .v-btn.active { background: var(--accent); color: white; }
+        .v-color { width: 30px; height: 30px; border-radius: 50%; display: inline-block; background-size: cover; }
+        .v-color.active { border: 2px solid var(--accent); }
+        .cart-fab { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .cart-drawer { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; background: white; transition: right 0.3s; box-shadow: -2px 0 5px rgba(0,0,0,0.1); }
+        .cart-drawer.active { right: 0; }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle">Toggle Theme</button>
+    <div id="main-renderer">
+        <h1 id="p-name">Loading...</h1>
+        <div id="p-price">--</div>
+        <div id="stock-badge-container"></div>
+        <div class="carousel" id="main-carousel">
+            <div class="carousel-inner" id="carousel-inner"></div>
+        </div>
+        <div id="thumbnail-row"></div>
+        <div id="p-variants"></div>
+        <div class="qty-controls">
+            <button id="qty-minus">-</button>
+            <span id="qty-val">1</span>
+            <button id="qty-plus">+</button>
+        </div>
+        <button id="add-to-cart-btn">Add to Bag</button>
+    </div>
+
+    <div class="cart-backdrop" id="cart-modal-backdrop" onclick="window.CartManager.hideModal()"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <h3>Cart</h3>
+        <div id="cart-items-list"></div>
+        <div id="cart-total-price"></div>
+    </div>
+    <div id="cart-fab-container"></div>
+
+    <script type="application/ld+json" id="mock-data">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProductGroup",
+      "name": "Ultimate Shelving System",
+      "description": "A modular shelving system.",
+      "variesBy": ["https://schema.org/color", "https://schema.org/size"],
+      "hasVariant": [
+        {
+          "@type": "Product",
+          "sku": "SHELVE-BLUE-S",
+          "color": "Blue",
+          "size": "Small",
+          "image": "https://via.placeholder.com/300/0000FF/FFFFFF?text=Blue+Small",
+          "offers": { "@type": "Offer", "price": "49.99", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+        },
+        {
+          "@type": "Product",
+          "sku": "SHELVE-RED-L",
+          "color": "Red",
+          "size": "Large",
+          "image": "https://via.placeholder.com/300/FF0000/FFFFFF?text=Red+Large",
+          "offers": { "@type": "Offer", "price": "79.99", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+        }
+      ]
+    }
+    </script>
+
+    <script type="module">
+        // Minimal port of the logic for verification
+        let state = { product: null, selected: {}, slide: 0, qty: 1, lastClickedAttr: null };
+
+        const renderers = {
+          renderProduct(p, state) {
+            const variants = p.hasVariant;
+            let variant = variants.find(v => Object.entries(state.selected).every(([k,val]) => v[k] === val));
+            if (!variant && state.lastClickedAttr) {
+               variant = variants.find(v => v[state.lastClickedAttr] === state.selected[state.lastClickedAttr]) || variants[0];
+               p.variesBy.forEach(u => { const a=u.split(/[\/#]/).pop(); if(variant[a]) state.selected[a]=variant[a]; });
+            } else if (!variant) variant = variants[0];
+
+            document.getElementById("p-name").textContent = variant.name || p.name;
+            document.getElementById("p-price").textContent = (variant.offers.priceCurrency) + " " + variant.offers.price;
+
+            const imgs = [variant.image];
+            const iN = document.getElementById("carousel-inner");
+            iN.innerHTML = imgs.map(url => `<div class="carousel-item"><img src="${url}"/></div>`).join('');
+
+            const vc = document.getElementById("p-variants");
+            if (!vc.children.length) {
+                p.variesBy.forEach(u => {
+                    const a = u.split(/[\/#]/).pop();
+                    const vals = [...new Set(p.hasVariant.map(x => x[a]))];
+                    const g = document.createElement("div");
+                    g.innerHTML = `<b>${a}</b>`;
+                    vals.forEach(vl => {
+                        const btn = document.createElement("button");
+                        btn.className = "v-btn";
+                        btn.textContent = vl;
+                        btn.onclick = () => { state.selected[a]=vl; state.lastClickedAttr=a; renderers.renderProduct(p, state); };
+                        g.appendChild(btn);
+                    });
+                    vc.appendChild(g);
+                });
+            }
+            document.querySelectorAll(".v-btn").forEach(b => {
+                const isMatch = Object.values(state.selected).includes(b.textContent);
+                b.classList.toggle("active", isMatch);
+            });
+          }
+        };
+
+        window.CartManager = {
+            order: { orderedItem: [], totalPrice: 0 },
+            showModal() { document.getElementById("cart-drawer").classList.add("active"); this.render(); },
+            hideModal() { document.getElementById("cart-drawer").classList.remove("active"); },
+            addItem(item) { this.order.orderedItem.push({ name: item.name, qty: 1 }); this.updateFab(); },
+            updateFab() { document.getElementById("cart-fab").textContent = "🛒 " + this.order.orderedItem.length; },
+            render() {
+                document.getElementById("cart-items-list").innerHTML = this.order.orderedItem.map(i => `<div>${i.name}</div>`).join('');
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const data = JSON.parse(document.getElementById("mock-data").textContent);
+            state.product = data;
+            renderers.renderProduct(data, state);
+
+            const fab = document.createElement("div");
+            fab.id = "cart-fab"; fab.className = "cart-fab"; fab.textContent = "🛒 0";
+            fab.onclick = () => window.CartManager.showModal();
+            document.getElementById("cart-fab-container").appendChild(fab);
+
+            document.getElementById("add-to-cart-btn").onclick = () => {
+                window.CartManager.addItem(state.product);
+                window.showToast("Added!", "success");
+            };
+            window.showToast = (m) => alert(m);
+            document.getElementById("theme-toggle").onclick = () => document.documentElement.classList.toggle("dark");
+        });
+    </script>
+</body>
+</html>
