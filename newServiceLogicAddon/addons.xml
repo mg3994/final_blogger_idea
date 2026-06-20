@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html b:css="false" b:defaultwidgetversion="2" b:layoutsversion="3" b:responsive="true" expr:dir="data:blog.languageDirection" expr:lang="data:blog.locale" xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://www.google.com/2005/gml/b" xmlns:data="http://www.google.com/2005/gml/data" xmlns:expr="http://www.google.com/2005/gml/expr">
+<head>
+  <meta content='width=device-width, initial-scale=1' name='viewport'/>
+  <b:include name="all-head-content" data="blog"/>
+  <title><data:blog.pageTitle/></title>
+  <b:skin><![CDATA[
+    /* Premium Schema Engine Template - addons.xml */
+    :root {
+      --primary: #2c3e50;
+      --accent: #e67e22;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #333333;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
+    html.dark {
+      --bg: #0f172a; --card: #1e293b; --text: #f8fafc;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+    }
+    body { background-color: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; margin: 0; line-height: 1.5; overflow-x: hidden; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+    /* Navbar */
+    .nav { background: var(--card); padding: 15px 0; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+
+    .cat-bar { background: var(--card); border-top: 1px solid rgba(0,0,0,0.05); padding: 10px 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+    .cat-inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; gap: 12px; }
+    .cat-link { text-decoration: none; color: var(--text); opacity: 0.7; font-size: 0.85rem; font-weight: 600; padding: 6px 16px; border-radius: 20px; background: rgba(0,0,0,0.05); transition: all 0.2s; border: 1px solid transparent; }
+    .cat-link:hover, .cat-link.active { background: var(--accent); color: #fff; opacity: 1; border-color: var(--accent); }
+
+    /* Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
+    .card { background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s; text-decoration: none; color: inherit; display: block; }
+    .card:hover { transform: translateY(-5px); }
+    .card-img-wrapper { width: 100%; height: 240px; position: relative; overflow: hidden; background: #f0f0f0; }
+    .card-img-scroll { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .card-img-scroll::-webkit-scrollbar { display: none; }
+    .card-img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: start; }
+    .card-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; pointer-events: none; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: all 0.2s; }
+    .dot.active { background: #fff; width: 12px; border-radius: 4px; }
+    .card-body { padding: 15px; }
+    .card-title { font-weight: 700; margin: 0 0 10px; font-size: 1.1rem; height: 2.8em; overflow: hidden; }
+    .card-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; background: rgba(0,0,0,0.05); margin-bottom: 8px; font-weight: 700; }
+    .card-price { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+
+    /* Product Page */
+    .product-layout { display: grid; grid-template-columns: 1fr; gap: 40px; background: var(--card); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
+    @media (min-width: 768px) { .product-layout { grid-template-columns: 1.2fr 1fr; } }
+    .carousel { position: relative; aspect-ratio: 1; background: #f0f0f0; border-radius: var(--radius); overflow: hidden; }
+    .carousel-inner { display: flex; height: 100%; transition: transform 0.5s ease; }
+    .carousel-item { min-width: 100%; height: 100%; }
+    .carousel-item img { width: 100%; height: 100%; object-fit: contain; }
+    .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+    .price { font-size: 2.2rem; font-weight: 800; color: var(--accent); }
+    .price.blurry { filter: blur(4px); opacity: 0.5; }
+    .stock-badge { display: inline-block; padding: 5px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; margin-left: 15px; }
+    .in-stock { background: #e8f5e9; color: #2e7d32; }
+    .out-stock { background: #ffebee; color: #c62828; }
+    .instore-only { background: #fffde7; color: #fbc02d; }
+    .pre-order { background: #e3f2fd; color: #1976d2; }
+
+    .v-group { margin-bottom: 20px; }
+    .v-label { font-weight: 700; font-size: 0.85rem; margin-bottom: 10px; display: block; text-transform: uppercase; opacity: 0.7; }
+    .v-options { display: flex; gap: 10px; flex-wrap: wrap; }
+    .v-btn { padding: 12px 20px; border: 2px solid rgba(0,0,0,0.1); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-weight: 600; transition: all 0.2s; }
+    .v-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .v-color { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #eee; padding: 0; background-size: cover; background-position: center; transition: transform 0.2s; position: relative; overflow: hidden; }
+    .v-color.active { outline: 3px solid var(--accent); outline-offset: 2px; border-color: #fff; z-index: 2; }
+
+    .qty-controls { display: flex; align-items: center; gap: 15px; margin: 25px 0; }
+    .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .seller-box { margin-top: 30px; padding: 25px; border: 1px solid rgba(0,0,0,0.05); border-radius: var(--radius); background: #fafafa; }
+    .geo-badge { display: inline-flex; align-items: center; gap: 8px; background: #e1f5fe; color: #0288d1; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; margin-top: 15px; font-weight: 700; text-decoration: none; }
+
+    /* Cart Drawer */
+    .cart-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 2000; display: none; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .cart-backdrop.active { display: block; opacity: 1; pointer-events: auto; }
+    .cart-drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: #fff; box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 2001; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+    .cart-drawer.active { right: 0; }
+    .cart-header { padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .cart-body { padding: 0; flex: 1; overflow-y: auto; scrollbar-width: thin; height: 0; }
+    .cart-footer { padding: 20px 25px; border-top: 1px solid #eee; background: #fff; flex-shrink: 0; }
+
+    .cart-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 25px rgba(230, 126, 34, 0.4); z-index: 1000; font-size: 1.5rem; transition: transform 0.3s; }
+    .cart-count { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; display: flex; align-items: center; justify-content: center; border: 2.5px solid #fff; font-weight: 900; }
+
+    /* Services cards */
+    .h-scroll { display: flex; overflow-x: auto; gap: 20px; padding: 10px 0; scrollbar-width: none; }
+    .h-card { min-width: 240px; background: #fff; padding: 15px; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--accent); }
+
+    .hidden { display: none !important; }
+    .section-title { font-size: 1.5rem; margin: 40px 0 20px; border-left: 6px solid var(--accent); padding-left: 20px; font-weight: 800; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+  ]]></b:skin>
+</head>
+<body>
+  <nav class='nav'>
+    <div class='nav-inner'>
+      <a class='brand' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
+      <button id="theme-toggle" class="qty-btn" style="border:none; background:none; font-size:1.4rem;">☾</button>
+    </div>
+  </nav>
+
+  <b:section id='category-section' showaddelement='no'>
+    <b:widget id='Label1' locked='true' title='Categories' type='Label'>
+      <b:includable id='main'>
+        <b:if cond='data:view.isMultipleItems'>
+          <div class='cat-bar'>
+            <div class='cat-inner'>
+              <a expr:class='data:view.isSearch and !data:view.search.label ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl + &quot;search&quot;'>ALL</a>
+              <b:loop values='data:labels' var='label'>
+                <a expr:class='data:view.search.label == data:label.name ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:label.url'><data:label.name/></a>
+              </b:loop>
+            </div>
+          </div>
+        </b:if>
+      </b:includable>
+    </b:widget>
+  </b:section>
+
+  <div class='container'>
+    <b:section id='main-section' showaddelement='yes'>
+      <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'>
+        <b:includable id='postCard' var='post'>
+          <a class='card' expr:href='data:post.url' expr:id='"card-" + data:post.id'>
+            <div class="card-img-wrapper">
+               <div class="card-img-scroll" onscroll="window.syncDots(this)">
+                  <img class='card-img' expr:src='data:post.featuredImage ?: "https://via.placeholder.com/400x300?text=Antinna"' loading='lazy'/>
+               </div>
+               <div class="card-dots"></div>
+            </div>
+            <div class='card-body'>
+              <div class='card-badge'>Loading...</div>
+              <h3 class='card-title'><data:post.title/></h3>
+              <div class='card-price'>--</div>
+            </div>
+            <div class='hidden grid-data'><data:post.body/></div>
+          </a>
+        </b:includable>
+
+        <b:includable id='main' var='top'>
+          <b:if cond='data:view.isHomepage'><h2 class='section-title'>Latest Arrivals</h2></b:if>
+          <b:if cond='data:view.isMultipleItems'>
+            <div class='grid' id='app-grid'>
+              <b:loop values='data:posts' var='post'><b:include data='post' name='postCard'/></b:loop>
+            </div>
+          <b:else/>
+            <b:loop values='data:posts' var='post'>
+              <div id='app-item'>
+                 <div class='breadcrumb' style='margin-bottom:20px; font-size:0.9rem;'><a expr:href='data:blog.homepageUrl'>Home</a> / <data:post.title/></div>
+                 <div class='product-layout' id='main-renderer'>
+                    <div id='initializing-state' style='padding:100px; text-align:center; grid-column: 1 / -1;'>
+                       <div class='v-btn' style='display:inline-block; cursor:default; animation: pulse 1.5s infinite;'>Preparing Data Engine...</div>
+                    </div>
+                    <div class='carousel-container hidden' id='carousel-section'>
+                       <div class='carousel' id='main-carousel'>
+                          <div class='carousel-inner' id='carousel-inner'></div>
+                          <button class='carousel-btn' onclick='window.prevSlide()' style='left:10px;'>&#10094;</button>
+                          <button class='carousel-btn' onclick='window.nextSlide()' style='right:10px;'>&#10095;</button>
+                       </div>
+                       <div class='h-scroll' id='thumbnail-row' style='margin-top:20px; gap:10px;'></div>
+                    </div>
+                    <div class='details-container hidden' id='details-section'>
+                       <div id='p-sku' style='font-size:0.75rem; color:var(--text); opacity:0.6; font-weight:800; margin-bottom:5px;'></div>
+                       <h1 id='p-name' style='margin-top:0;'></h1>
+                       <div id='p-brand' style='font-weight:700; color:var(--text); opacity:0.7; margin-bottom:15px;'></div>
+                       <div style='display:flex; align-items:center; margin-bottom:25px;'>
+                         <div class='price' id='p-price'>--</div>
+                         <div id='stock-badge-container'></div>
+                       </div>
+                       <p id='p-desc' style='opacity:0.8;'></p>
+                       <div class='variants' id='p-variants'></div>
+                       <div class='qty-controls'>
+                         <button class='qty-btn' id='qty-minus'>-</button>
+                         <span id='qty-val' style='font-weight:900; font-size:1.4rem; min-width:30px; text-align:center;'>1</span>
+                         <button class='qty-btn' id='qty-plus'>+</button>
+                       </div>
+                       <button class='v-btn active' id='add-to-cart-btn' style='width:100%; padding:20px; font-size:1.1rem; border-radius:15px; margin-top:25px;'>Add to Shopping Bag</button>
+                       <div class='seller-box' id='p-seller' style='display:none;'>
+                          <h4 style='margin:0 0 10px; opacity:0.6; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px;'>Seller Details</h4>
+                          <div id='seller-info'></div>
+                          <a class='geo-badge' id='maps-link' style='display:none;' target='_blank'>📍 Map Location</a>
+                       </div>
+                       <div id='p-specs' style='margin-top:40px; border-top:1px solid rgba(0,0,0,0.05); padding-top:25px; display:none;'>
+                          <h4 style='text-transform:uppercase; font-size:0.8rem; letter-spacing:1px; margin-bottom:15px;'>Specifications</h4>
+                          <div id='specs-list' style='font-size:0.95rem;'></div>
+                       </div>
+                    </div>
+                 </div>
+                 <div id='other-services' style='margin-top:50px; display:none;'>
+                    <h2 class='section-title' style="margin-left:0; padding-left:0; border-left:none;">Optional Product-Related Services</h2>
+                    <div class='h-scroll' id='other-services-list'></div>
+                 </div>
+                 <div id='comments-section' style='margin-top:60px; padding-top:40px; border-top:1px solid #eee;'>
+                    <h2 class='section-title' style='margin-left:0; border-left:none; padding-left:0;'>Community Feedback</h2>
+                    <b:include data='post' name='comments'/>
+                 </div>
+              </div>
+              <div class='hidden' id='post-body-raw'><data:post.body/></div>
+            </b:loop>
+          </b:if>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+
+  <div class="cart-backdrop" id="cart-modal-backdrop" onclick="window.CartManager.hideModal()"></div>
+  <div class="cart-drawer" id="cart-drawer">
+      <div class="cart-header"><h3 style="margin:0;">Shopping Bag</h3><button class="qty-btn" style="border:none; font-size:1.5rem;" onclick="window.CartManager.hideModal()">×</button></div>
+      <div class="cart-body" id="cart-items-list"></div>
+      <div class="cart-footer">
+        <div style="display:flex; justify-content:space-between; font-weight:900; font-size:1.2rem; margin-bottom:20px;"><span>Total</span><span id="cart-total-price">--</span></div>
+        <button class="v-btn active" style="width:100%; padding:18px; font-size:1.1rem; border-radius:12px;" onclick="window.CartManager.placeOrder()">Confirm Order</button>
+      </div>
+  </div>
+  <div id="cart-fab-container"></div>
+
+  <script type="module">//<![CDATA[
+    let state = { product: null, selected: {}, slide: 0, qty: 1 };
+
+    const engine = {
+      decodeEntities(t) { if(!t)return ""; const a=document.createElement("textarea"); a.innerHTML=t; return a.value; },
+      extractJsonLd(s) {
+        if(!s)return null;
+        try {
+          const m=String(s).match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+          let j=m?m[1]:s; let d=this.decodeEntities(j); if(d.includes("&quot;"))d=this.decodeEntities(d);
+          return JSON.parse(d.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm,"$1").trim());
+        } catch(e) {
+          const b=String(s).match(/\{[\s\S]*\}/); if(b)try{return JSON.parse(b[0])}catch(e2){}
+          return null;
+        }
+      }
+    };
+
+    const renderers = {
+      renderProduct(p, state) {
+        if(!p)return; const v=p.hasVariant?p.hasVariant.find(x=>Object.entries(state.selected||{}).every(([k,v])=>x[k]===v))||p.hasVariant[0]:p;
+        const el=(id)=>document.getElementById(id); const set=(id,v)=>{const e=el(id); if(e)e.textContent=v||""};
+        set("p-name",v.name||p.name); set("p-desc",v.description||p.description); set("p-sku",v.sku?"SKU: "+v.sku:"");
+        const b=typeof(v.brand||p.brand)==="string"?(v.brand||p.brand):(v.brand?.name||p.brand?.name); set("p-brand",b);
+        const o=v.offers||p.offers; const pr=el("p-price"); if(pr && o){pr.textContent=(o.priceCurrency||"INR")+" "+(o.price||"0"); pr.classList.toggle("blurry",o.availability==="https://schema.org/OutOfStock")}
+        const st=el("stock-badge-container"); if(st && o){
+          const av=o.availability; let l='Out of Stock', c='out-stock', a=false;
+          if(av==='https://schema.org/InStock'||av==='https://schema.org/OnlineOnly'){l='In Stock'; c='in-stock'; a=true}
+          else if(av==='https://schema.org/InStoreOnly'){l='In-Store Only'; c='instore-only'; a=false}
+          else if(av==='https://schema.org/PreOrder'){l='Pre-Order'; c='pre-order'; a=true}
+          st.innerHTML=`<span class="stock-badge ${c}">${l}</span>`;
+          const ad=el("add-to-cart-btn"); if(ad)ad.disabled=!a;
+        }
+        const im=Array.isArray(v.image||p.image)?(v.image||p.image):[v.image||p.image]; this.renderCarousel(im.filter(Boolean), state);
+        const vc=el("p-variants"); if(vc && p.variesBy && !vc.children.length){
+          p.variesBy.forEach(u=>{
+            const a=u.split(/[\/#]/).pop(); const vals=[...new Set(p.hasVariant.map(x=>x[a]).filter(Boolean))];
+            const g=document.createElement("div"); g.className="v-group"; g.innerHTML=`<span class="v-label">Select ${a}</span>`;
+            const os=document.createElement("div"); os.className="v-options";
+            vals.forEach(vl=>{
+              const btn=document.createElement("button"); btn.className="v-btn"; btn.dataset.attr=a; btn.dataset.val=vl;
+              if(a.toLowerCase()==="color"){
+                btn.classList.add("v-color"); const vm=p.hasVariant.find(x=>x[a]===vl); const vi=vm&&(Array.isArray(vm.image)?vm.image[0]:vm.image);
+                if(vi){btn.style.backgroundImage=`url('${vi.url||vi}')`}else{btn.style.backgroundColor=vl}
+                btn.title=vl;
+              }else{btn.textContent=vl}
+              btn.onclick=()=>{ state.selected[a]=vl; this.renderProduct(p, state); }; os.appendChild(btn);
+            });
+            g.appendChild(os); vc.appendChild(g); if(!state.selected[a])state.selected[a]=vals[0];
+          });
+        }
+        document.querySelectorAll(".v-btn[data-attr]").forEach(btn=>{const a=btn.dataset.attr; const vL=btn.dataset.val||btn.textContent; btn.classList.toggle("active",state.selected[a]===vL)});
+        this.renderSeller(o?.seller||p.seller||p.provider);
+        const sp=el("p-specs"); const sl=el("specs-list"); if(sp && sl){
+          const flds={'Model':v.model||p.model,'Material':v.material||p.material,'GTIN':v.gtin13||v.gtin8||'','Weight':(v.weight||p.weight)?.value||(v.weight||p.weight)};
+          let h=''; for(let[l,k] of Object.entries(flds)){if(k)h+=`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;"><span style="opacity:0.6;">${l}</span><span style="font-weight:700;">${k}</span></div>`}
+          if(h){sp.style.display="block"; sl.innerHTML=h}else{sp.style.display="none"}
+        }
+      },
+      renderCarousel(imgs, state) {
+        const iN=document.getElementById("carousel-inner"); const tR=document.getElementById("thumbnail-row"); if(!iN)return; iN.innerHTML=""; if(tR)tR.innerHTML="";
+        imgs.forEach((s,i)=>{
+          const url=s.url||s; const d=document.createElement("div"); d.className="carousel-item"; d.innerHTML=`<img src="${url}"/>`; iN.appendChild(d);
+          if(tR && imgs.length>1){const t=document.createElement("img"); t.className="thumb"+(i===0?" active":""); t.src=url; t.onclick=()=>{window.goToSlide(i)}; tR.appendChild(t)}
+        });
+        iN.style.transform="translateX(0)"; state.slide=0;
+      },
+      renderSeller(s) {
+        const box=document.getElementById("p-seller"); const inf=document.getElementById("seller-info"); const maps=document.getElementById("maps-link"); if(!box||!inf)return; if(!s){box.style.display="none"; return} box.style.display="block";
+        inf.innerHTML=`<strong>${s.name||"Antinna"}</strong><br/>${s.telephone?`&#128222; ${s.telephone}<br/>`:""}${s.email?`&#128231; <a href="mailto:${s.email}">${s.email}</a><br/>`:""}${s.address?`📍 ${s.address.streetAddress||""}, ${s.address.addressLocality||""}`:""}`;
+        if(maps){if(s.geo){maps.style.display="inline-flex"; maps.href=`https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`}else maps.style.display="none"}
+
+        const otherSec=document.getElementById("other-services"); const otherList=document.getElementById("other-services-list");
+        let svcs=[]; if(s.hasOfferCatalog&&s.hasOfferCatalog.itemListElement)svcs=s.hasOfferCatalog.itemListElement; else if(s.knowsAbout)svcs=Array.isArray(s.knowsAbout)?s.knowsAbout:[s.knowsAbout];
+        if(svcs.length>0&&otherSec&&otherList){
+          otherSec.style.display="block";
+          otherList.innerHTML=svcs.map(ser=>{
+            const n=ser.name||ser.itemOffered?.name||ser; const pr=ser.price||ser.itemOffered?.offers?.price||''; const cr=ser.priceCurrency||'INR';
+            const ci=ser.itemOffered?{...ser.itemOffered}:(typeof ser==='object'?{...ser}:{name:ser}); if(!ci.offers)ci.offers={"@type":"Offer",price:pr,priceCurrency:cr};
+            return `<div class="h-card"><div style="font-weight:700;margin-bottom:10px;height:3em;overflow:hidden;">${n}</div><div class="price" style="font-size:1.2rem;margin-bottom:15px;">${pr?cr+' '+pr:'Free/Included'}</div><button class="v-btn" style="width:100%;padding:8px;font-size:0.85rem;" onclick="window.CartManager.addItem(${JSON.stringify(ci).replace(/"/g,'&quot;')}, ${JSON.stringify(s).replace(/"/g,'&quot;')})">Add Service</button></div>`;
+          }).join('');
+        }else if(otherSec){otherSec.style.display="none"}
+      }
+    };
+
+    window.CartManager = {
+      order: { "@context": "https://schema.org", "@type": "Order", "orderedItem": [], "totalPrice": 0, "priceCurrency": "INR" },
+      init() { const s=localStorage.getItem("antinna_cart_order"); if(s)try{this.order=JSON.parse(s)}catch(e){} this.renderFab(); },
+      addItem(item, seller) {
+        const iS=this.order.orderedItem; const ex=iS.find(x=>x.orderedItem.name===item.name);
+        if(ex){if(item.maxQuantity===1){window.showToast("Item already in bag","error"); return} ex.orderQuantity++}
+        else{ const specs={}; ['material','color','size','gtin13','sku','weight','height','width','depth'].forEach(f=>{if(item[f])specs[f]=item[f]}); iS.push({"@type":"OrderItem","orderedItem":{"@type":item["@type"]||"Product","name":item.name,"image":item.image,"offers":item.offers,...specs},"orderQuantity":1,"seller":seller})}
+        this.save(); this.updateUI(); window.showToast("Added to Bag","success");
+      },
+      removeItem(idx) {
+        const item=this.order.orderedItem[idx]; if(!item)return; const name=item.orderedItem.name;
+        this.order.orderedItem = this.order.orderedItem.filter(x=>x.orderedItem.parentProductName!==name);
+        const nIdx = this.order.orderedItem.indexOf(item); if(nIdx>-1)this.order.orderedItem.splice(nIdx,1);
+        this.save(); this.updateUI(); this.showModal();
+      },
+      updateQty(idx, d) { const i=this.order.orderedItem[idx]; if(!i)return; i.orderQuantity+=d; if(i.orderQuantity<=0){this.removeItem(idx); return} this.save(); this.updateUI(); this.showModal(); },
+      save() { this.order.totalPrice=this.order.orderedItem.reduce((s,x)=>s+(parseFloat(x.orderedItem.offers?.price||0)*x.orderQuantity),0); localStorage.setItem("antinna_cart_order", JSON.stringify(this.order)); },
+      renderFab() { const c=document.getElementById("cart-fab-container"); if(!c)return; const f=document.createElement("div"); f.id="cart-fab"; f.className="cart-fab"; f.onclick=()=>this.showModal(); c.appendChild(f); this.updateUI(); },
+      updateUI() { const c=this.order.orderedItem.reduce((s,x)=>s+x.orderQuantity,0); const f=document.getElementById("cart-fab"); if(f){f.innerHTML=`🛒 <span class="cart-count">${c}</span>`; f.style.transform=c>0?"scale(1)":"scale(0)"} },
+      showModal() {
+        const b=document.getElementById("cart-modal-backdrop"); const d=document.getElementById("cart-drawer"); const l=document.getElementById("cart-items-list"); if(!l)return;
+        l.innerHTML=this.order.orderedItem.map((i,idx)=>`
+          <div style="display:flex;gap:15px;padding:15px;border-bottom:1px solid #eee;align-items:center;">
+             <img src="${(Array.isArray(i.orderedItem.image)?i.orderedItem.image[0]:(i.orderedItem.image?.url||i.orderedItem.image||''))}" style="width:60px;height:60px;border-radius:10px;object-fit:cover;"/>
+             <div style="flex:1;">
+                <div style="font-weight:700;">${i.orderedItem.name}</div>
+                <div style="color:var(--accent);font-weight:800;margin-top:4px;">${i.orderedItem.offers?.priceCurrency||'INR'} ${i.orderedItem.offers?.price||'0'}</div>
+                <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+                   <button class="qty-btn" style="width:24px;height:24px;font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx},-1)">-</button>
+                   <span style="font-weight:800;">${i.orderQuantity}</span>
+                   <button class="qty-btn" style="width:24px;height:24px;font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx},1)">+</button>
+                </div>
+             </div>
+             <button onclick="window.CartManager.updateQty(${idx},-${i.orderQuantity})" style="background:none;border:none;color:#ff3b30;cursor:pointer;font-size:1.2rem;">×</button>
+          </div>
+        `).join("")||'<div style="text-align:center;padding:50px;opacity:0.5;">Bag is empty</div>';
+        document.getElementById("cart-total-price").textContent=`${this.order.priceCurrency} ${this.order.totalPrice}`; b.classList.add("active"); d.classList.add("active");
+      },
+      hideModal() { document.getElementById("cart-modal-backdrop").classList.remove("active"); document.getElementById("cart-drawer").classList.remove("active"); },
+      placeOrder() { alert("Confirming Order Schema: "+JSON.stringify(this.order)); }
+    };
+
+    window.syncDots = (el) => { const idx = Math.round(el.scrollLeft / el.offsetWidth); const dots = el.parentElement.querySelectorAll('.dot'); dots.forEach((d, i) => d.classList.toggle('active', i === idx)); };
+    window.showToast=(m,t)=>{const e=document.createElement("div"); e.style.cssText="position:fixed;bottom:24px;right:24px;color:white;padding:12px 24px;border-radius:10px;font-weight:600;z-index:3000;background:"+(t==="success"?"#10b981":"#ef4444"); e.textContent=m; document.body.appendChild(e); setTimeout(()=>{e.style.opacity="0";setTimeout(()=>e.remove(),300)},3000)};
+    window.nextSlide=()=>window.goToSlide(state.slide+1); window.prevSlide=()=>window.goToSlide(state.slide-1);
+    window.goToSlide=(i)=>{const n=document.getElementById("carousel-inner"); const c=document.querySelectorAll(".carousel-item").length; if(i<0)i=c-1; if(i>=c)i=0; state.slide=i; n.style.transform=`translateX(-${i*100}%)`; document.querySelectorAll(".thumb").forEach((t,x)=>t.classList.toggle("active",x===i))};
+
+    document.addEventListener("DOMContentLoaded",()=>{
+      window.CartManager.init();
+      setTimeout(()=>{
+        const r=document.getElementById("post-body-raw"); if(r){const d=engine.extractJsonLd(r.textContent); if(d){state.product=d; renderers.renderProduct(d, state)}}
+        document.getElementById("initializing-state")?.classList.add("hidden"); document.getElementById("carousel-section")?.classList.remove("hidden"); document.getElementById("details-section")?.classList.remove("hidden");
+        const cards=document.querySelectorAll(".card"); const f="/feeds/posts/default?alt=json&max-results=50";
+        fetch(f).then(x=>x.json()).then(fd=>{
+          const es=fd.feed.entry||[]; cards.forEach(c=>{
+            const u=c.href.split("?")[0].split("#")[0]; const e=es.find(x=>x.link.some(l=>l.rel==="alternate"&&l.href.includes(u)));
+            const d=e?engine.extractJsonLd(e.content.$t):engine.extractJsonLd(c.querySelector(".grid-data").textContent);
+            if(d){
+              const b=c.querySelector(".card-badge"); const p=c.querySelector(".card-price"); const sc=c.querySelector(".card-img-scroll"); const dc=c.querySelector(".card-dots");
+              b.textContent=(d["@type"]==='ProductGroup'||d["@type"]==='Product')?'Product':'Service';
+              const v=d.hasVariant?d.hasVariant[0]:d; if(v.offers)p.textContent=(v.offers.priceCurrency||"INR")+" "+(v.offers.price||"");
+              const ims=Array.isArray(d.image)?d.image:[d.image]; if(ims[0]&&sc){sc.innerHTML=ims.map(img=>`<img class="card-img" src="${img.url||img}" loading="lazy"/>`).join(''); if(dc&&ims.length>1)dc.innerHTML=ims.map((_,i)=>`<div class="dot ${i===0?'active':''}"></div>`).join('')}
+            }
+          })
+        });
+      },100);
+      document.getElementById("theme-toggle").onclick=()=>{const d=document.documentElement.classList.toggle("dark"); localStorage.setItem("antinna-theme",d?"dark":"light"); document.getElementById("theme-toggle").textContent=d?"☼":"☾"};
+      document.getElementById("qty-plus").onclick=()=>{state.qty++; document.getElementById("qty-val").textContent=state.qty};
+      document.getElementById("qty-minus").onclick=()=>{if(state.qty>1){state.qty--; document.getElementById("qty-val").textContent=state.qty}};
+      document.getElementById("add-to-cart-btn").onclick=()=>{const p=state.product; const v=p.hasVariant?p.hasVariant.find(x=>Object.entries(state.selected||{}).every(([k,v])=>x[k]===v))||p.hasVariant[0]:p; for(let i=0;i<state.qty;i++)window.CartManager.addItem(v,v.offers?.seller||p.seller||p.provider)};
+    });
+  //]]></script>
+</body>
+</html>
