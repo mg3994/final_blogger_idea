@@ -122,5 +122,30 @@ export const renderers = {
       if (s.geo) { maps.style.display = 'inline-flex'; maps.href = `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`; }
       else maps.style.display = 'none';
     }
+
+    // Optional Paid Services logic
+    const otherSection = document.getElementById('other-services');
+    const otherList = document.getElementById('other-services-list');
+    let services = [];
+    if (s.hasOfferCatalog && s.hasOfferCatalog.itemListElement) services = s.hasOfferCatalog.itemListElement;
+    else if (s.knowsAbout) services = Array.isArray(s.knowsAbout) ? s.knowsAbout : [s.knowsAbout];
+
+    if (services.length > 0 && otherSection && otherList) {
+      otherSection.style.display = 'block';
+      otherList.innerHTML = services.map((ser, idx) => {
+        const name = ser.name || ser.itemOffered?.name || ser;
+        const price = ser.price || ser.itemOffered?.offers?.price || '';
+        const curr = ser.priceCurrency || ser.itemOffered?.offers?.priceCurrency || 'INR';
+        return `
+          <div class="h-card">
+            <div style="font-weight:700; margin-bottom:10px; height:3em; overflow:hidden;">${name}</div>
+            <div class="price" style="font-size:1.2rem; margin-bottom:15px;">${price ? curr + ' ' + price : 'Free/Included'}</div>
+            <button class="v-btn" style="width:100%; padding:8px; font-size:0.85rem;" onclick="window.CartManager.addItem(${JSON.stringify(ser.itemOffered || {name:ser}).replace(/"/g, '&quot;')}, ${JSON.stringify(s).replace(/"/g, '&quot;')})">Add Service</button>
+          </div>
+        `;
+      }).join('');
+    } else if (otherSection) {
+      otherSection.style.display = 'none';
+    }
   }
 };
