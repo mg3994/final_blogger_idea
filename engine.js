@@ -1,69 +1,44 @@
 /**
- * engine.js - Core logic for extracting and routing Schema.org data
+ * engine.js - High-fidelity Schema.org Engine for Blogger
  */
 
-export function decodeEntities(text) {
-  if (typeof document === 'undefined' || !document.createElement) {
-    return (text || "").replace(/&quot;/g, '"')
+export const engine = {
+  decodeEntities(text) {
+    if (typeof document === 'undefined' || !document.createElement) {
+       return (text || "").replace(/&quot;/g, '"')
                .replace(/&lt;/g, '<')
                .replace(/&gt;/g, '>')
                .replace(/&amp;/g, '&')
                .replace(/&#39;/g, "'");
-  }
-  const textArea = document.createElement('textarea');
-  textArea.innerHTML = text || '';
-  return textArea.value;
-}
-
-export function extractJsonLd(sourceText) {
-  if (!sourceText) return null;
-
-  let jsonStr = "";
-  const scriptMatch = sourceText.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
-  if (scriptMatch) {
-    jsonStr = scriptMatch[1];
-  } else {
-    jsonStr = sourceText;
-  }
-
-  let decoded = decodeEntities(jsonStr);
-  if (decoded && decoded.includes('&quot;')) decoded = decodeEntities(decoded);
-
-  if (!decoded) return null;
-
-  try {
-    const cleanJson = decoded.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
-    return JSON.parse(cleanJson);
-  } catch (e) {
-    const jsonBlock = decoded.match(/\{[\s\S]*\}/);
-    if (jsonBlock) {
-      try {
-        return JSON.parse(jsonBlock[0]);
-      } catch (e2) {}
     }
-    return null;
-  }
-}
-
-export async function TypeRouter(data, SchemaTypes, renderers) {
-  if (!data || !data['@type']) return;
-  const type = data['@type'];
-  let hydratedData = data;
-
-  if (SchemaTypes && SchemaTypes[type]) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text || '';
+    return textArea.value;
+  },
+  extractJsonLd(sourceText) {
+    if (!sourceText) return null;
+    const scriptMatch = String(sourceText).match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+    let jsonStr = scriptMatch ? scriptMatch[1] : sourceText;
+    let decoded = this.decodeEntities(jsonStr);
+    if (decoded && decoded.includes('&quot;')) decoded = this.decodeEntities(decoded);
     try {
-      const v = SchemaTypes[type];
-      if (v.validate(data)) hydratedData = v.deserialize(data);
+      const cleanJson = (decoded || "").replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
+      return JSON.parse(cleanJson);
     } catch (e) {
-      console.warn("Hydration failed", e);
+      const jsonBlock = (decoded || "").match(/\{[\s\S]*\}/);
+      if (jsonBlock) try { return JSON.parse(jsonBlock[0]); } catch (e2) {}
+      return null;
     }
+  },
+  async route(data, SchemaTypes, renderers) {
+    if (!data || !data['@type']) return;
+    const type = data['@type'];
+    let hydrated = data;
+    if (SchemaTypes && SchemaTypes[type]) {
+      try { if (SchemaTypes[type].validate(data)) hydrated = SchemaTypes[type].deserialize(data); } catch(e) {}
+    }
+    if (type === 'ProductGroup') renderers.productGroup(hydrated);
+    else if (['Product', 'Service', 'LocalBusiness', 'ProfessionalService'].includes(type)) renderers.product(hydrated);
+    else renderers.generic(hydrated);
   }
-
-  if (type === 'ProductGroup' && renderers.renderProductGroup) {
-    renderers.renderProductGroup(hydratedData);
-  } else if (['Service', 'LocalBusiness', 'ProfessionalService', 'Product', 'Plumber', 'Electrician'].includes(type) && renderers.renderProduct) {
-    renderers.renderProduct(hydratedData);
-  } else if (renderers.renderGeneric) {
-    renderers.renderGeneric(hydratedData);
-  }
-}
+};

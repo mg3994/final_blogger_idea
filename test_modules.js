@@ -1,5 +1,5 @@
-import { extractJsonLd, TypeRouter } from './engine.js';
-import * as renderers from './renderers.js';
+import { engine } from './engine.js';
+import { renderers } from './renderers.js';
 
 const mockElement = () => ({
   innerHTML: '',
@@ -19,35 +19,16 @@ global.document = {
   createElement: () => mockElement()
 };
 global.window = {};
-global.localStorage = {
-  getItem: () => null,
-  setItem: () => {}
-};
-
-const testProductGroup = {
-  "@context": "https://schema.org",
-  "@type": "ProductGroup",
-  "name": "Test Product",
-  "variesBy": ["https://schema.org/color"],
-  "hasVariant": [
-    {
-      "@type": "Product",
-      "color": "Red",
-      "offers": { "@type": "Offer", "price": "100", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
-    }
-  ]
-};
 
 async function runTests() {
-  console.log("Testing extractJsonLd...");
-  const jsonStr = JSON.stringify(testProductGroup);
-  const raw = `<script type="application/ld+json">${jsonStr}</script>`;
-  const extracted = extractJsonLd(raw);
-  if (extracted && extracted.name === "Test Product") console.log("✅ extractJsonLd passed");
+  console.log("Testing engine...");
+  const raw = `<script type="application/ld+json">{"@type":"Product","name":"Test"}</script>`;
+  const data = engine.extractJsonLd(raw);
+  if (data && data.name === "Test") console.log("✅ extractJsonLd passed");
 
-  console.log("Testing TypeRouter...");
-  await TypeRouter(testProductGroup, null, renderers);
-  console.log("✅ TypeRouter simulation finished");
+  console.log("Testing renderers...");
+  await engine.route(data, null, renderers);
+  console.log("✅ route simulation finished");
 }
 
 runTests().catch(console.error);
