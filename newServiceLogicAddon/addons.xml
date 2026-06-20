@@ -29,31 +29,34 @@
     .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; flex-shrink: 0; }
     html.dark .brand { color: #fff; }
 
-    /* Enhanced Search Header */
-    .header-center-search { flex: 1; display: flex; align-items: center; gap: 0; max-width: 700px; background: #f0f0f0; border-radius: 12px; padding: 4px; border: 2px solid transparent; transition: all 0.2s; }
-    html.dark .header-center-search { background: #334155; }
-    .header-center-search:focus-within { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.1); }
-    html.dark .header-center-search:focus-within { background: #0f172a; }
+    /* Enhanced Search Header (Indeed Style) */
+    .header-center-search { flex: 1; max-width: 800px; }
+    .search-form-v2 { display: flex; align-items: center; background: #fff; border-radius: 12px; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #ddd; transition: all 0.2s; }
+    html.dark .search-form-v2 { background: #1e293b; border-color: #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .search-form-v2:focus-within { border-color: var(--accent); box-shadow: 0 4px 12px rgba(230, 126, 34, 0.2); }
 
-    .location-picker { display: flex; align-items: center; gap: 8px; padding: 6px 15px; border-right: 1px solid #ddd; cursor: pointer; transition: all 0.2s; white-space: nowrap; font-size: 0.85rem; font-weight: 700; color: var(--accent); }
-    html.dark .location-picker { border-color: #475569; }
-    .location-picker:hover { opacity: 0.8; }
+    .search-input-group { flex: 1; display: flex; align-items: center; gap: 10px; padding: 0 15px; position: relative; cursor: text; }
+    .search-input-v2 { border: none; background: transparent; padding: 12px 0; width: 100%; outline: none; font-size: 0.95rem; font-weight: 600; color: inherit; }
+    .search-icon-v2 { color: #888; flex-shrink: 0; display: flex; align-items: center; }
+    .search-icon-v2 svg { width: 20px; height: 20px; fill: currentColor; }
 
-    .search-container { flex: 1; display: flex; align-items: center; }
-    .search-form { display: flex; align-items: center; width: 100%; padding-left: 10px; }
-    .search-input { border: none; background: transparent; padding: 8px 10px; width: 100%; outline: none; font-size: 0.9rem; color: inherit; font-weight: 500; }
-    .search-icon { background: none; border: none; cursor: pointer; color: #888; display: flex; align-items: center; padding: 5px; transition: color 0.2s; }
-    .search-icon:hover { color: var(--accent); }
-    .search-icon svg { width: 20px; height: 20px; }
+    .search-divider { width: 1px; height: 30px; background: #eee; flex-shrink: 0; }
+    html.dark .search-divider { background: #334155; }
+
+    .search-btn-v2 { background: var(--accent); color: #fff; border: none; padding: 10px 25px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; margin-left: 5px; }
+    .search-btn-v2:hover { background: #d35400; transform: translateY(-1px); }
 
     /* Responsive Header Logic */
-    .pin-input-mode { display: none; width: 60px; border: none; background: transparent; outline: none; font-weight: 800; color: inherit; font-size: 0.85rem; }
     @media (max-width: 768px) {
-      .brand { font-size: 1.1rem; letter-spacing: -1px; }
-      .location-text { display: none; }
-      .pin-input-mode { display: inline-block; }
-      .location-picker { padding: 6px 10px; gap: 4px; }
-      .header-center-search { border-radius: 10px; }
+      .nav-inner { padding: 10px 15px; gap: 10px; }
+      .brand { display: none; }
+      .search-form-v2 { flex-direction: column; align-items: stretch; border-radius: 15px; gap: 0; padding: 5px; }
+      .search-divider { display: none; }
+      .search-input-group { padding: 10px 15px; border-bottom: 1px solid #eee; }
+      html.dark .search-input-group { border-color: #334155; }
+      .search-input-group:last-of-type { border-bottom: none; }
+      .search-btn-v2 { margin: 5px 0 0; width: 100%; padding: 15px; }
+      .search-input-v2 { padding: 8px 0; }
     }
 
     /* Awesome Location Modal */
@@ -181,23 +184,29 @@
             <a class='brand' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
 
             <div class='header-center-search'>
-              <div class='location-picker' id='location-trigger' onclick='window.LocationManager.showModal()'>
-                <span id='loc-icon'>📍</span>
-                <span class='location-text' id='loc-display'>Set Location</span>
-                <input class='pin-input-mode' id='pin-input' maxlength='6' placeholder='PIN' type='text'/>
-              </div>
+              <form class='search-form-v2' expr:action='data:blog.searchUrl' id='search-form' method='get'>
+                <b:attr cond='not data:view.isPreview' name='target' value='_top'/>
 
-              <div class='search-container'>
-                <form class='search-form' expr:action='data:blog.searchUrl' id='search-form' method='get'>
-                  <b:attr cond='not data:view.isPreview' name='target' value='_top'/>
-                  <input autocomplete='off' class='search-input' id='search-q' name='q' placeholder='Search products &amp; services...' type='search'/>
-                  <button aria-label='Search' class='search-icon' type='submit'>
-                    <svg fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-                      <path d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/>
-                    </svg>
-                  </button>
-                </form>
-              </div>
+                <!-- "What" Input -->
+                <div class='search-input-group'>
+                  <span class='search-icon-v2'>
+                    <svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M9.452 16.137c-1.852 0-3.422-.643-4.708-1.929s-1.93-2.856-1.93-4.708c0-1.853.644-3.422 1.93-4.708C6.03 3.505 7.6 2.862 9.452 2.862c1.853 0 3.422.643 4.708 1.93 1.287 1.286 1.93 2.855 1.93 4.708a6.25 6.25 0 01-.338 2.078 5.93 5.93 0 01-.915 1.704l5.553 5.558c.21.215.316.481.316.799 0 .317-.107.581-.322.792a1.08 1.08 0 01-.796.317c-.32 0-.584-.106-.796-.317l-5.546-5.546a5.991 5.991 0 01-1.716.914 6.284 6.284 0 01-2.078.338zm0-2.275c1.214 0 2.245-.423 3.092-1.27s1.27-1.878 1.27-3.092c0-1.214-.423-2.245-1.27-3.092s-1.878-1.27-3.092-1.27c-1.214 0-2.245.423-3.092 1.27S5.09 8.286 5.09 9.5c0 1.214.423 2.245 1.27 3.092s1.878 1.27 3.092 1.27z'/></svg>
+                  </span>
+                  <input autocomplete='off' class='search-input-v2' id='search-q' name='q' placeholder='Service title, keywords, or company' type='text'/>
+                </div>
+
+                <div class='search-divider'/>
+
+                <!-- "Where" Input -->
+                <div class='search-input-group' onclick='window.LocationManager.showModal()'>
+                  <span class='search-icon-v2'>
+                    <svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M12 19.188c2.005-1.834 3.495-3.49 4.468-4.964.974-1.476 1.46-2.825 1.46-4.048 0-1.789-.572-3.253-1.717-4.394-1.144-1.14-2.548-1.71-4.211-1.71-1.664 0-3.067.57-4.212 1.71-1.144 1.14-1.716 2.605-1.716 4.394 0 1.223.486 2.571 1.46 4.045.973 1.473 2.462 3.129 4.468 4.967zm-.002 2.304c-.248 0-.496-.043-.743-.13a1.963 1.963 0 01-.664-.394 40.642 40.642 0 01-2.935-2.949c-.849-.954-1.558-1.88-2.126-2.78-.568-.9-1-1.77-1.293-2.614-.294-.843-.44-1.66-.44-2.45 0-2.554.824-4.589 2.473-6.105C7.92 2.555 9.83 1.797 12 1.797c2.17 0 4.08.758 5.73 2.273 1.648 1.516 2.473 3.551 2.473 6.106 0 .79-.147 1.606-.44 2.45-.294.842-.725 1.713-1.293 2.613-.569.9-1.277 1.826-2.127 2.78a40.646 40.646 0 01-2.934 2.95 1.967 1.967 0 01-.666.392 2.234 2.234 0 01-.745.131zM12 12.06c.57 0 1.056-.201 1.457-.603.402-.401.603-.887.603-1.457 0-.57-.201-1.056-.603-1.457A1.984 1.984 0 0012 7.94c-.57 0-1.056.201-1.457.603A1.985 1.985 0 009.94 10c0 .57.201 1.056.603 1.457.401.402.887.603 1.457.603z'/></svg>
+                  </span>
+                  <input autocomplete='off' class='search-input-v2' id='loc-display-v2' placeholder='City, PIN code' readonly='readonly' type='text'/>
+                </div>
+
+                <button class='search-btn-v2' type='submit'>Find</button>
+              </form>
             </div>
 
             <button class='qty-btn' id='theme-toggle' style='border:none; background:none; font-size:1.4rem;'>☾</button>
@@ -540,7 +549,9 @@
       },
       async reverseGeocode() {
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${this.data.lat}&lon=${this.data.lon}&format=json`);
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${this.data.lat}&lon=${this.data.lon}&format=json`, {
+            headers: { 'User-Agent': 'Antinna-Blogger-Engine/1.0' }
+          });
           const d = await res.json();
           if (d.address) {
             this.data.pin = d.address.postcode || this.data.pin;
@@ -556,12 +567,10 @@
       },
       save() { localStorage.setItem("antinna_location", JSON.stringify(this.data)); },
       updateUI() {
-        const d = document.getElementById('loc-display');
-        const p = document.getElementById('pin-input');
+        const d = document.getElementById('loc-display-v2');
         const mp = document.getElementById('modal-pin-input');
-        const text = this.data.city ? (this.data.pin ? `${this.data.city}, ${this.data.pin}` : this.data.city) : (this.data.pin || "Set Location");
-        if (d) d.textContent = text;
-        if (p) p.value = this.data.pin || "";
+        const text = this.data.city ? (this.data.pin ? `${this.data.city}, ${this.data.pin}` : this.data.city) : (this.data.pin || "");
+        if (d) d.value = text;
         if (mp) mp.value = this.data.pin || "";
       }
     };
@@ -649,11 +658,6 @@
         }
       };
 
-      document.getElementById("pin-input").onchange=(e)=>{
-        window.LocationManager.data.pin = e.target.value;
-        window.LocationManager.save();
-        window.LocationManager.updateUI();
-      };
       document.getElementById("qty-plus").onclick=()=>{state.qty++; document.getElementById("qty-val").textContent=state.qty};
       document.getElementById("qty-minus").onclick=()=>{if(state.qty>1){state.qty--; document.getElementById("qty-val").textContent=state.qty}};
       document.getElementById("add-to-cart-btn").onclick=()=>{
