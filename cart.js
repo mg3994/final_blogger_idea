@@ -63,13 +63,25 @@ export class CartManager {
         "orderQuantity": 1,
         "seller": {
           "@type": seller?.["@type"] || "Organization",
-          "name": seller?.name || "Seller",
+          "name": seller?.name || "Official Seller",
           "url": seller?.url
         }
       });
     }
     this.save();
-    window.showToast?.("Added to Cart", "success");
+    window.showToast?.("Added to Shopping Cart", "success");
+  }
+
+  updateQuantity(idx, delta) {
+    const item = this.order.orderedItem[idx];
+    if (!item) return;
+    const inv = item.orderedItem.offers?.inventoryLevel?.value ?? Infinity;
+    const newVal = item.orderQuantity + delta;
+    if (newVal > inv) { window.showToast?.("Cannot exceed inventory!", "error"); return; }
+    if (newVal <= 0) { this.removeItem(idx); return; }
+    item.orderQuantity = newVal;
+    this.save();
+    this.showModal();
   }
 
   removeItem(idx) {
@@ -82,17 +94,19 @@ export class CartManager {
     if (typeof document === 'undefined') return;
     const fab = document.createElement('div');
     fab.id = 'cart-fab';
-    fab.style.cssText = 'position:fixed; bottom:30px; right:30px; width:64px; height:64px; background:var(--color-accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.3); z-index:1000; font-size:1.5rem;';
-    fab.innerHTML = '🛒 <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; border-radius:50%; width:24px; height:24px; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid #fff;">0</span>';
+    fab.style.cssText = 'position:fixed; bottom:30px; right:30px; width:64px; height:64px; background:var(--color-accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.3); z-index:1000; font-size:1.5rem; transition:transform 0.2s;';
+    fab.innerHTML = '🛒 <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; border-radius:50%; width:26px; height:26px; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid #fff; font-weight:800;">0</span>';
     fab.onclick = () => this.showModal();
     document.body.appendChild(fab);
     this.updateFab();
   }
 
   updateFab() {
-    const countEl = document.getElementById('cart-count');
-    if (countEl) {
-      countEl.textContent = this.order.orderedItem.reduce((s, i) => s + (i.orderQuantity || 1), 0);
+    const count = this.order.orderedItem.reduce((s, i) => s + (i.orderQuantity || 1), 0);
+    const fab = document.getElementById('cart-fab');
+    if (fab) {
+       document.getElementById('cart-count').textContent = count;
+       fab.style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
     }
   }
 
@@ -102,22 +116,27 @@ export class CartManager {
 
     const list = document.getElementById('cart-items-list');
     list.innerHTML = this.order.orderedItem.map((i, idx) => `
-      <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid var(--border-ui); align-items:center;">
-        <img src="${(Array.isArray(i.orderedItem.image) ? i.orderedItem.image[0] : (i.orderedItem.image?.url || i.orderedItem.image || ''))}" style="width:60px; height:60px; border-radius:8px; object-fit:cover;"/>
+      <div style="display:flex; gap:15px; padding:20px; border-bottom:1px solid var(--border-ui); align-items:center;">
+        <img src="${(Array.isArray(i.orderedItem.image) ? i.orderedItem.image[0] : (i.orderedItem.image?.url || i.orderedItem.image || ''))}" style="width:70px; height:70px; border-radius:10px; object-fit:cover;"/>
         <div style="flex:1;">
-          <div style="font-weight:700;">${i.orderedItem.name}</div>
-          <div style="font-size:0.85rem; color:var(--text-muted);">${i.orderedItem.offers?.priceCurrency || 'INR'} ${i.orderedItem.offers?.price || '0'} x ${i.orderQuantity}</div>
+          <div style="font-weight:700; font-size:1rem; margin-bottom:5px;">${i.orderedItem.name}</div>
+          <div style="font-size:0.9rem; color:var(--color-accent); font-weight:800;">${i.orderedItem.offers?.priceCurrency || 'INR'} ${i.orderedItem.offers?.price || '0'}</div>
+          <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
+             <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQuantity(${idx}, -1)">-</button>
+             <span style="font-weight:800;">${i.orderQuantity}</span>
+             <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQuantity(${idx}, 1)">+</button>
+          </div>
         </div>
-        <button onclick="window.CartManager.removeItem(${idx})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">×</button>
+        <button onclick="window.CartManager.removeItem(${idx})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.8rem; padding:5px;">×</button>
       </div>
-    `).join('') || '<div style="text-align:center; padding:50px; color:var(--text-muted);">Cart is empty</div>';
+    `).join('') || '<div style="text-align:center; padding:60px; color:var(--text-muted); font-weight:600; font-size:1.1rem;">Your cart is empty.</div>';
 
     document.getElementById('cart-total-price').textContent = `${this.order.priceCurrency} ${this.order.totalPrice}`;
     m.classList.add('active');
   }
 
   placeOrder() {
-    alert("Order ready to be processed: " + JSON.stringify(this.order));
+    alert("Finalizing Order Schema: " + JSON.stringify(this.order, null, 2));
   }
 }
 

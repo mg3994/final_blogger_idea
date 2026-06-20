@@ -12,19 +12,20 @@
   }
 })();
 //]]></script>
-<script>//<![CDATA[
-cookieOptions = {
-close:" Got it! ",
-learn: "Privacy Policy",
-link: "<data:blog.canonicalHomepageUrl/>p/privacy.html"
-};
-//]]></script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <b:include name="all-head-content" data="blog"/>
 <title><data:blog.title.escaped/></title>
 
 <b:skin><![CDATA[
   :root {
+  --primary: #2c3e50;
+  --accent: #e67e22;
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text: #333333;
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+
   --bg-app: #ffffff;
   --bg-surface: #f8f9fa;
   --bg-panel: #1e293b;
@@ -35,8 +36,6 @@ link: "<data:blog.canonicalHomepageUrl/>p/privacy.html"
   --color-accent: #2563eb;
   --header-height: 64px;
   --sidebar-width: 280px;
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   }
 
 html.dark {
@@ -47,12 +46,15 @@ html.dark {
 --text-main: #f8fafc;
 --text-muted: #94a3b8;
 --color-accent: #3b82f6;
+--card: #1e293b;
+--text: #f8fafc;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg-app); color: var(--text-main); overflow: hidden; height: 100vh; }
+body { font-family: 'Inter', -apple-system, sans-serif; background-color: var(--bg-app); color: var(--text-main); overflow: hidden; height: 100vh; line-height: 1.5; }
 .app-container { display: flex; width: 100vw; height: 100vh; position: relative; }
 
+/* Sidebar */
 #sidebar-drawer {
 width: var(--sidebar-width);
 min-width: var(--sidebar-width);
@@ -71,12 +73,12 @@ transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 @media (max-width: 992px) {
   #sidebar-drawer { position: fixed; left: calc(var(--sidebar-width) * -1); top: 0; }
   #sidebar-drawer.drawer-open { left: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.2); }
-  #sidebar-backdrop.backdrop-active { position: fixed; top: 0; left: 0; width:100vw; height:100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); z-index: 90; }
+  #sidebar-backdrop.backdrop-active { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); z-index: 90; }
 }
 
 .sidebar-header { height: var(--header-height); padding: 0 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
 .brand-logo { display: flex; align-items: center; gap: 0.75rem; }
-.brand-icon { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; display: block; }
+.brand-icon { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; }
 .brand-text { font-size: 1.15rem; font-weight: 700; }
 
 .sidebar-scroll-content { flex: 1; overflow-y: auto; padding-bottom: 1.5rem; }
@@ -85,65 +87,80 @@ transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 .sidebar-static-links li a:hover { background: rgba(255,255,255,0.04); color:#fff; }
 .sidebar-static-links li a.active { background-color: var(--color-accent); color: #fff !important; }
 
+/* Main Area */
 .main-view-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-surface); overflow: hidden; position: relative; }
-.top-navbar-header { height: var(--header-height); background-color: var(--bg-app); border-bottom: 1px solid var(--border-ui); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-.scrollable-main-content { flex: 1; overflow-y: auto; padding: 1.5rem; }
+.top-navbar-header { height: var(--header-height); background-color: var(--bg-app); border-bottom: 1px solid var(--border-ui); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.scrollable-main-content { flex: 1; overflow-y: auto; padding: 1.5rem; position: relative; }
 
-.btn-hamburger { display: none; background:none; border:none; color:var(--text-main); font-size:1.4rem; cursor:pointer; width:40px; height:40px; align-items:center; justify-content:center; }
-@media (max-width: 992px) { .btn-hamburger { display: flex; } }
+/* Category Bar */
+.cat-bar { background: var(--bg-app); border-bottom: 1px solid var(--border-ui); padding: 10px 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.cat-bar::-webkit-scrollbar { display: none; }
+.cat-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 12px; }
+.cat-link { text-decoration: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; padding: 6px 16px; border-radius: 20px; background: var(--bg-surface); transition: all 0.2s; border: 1px solid var(--border-ui); }
+.cat-link:hover, .cat-link.active { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
 
-/* Grid & Card */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-.card { background: var(--bg-app); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s; text-decoration: none; color: inherit; display: block; position: relative; }
+/* Grid Layout */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+.card { background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s; text-decoration: none; color: inherit; display: block; position: relative; }
 .card:hover { transform: translateY(-5px); }
 .card-img { width: 100%; height: 200px; background: #eee; object-fit: cover; }
 .card-body { padding: 15px; }
-.card-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; background: var(--bg-surface); margin-bottom: 8px; font-weight: 700; color: var(--text-muted); }
+.card-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; background: var(--bg-surface); margin-bottom: 8px; font-weight: 700; color: var(--text-muted); border: 1px solid var(--border-ui); }
+.card-price { font-weight: 800; color: var(--color-accent); font-size: 1.1rem; }
 
-/* Schema Layouts */
-.product-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; background: var(--bg-app); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
-@media (max-width: 768px) { .product-layout { grid-template-columns: 1fr; } }
+/* Single Product Layout */
+.product-layout { display: grid; grid-template-columns: 1fr; gap: 40px; background: var(--bg-app); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 30px; }
+@media (min-width: 768px) { .product-layout { grid-template-columns: 1.2fr 1fr; } }
+
 .carousel { position: relative; aspect-ratio: 1; background: #f0f0f0; border-radius: var(--radius); overflow: hidden; }
 .carousel-inner { display: flex; height: 100%; transition: transform 0.5s ease; }
 .carousel-item { min-width: 100%; height: 100%; }
 .carousel-item img { width: 100%; height: 100%; object-fit: contain; }
-.carousel-btn { position: absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.9); border:none; width:44px; height:44px; border-radius:50%; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-.price { font-size: 1.8rem; font-weight: 800; color: var(--color-accent); }
-.v-btn { padding: 10px 15px; border: 2px solid var(--border-ui); border-radius: 8px; background: var(--bg-app); color: var(--text-main); cursor: pointer; font-weight: 600; transition: all 0.2s; }
-.v-btn.active { border-color: var(--color-accent); background: var(--color-accent); color: #fff; }
-.v-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.v-color { width: 35px; height: 35px; border-radius: 50%; padding: 0; border: 2px solid #ddd; }
-.stock-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; }
+.carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.carousel-btn:hover { background: #fff; transform: translateY(-50%) scale(1.1); }
+
+.price { font-size: 2rem; font-weight: 800; color: var(--color-accent); }
+.price.blurry { filter: blur(4px); opacity: 0.5; }
+.stock-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; margin-left: 10px; }
 .in-stock { background: #e8f5e9; color: #2e7d32; }
 .out-stock { background: #ffebee; color: #c62828; }
 
-/* Auth UI */
-.avatar-footer-row { min-height: 68px; background: rgba(15, 23, 42, 0.4); border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 0 1.15rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
-.avatar-left-info { display: flex; align-items: center; gap: 0.75rem; overflow: hidden; }
-.user-avatar-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; overflow: hidden; }
-.user-meta-strings { display: flex; flex-direction: column; overflow: hidden; }
-.user-display-name { font-size: 0.875rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-display-role { font-size: 0.75rem; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.btn-google-login { background: #fff; color: #0f172a; border: 1.5px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center; }
+.v-group { margin-bottom: 20px; }
+.v-label { font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; display: block; color: var(--text-muted); text-transform: uppercase; }
+.v-options { display: flex; gap: 10px; flex-wrap: wrap; }
+.v-btn { padding: 12px 20px; border: 2px solid var(--border-ui); border-radius: 10px; background: var(--bg-app); color: var(--text-main); cursor: pointer; font-weight: 600; transition: all 0.2s; }
+.v-btn.active { border-color: var(--color-accent); background: var(--color-accent); color: #fff; }
+.v-color { width: 40px; height: 40px; border-radius: 50%; padding: 0; border: 2px solid #ddd; }
+.v-color.active { border-color: #fff; outline: 2px solid var(--color-accent); }
+
+/* Seller Box */
+.seller-box { margin-top: 30px; padding: 25px; border: 1px solid var(--border-ui); border-radius: var(--radius); background: var(--bg-surface); }
+.geo-badge { display: inline-flex; align-items: center; gap: 8px; background: #e1f5fe; color: #0288d1; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-decoration: none; }
+
+/* Cart UI */
+.qty-controls { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
+.qty-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border-ui); background: var(--bg-app); color: var(--text-main); cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.qty-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+.avatar-footer-row { min-height: 68px; background: rgba(15, 23, 42, 0.4); border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 0 1.15rem; display: flex; align-items: center; justify-content: space-between; }
+.user-avatar-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; overflow: hidden; }
+.btn-google-login { background: #fff; color: #0f172a; border: 1.5px solid #e2e8f0; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
 /* Modals */
 .settings-modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
 .settings-modal-backdrop.active { display: flex; opacity: 1; }
-.settings-modal { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border-ui); width: 95%; max-width: 420px; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transform: scale(0.95); transition: transform 0.3s; }
+.settings-modal { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border-ui); width: 95%; max-width: 450px; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transform: scale(0.95); transition: transform 0.3s; }
 .settings-modal-backdrop.active .settings-modal { transform: scale(1); }
 .settings-modal-header { padding: 1.25rem; border-bottom: 1px solid var(--border-ui); display: flex; justify-content: space-between; align-items: center; }
-.settings-modal-title { font-weight: 700; font-size: 1.1rem; }
-.settings-modal-close { cursor: pointer; font-size: 1.5rem; background: none; border: none; color: var(--text-muted); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 .settings-modal-body { padding: 1.25rem; flex: 1; overflow-y: auto; }
 .settings-modal-footer { padding: 1.25rem; border-top: 1px solid var(--border-ui); }
 
-/* Toasts */
-.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2500; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-.toast { color: white; padding: 12px 24px; border-radius: 10px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; animation: slideUp 0.3s forwards; }
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2500; display: flex; flex-direction: column; gap: 10px; }
+.toast { color: white; padding: 12px 24px; border-radius: 10px; font-weight: 600; animation: slideUp 0.3s forwards; }
 @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
 .hidden { display: none !important; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 ]]></b:skin>
 </head>
 <body>
@@ -155,7 +172,7 @@ transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         <img class="brand-icon" alt="Antinna" expr:src="data:blog.blogspotFaviconUrl"/>
         <span class="brand-text">Antinna</span>
       </div>
-      <button class="v-btn" style="border:none;" onclick="toggleSidebarDrawer()">×</button>
+      <button class="v-btn" style="border:none; color:white; font-size:1.5rem;" onclick="toggleSidebarDrawer()">×</button>
     </div>
     <div class="sidebar-scroll-content">
       <b:section id="sidebar-nav" maxwidgets="1" showaddelement="yes">
@@ -170,24 +187,37 @@ transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         </b:widget>
       </b:section>
     </div>
-    <div class="avatar-footer-row" id="auth-footer">
-      <!-- Reactive Auth Row -->
-    </div>
+    <div class="avatar-footer-row" id="auth-footer"></div>
   </aside>
 
   <div class="main-view-wrapper">
     <header class="top-navbar-header">
       <button class="btn-hamburger" onclick="toggleSidebarDrawer()">☰</button>
-      <div class="header-center-search" style="flex:1; max-width:400px; margin:0 20px;">
+      <div class="header-center-search" style="flex:1; max-width:500px;">
         <form expr:action="data:blog.searchUrl" method="get" style="position:relative;">
-          <input class="v-btn" name="q" placeholder="Search items &amp; services..." style="width:100%; padding-left:40px; text-align:left; border-radius:8px;" type="search"/>
-          <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:0.5;">🔍</span>
+          <input class="v-btn" name="q" placeholder="Search for anything..." style="width:100%; padding-left:40px; text-align:left; border-radius:10px;" type="search"/>
+          <span style="position:absolute; left:15px; top:50%; transform:translateY(-50%); opacity:0.5;">🔍</span>
         </form>
       </div>
       <div class="header-right">
         <button id="theme-mode-switcher" class="v-btn" style="border:none; font-size:1.25rem;">☾</button>
       </div>
     </header>
+
+    <b:section id='category-section' showaddelement='no'>
+      <b:widget id='Label1' locked='true' title='Categories' type='Label'>
+        <b:includable id='main'>
+          <div class='cat-bar'>
+            <div class='cat-inner'>
+              <a expr:class='data:view.isHomepage ? "cat-link active" : "cat-link"' expr:href='data:blog.homepageUrl'>All</a>
+              <b:loop values='data:labels' var='label'>
+                <a expr:class='data:view.search.label == data:label.name ? "cat-link active" : "cat-link"' expr:href='data:label.url'><data:label.name/></a>
+              </b:loop>
+            </div>
+          </div>
+        </b:includable>
+      </b:widget>
+    </b:section>
 
     <main class="scrollable-main-content">
       <b:section id="main-feed-stream" class="main-feed-section" showaddelement="yes">
@@ -197,23 +227,20 @@ transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
               <b:loop values='data:posts' var='post'>
                 <div id='main-renderer'>
                   <div style="padding:100px; text-align:center;">
-                    <div class="v-btn" style="cursor:default; border:none; font-size:1.2rem; animation: pulse 1.5s infinite;">Initializing Engine...</div>
+                    <div class="v-btn" style="cursor:default; border:none; font-size:1.2rem; animation: pulse 1.5s infinite;">Preparing Data Engine...</div>
                   </div>
                 </div>
                 <div id='post-body-raw' style="display:none;"><data:post.body/></div>
               </b:loop>
             <b:else/>
-              <b:if cond='data:view.isHomepage'>
-                <h2 style="margin-bottom:20px; font-weight:800; border-left:5px solid var(--color-accent); padding-left:15px;">Latest Arrivals</h2>
-              </b:if>
               <div class="grid" id="app-grid">
                 <b:loop values='data:posts' var='post'>
                   <a class="card" expr:href='data:post.url' expr:id='"card-" + data:post.id'>
                     <img class="card-img" expr:src='data:post.featuredImage ?: "https://via.placeholder.com/400x300?text=Antinna"' loading="lazy"/>
                     <div class="card-body">
                       <div class="card-badge">Loading...</div>
-                      <h3 style="margin:0 0 10px; font-size:1.1rem;"><data:post.title/></h3>
-                      <div class="card-price" style="font-weight:800; color:var(--color-accent);">--</div>
+                      <h3 style="margin:0 0 10px; font-size:1.1rem; height:2.8em; overflow:hidden;"><data:post.title/></h3>
+                      <div class="card-price">--</div>
                     </div>
                     <div class="hidden grid-data"><data:post.body/></div>
                   </a>
@@ -227,31 +254,21 @@ transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   </div>
 </div>
 
+<!-- Modals -->
 <div class="settings-modal-backdrop" id="account-settings-modal-backdrop">
   <div class="settings-modal">
-    <div class="settings-modal-header">
-      <span class="settings-modal-title">Session Settings</span>
-      <button class="settings-modal-close" onclick="closeSettingsModal()">×</button>
-    </div>
+    <div class="settings-modal-header"><span class="settings-modal-title">Account</span><button class="settings-modal-close" onclick="closeSettingsModal()">×</button></div>
     <div class="settings-modal-body" id="modal-content-auth"></div>
-    <div class="settings-modal-footer">
-      <button class="v-btn" id="modal-signout-btn" style="width:100%; background:#ef4444; color:#fff; border:none; padding:12px;">Logout Session</button>
-    </div>
+    <div class="settings-modal-footer"><button class="v-btn" id="modal-signout-btn" style="width:100%; background:#ef4444; color:#fff; border:none; padding:12px;">Sign Out</button></div>
   </div>
 </div>
 
 <div class="settings-modal-backdrop" id="cart-modal-backdrop">
   <div class="settings-modal" style="max-height:85vh;">
-    <div class="settings-modal-header">
-      <span class="settings-modal-title">Your Order (Schema.org Order)</span>
-      <button class="settings-modal-close" onclick="document.getElementById('cart-modal-backdrop').classList.remove('active')">×</button>
-    </div>
+    <div class="settings-modal-header"><span class="settings-modal-title">Shopping Cart (Schema Order)</span><button class="settings-modal-close" onclick="document.getElementById('cart-modal-backdrop').classList.remove('active')">×</button></div>
     <div class="settings-modal-body" id="cart-items-list" style="padding:0;"></div>
     <div class="settings-modal-footer">
-      <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:15px; font-size:1.2rem;">
-        <span>Estimated Total:</span>
-        <span id="cart-total-price">--</span>
-      </div>
+      <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:15px; font-size:1.2rem;"><span>Total:</span><span id="cart-total-price">--</span></div>
       <button class="v-btn active" style="width:100%; padding:15px; border-radius:12px;" onclick="window.CartManager.placeOrder()">Place Order</button>
     </div>
   </div>
@@ -272,7 +289,7 @@ const provider = new GoogleAuthProvider();
 
 function sanitize(text) {
   const div = document.createElement('div');
-  div.textContent = text;
+  div.textContent = text || '';
   return div.innerHTML;
 }
 
@@ -289,7 +306,7 @@ window.showToast = (msg, type = 'info') => {
 const engine = {
   decodeEntities(text) {
     const textArea = document.createElement('textarea');
-    textArea.innerHTML = text;
+    textArea.innerHTML = text || '';
     return textArea.value;
   },
   extractJsonLd(sourceText) {
@@ -332,71 +349,91 @@ const renderers = {
             <button class="carousel-btn" style="left:10px;" id="prev-btn">&#10094;</button>
             <button class="carousel-btn" style="right:10px;" id="next-btn">&#10095;</button>
           </div>
-          <div class="h-scroll" id="thumb-row" style="margin-top:15px;"></div>
+          <div class="h-scroll" id="thumb-row" style="margin-top:20px; gap:10px;"></div>
         </div>
         <div class="details-container">
-          <h1 style="margin-bottom:5px;">${sanitize(pg.name)}</h1>
+          <div id="p-sku" style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-bottom:5px;"></div>
+          <h1 style="margin-bottom:5px; font-size:1.8rem;">${sanitize(pg.name)}</h1>
           <div id="p-brand" style="color:var(--text-muted); margin-bottom:15px; font-weight:600;">${sanitize(pg.brand?.name || pg.brand || '')}</div>
           <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
              <div id="p-price" class="price">--</div>
              <div id="p-stock" class="stock-badge"></div>
           </div>
-          <p style="line-height:1.7; color:var(--text-muted); margin-bottom:25px;">${sanitize(pg.description || '')}</p>
+          <p style="line-height:1.7; color:var(--text-main); margin-bottom:25px; font-size:0.95rem;">${sanitize(pg.description || '')}</p>
           <div id="p-variants"></div>
-          <button class="v-btn active" id="add-to-cart-btn" style="width:100%; padding:18px; font-size:1.1rem; border-radius:12px; margin-top:20px;">Add to Cart</button>
+          <div class="qty-controls">
+            <button class="qty-btn" id="qty-minus">-</button>
+            <span id="p-qty" style="font-weight:800; font-size:1.2rem; min-width:30px; text-align:center;">1</span>
+            <button class="qty-btn" id="qty-plus">+</button>
+          </div>
+          <button class="v-btn active" id="add-to-cart-btn" style="width:100%; padding:20px; font-size:1.1rem; border-radius:12px; margin-top:25px;">Add to Shopping Cart</button>
+          <div id="p-seller-info"></div>
           <div id="p-specs" style="margin-top:30px; border-top:1px solid var(--border-ui); padding-top:20px;"></div>
         </div>
       </div>
     `;
+
     let selected = {};
+    let currentQty = 1;
     const vars = pg.hasVariant || [];
+
     const update = () => {
       const v = vars.find(v => Object.entries(selected).every(([k, val]) => v[k] === val)) || vars[0];
       if (!v) return;
-      const off = v.offers || {};
-      document.getElementById('p-price').textContent = `${off.priceCurrency || ''} ${off.price || ''}`;
+
+      const off = v.offers || pg.offers || {};
+      document.getElementById('p-price').textContent = `${off.priceCurrency || 'INR'} ${off.price || '0'}`;
+      document.getElementById('p-sku').textContent = v.sku ? 'SKU: ' + v.sku : '';
+
       const stock = document.getElementById('p-stock');
       const invVal = off.inventoryLevel?.value ?? v.inventoryLevel?.value ?? Infinity;
       const isOut = off.availability === 'https://schema.org/OutOfStock' || invVal <= 0;
       stock.className = 'stock-badge ' + (isOut ? 'out-stock' : 'in-stock');
       stock.textContent = isOut ? 'Out of Stock' : 'In Stock';
       document.getElementById('add-to-cart-btn').disabled = isOut;
+
       const inner = document.getElementById('carousel-inner');
-      inner.innerHTML = '';
+      const thumbRow = document.getElementById('thumb-row');
+      inner.innerHTML = ''; thumbRow.innerHTML = '';
       const imgs = Array.isArray(v.image || pg.image) ? (v.image || pg.image) : [v.image || pg.image];
-      imgs.filter(Boolean).forEach(img => {
-        const slide = document.createElement('div');
-        slide.className = 'carousel-item';
-        slide.innerHTML = `<img src="${img.url || img}"/>`;
+      imgs.filter(Boolean).forEach((img, idx) => {
+        const url = img.url || img;
+        const slide = document.createElement('div'); slide.className = 'carousel-item';
+        slide.innerHTML = `<img src="${url}"/>`;
         inner.appendChild(slide);
+
+        const thumb = document.createElement('img'); thumb.className = 'thumb' + (idx===0?' active':'');
+        thumb.src = url;
+        thumb.onclick = () => {
+          inner.style.transform = `translateX(-${idx * 100}%)`;
+          thumbRow.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
+        };
+        thumbRow.appendChild(thumb);
       });
 
-      let slideIdx = 0;
-      const moveSlide = (dir) => {
-        const count = inner.querySelectorAll('.carousel-item').length;
-        slideIdx = (slideIdx + dir + count) % count;
-        inner.style.transform = `translateX(-${slideIdx * 100}%)`;
+      document.getElementById('add-to-cart-btn').onclick = () => {
+        for(let i=0; i<currentQty; i++) window.CartManager.addItem(v, off.seller || pg.seller || pg.provider);
       };
-      document.getElementById('prev-btn').onclick = () => moveSlide(-1);
-      document.getElementById('next-btn').onclick = () => moveSlide(1);
 
-      document.getElementById('add-to-cart-btn').onclick = () => window.CartManager.addItem(v, pg);
+      this.renderSellerSection(off.seller || pg.seller || pg.provider);
+
       const specs = document.getElementById('p-specs');
-      specs.innerHTML = '<h4>Specifications</h4>';
-      ['material', 'color', 'size', 'sku', 'gtin13'].forEach(f => {
+      specs.innerHTML = '<h4 style="margin-bottom:10px;">Product Specifications</h4>';
+      ['material', 'color', 'size', 'gtin13', 'weight', 'height', 'width', 'depth'].forEach(f => {
         const val = v[f] || pg[f];
-        if (val) specs.innerHTML += `<div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.9rem; border-bottom:1px dashed var(--border-ui); padding-bottom:5px;">
-          <span style="color:var(--text-muted); text-transform:capitalize;">${f}</span>
-          <span style="font-weight:700;">${sanitize(val)}</span>
-        </div>`;
+        if (val) specs.innerHTML += `<div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.9rem; border-bottom:1px dashed var(--border-ui); padding-bottom:5px;"><span style="color:var(--text-muted); text-transform:capitalize;">${f}</span><span style="font-weight:700;">${sanitize(val)}</span></div>`;
       });
     };
+
+    document.getElementById('qty-plus').onclick = () => { currentQty++; document.getElementById('p-qty').textContent = currentQty; };
+    document.getElementById('qty-minus').onclick = () => { if(currentQty > 1) { currentQty--; document.getElementById('p-qty').textContent = currentQty; } };
+
     if (pg.variesBy) {
       pg.variesBy.forEach(vUrl => {
         const attr = vUrl.split(/[\/#]/).pop();
         const vals = [...new Set(vars.map(v => v[attr]).filter(Boolean))];
         const group = document.createElement('div'); group.className = 'v-group';
-        group.innerHTML = `<span style="font-size:0.85rem; font-weight:800; margin-bottom:10px; display:block; text-transform:uppercase; color:var(--text-muted);">Select ${sanitize(attr)}</span>`;
+        group.innerHTML = `<span class="v-label">Select ${sanitize(attr)}</span>`;
         const opts = document.createElement('div'); opts.className = 'v-options';
         vals.forEach(val => {
           const btn = document.createElement('button'); btn.className = 'v-btn';
@@ -411,58 +448,89 @@ const renderers = {
     }
     update();
   },
+
+  renderSellerSection(seller) {
+    const wrap = document.getElementById('p-seller-info');
+    if (!seller) { wrap.innerHTML = ''; return; }
+    const name = seller.name || 'Official Seller';
+    wrap.innerHTML = `
+      <div class="seller-box">
+        <h4 style="margin-bottom:10px;">Seller Information</h4>
+        <div style="font-weight:700; font-size:1.1rem; color:var(--primary);">${sanitize(name)}</div>
+        ${seller.telephone ? `<div style="margin-top:5px; font-size:0.9rem;">📞 ${seller.telephone}</div>` : ''}
+        ${seller.email ? `<div style="margin-top:5px; font-size:0.9rem;">📧 ${seller.email}</div>` : ''}
+        ${seller.address ? `<div style="margin-top:5px; font-size:0.9rem;">📍 ${seller.address.streetAddress || ''}, ${seller.address.addressLocality || ''}</div>` : ''}
+        ${seller.geo ? `<a href="https://www.google.com/maps/search/?api=1&query=${seller.geo.latitude},${seller.geo.longitude}" target="_blank" class="geo-badge">📍 View on Maps</a>` : ''}
+      </div>
+    `;
+  },
+
   renderProduct(p) {
     const container = document.getElementById('main-renderer');
     const img = Array.isArray(p.image) ? p.image[0] : p.image;
     container.innerHTML = `
-      <div class="product-layout" style="display:block; max-width:800px; margin:0 auto;">
-         <img src="${(img?.url || img || 'https://via.placeholder.com/600x400')}" style="width:100%; border-radius:16px; margin-bottom:30px; box-shadow:var(--shadow);"/>
-         <h1 style="font-size:2rem; margin-bottom:10px;">${sanitize(p.name)}</h1>
-         <div class="price" style="margin:20px 0;">${p.offers?.priceCurrency || ''} ${p.offers?.price || ''}</div>
-         <p style="color:var(--text-muted); line-height:1.8; font-size:1.1rem;">${sanitize(p.description || '')}</p>
-         <button class="v-btn active" id="add-to-cart-btn" style="width:100%; margin-top:40px; padding:20px; font-size:1.2rem; border-radius:12px;">Add to Order</button>
+      <div class="product-layout" style="display:block; max-width:850px; margin:0 auto;">
+         <div class="carousel" style="height:400px; margin-bottom:30px;"><div class="carousel-inner"><div class="carousel-item"><img src="${(img?.url || img || 'https://via.placeholder.com/800x600')}"/></div></div></div>
+         <h1 style="font-size:2.2rem; margin-bottom:10px;">${sanitize(p.name)}</h1>
+         <div id="p-brand" style="color:var(--text-muted); margin-bottom:15px; font-weight:600;">${sanitize(p.brand?.name || p.brand || '')}</div>
+         <div class="price" style="margin:20px 0;">${p.offers?.priceCurrency || 'INR'} ${p.offers?.price || '0'}</div>
+         <p style="color:var(--text-main); line-height:1.8; font-size:1.1rem; margin-bottom:30px;">${sanitize(p.description || '')}</p>
+         <div class="qty-controls" style="margin-bottom:30px;">
+            <button class="qty-btn" onclick="window.currentQty = Math.max(1, (window.currentQty||1)-1); document.getElementById('p-qty-val').textContent = window.currentQty;">-</button>
+            <span id="p-qty-val" style="font-weight:800; font-size:1.4rem; min-width:40px; text-align:center;">1</span>
+            <button class="qty-btn" onclick="window.currentQty = (window.currentQty||1)+1; document.getElementById('p-qty-val').textContent = window.currentQty;">+</button>
+         </div>
+         <button class="v-btn active" id="add-to-cart-btn" style="width:100%; padding:20px; font-size:1.3rem; border-radius:15px;">Add to Order</button>
+         <div id="p-seller-info"></div>
       </div>
     `;
-    document.getElementById('add-to-cart-btn').onclick = () => window.CartManager.addItem(p, p.provider || p);
+    window.currentQty = 1;
+    document.getElementById('add-to-cart-btn').onclick = () => {
+      for(let i=0; i<window.currentQty; i++) window.CartManager.addItem(p, p.offers?.seller || p.seller || p.provider);
+    };
+    this.renderSellerSection(p.offers?.seller || p.seller || p.provider);
   },
+
   renderGeneric(data) {
     const container = document.getElementById('main-renderer');
     const div = document.createElement('div');
-    div.style.background = 'var(--bg-app)'; div.style.padding = '40px'; div.style.borderRadius = '16px'; div.style.boxShadow = 'var(--shadow)';
-    div.innerHTML = `<h1 style="margin-bottom:20px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">${sanitize(data.name || data['@type'])}</h1>`;
+    div.style.background = 'var(--bg-app)'; div.style.padding = '40px'; div.style.borderRadius = '20px'; div.style.boxShadow = 'var(--shadow)';
+    div.innerHTML = `<h1 style="margin-bottom:20px; border-bottom: 3px solid var(--color-accent); padding-bottom: 15px; font-size:2rem;">${sanitize(data.name || data['@type'])}</h1>`;
+
     const renderDeep = (val, key = '') => {
       if (!val) return '';
       if (typeof val === 'string') {
         if (val.startsWith('http')) {
            if (val.match(/\.(jpg|jpeg|png|gif|webp)$/i) || key.toLowerCase().includes('image') || key.toLowerCase().includes('logo')) {
-             return `<img src="${val}" style="max-width:100%; border-radius:8px; margin: 10px 0; display:block; border: 1px solid var(--border-ui);"/>`;
+             return `<img src="${val}" style="max-width:100%; border-radius:12px; margin: 15px 0; display:block; border: 1px solid var(--border-ui); shadow: var(--shadow);"/>`;
            }
-           return `<a href="${val}" target="_blank" style="color:var(--color-accent); word-break: break-all;">${sanitize(val)}</a>`;
+           return `<a href="${val}" target="_blank" style="color:var(--color-accent); word-break: break-all; font-weight:600;">${sanitize(val)}</a>`;
         }
         return sanitize(val);
       }
       if (Array.isArray(val)) {
-        return `<div style="display:flex; flex-direction:column; gap:10px; margin-top:5px;">${val.map(v => `<div style="padding:10px; background:var(--bg-surface); border-radius:8px; border-left:4px solid var(--color-accent);">${renderDeep(v)}</div>`).join('')}</div>`;
+        return `<div style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">${val.map(v => `<div style="padding:15px; background:var(--bg-surface); border-radius:12px; border-left:5px solid var(--color-accent);">${renderDeep(v)}</div>`).join('')}</div>`;
       }
       if (typeof val === 'object') {
-        return `<div style="display:grid; gap:8px; margin-top:5px; padding:12px; background:rgba(0,0,0,0.02); border-radius:10px; border: 1px solid var(--border-ui);">
-          ${Object.entries(val).map(([k,v]) => `<div><span style="font-weight:700; color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">${sanitize(k)}:</span> <div style="margin-top:4px;">${renderDeep(v, k)}</div></div>`).join('')}
+        return `<div style="display:grid; gap:10px; margin-top:8px; padding:15px; background:rgba(0,0,0,0.03); border-radius:12px; border: 1px solid var(--border-ui);">
+          ${Object.entries(val).map(([k,v]) => `<div><span style="font-weight:800; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${sanitize(k)}</span> <div style="margin-top:5px; font-size:0.95rem;">${renderDeep(v, k)}</div></div>`).join('')}
         </div>`;
       }
       return sanitize(String(val));
     };
+
     const propsGrid = document.createElement('div');
-    propsGrid.style.display = 'grid'; propsGrid.style.gap = '20px'; propsGrid.style.marginTop = '20px';
+    propsGrid.style.display = 'grid'; propsGrid.style.gap = '25px'; propsGrid.style.marginTop = '20px';
     Object.entries(data).forEach(([k,v]) => {
       if (k.startsWith('@') || k === 'name' || k === 'description') return;
       const propWrap = document.createElement('div');
-      propWrap.innerHTML = `<div style="font-weight:800; font-size:0.9rem; color:var(--color-accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">${sanitize(k)}</div>
-                            <div style="font-size:1rem;">${renderDeep(v, k)}</div>`;
+      propWrap.innerHTML = `<div style="font-weight:800; font-size:0.85rem; color:var(--color-accent); text-transform:uppercase; letter-spacing:1.2px; margin-bottom:8px;">${sanitize(k)}</div>
+                            <div style="font-size:1.05rem; line-height:1.6;">${renderDeep(v, k)}</div>`;
       propsGrid.appendChild(propWrap);
     });
     if (data.description) {
       const desc = document.createElement('p');
-      desc.style.lineHeight = '1.7'; desc.style.color = 'var(--text-muted)'; desc.style.marginTop = '20px';
+      desc.style.lineHeight = '1.8'; desc.style.color = 'var(--text-muted)'; desc.style.marginTop = '25px'; desc.style.fontSize = '1.1rem';
       desc.textContent = data.description;
       div.insertBefore(desc, propsGrid);
     }
@@ -472,6 +540,7 @@ const renderers = {
   }
 };
 
+/** CART (Schema.org Order) **/
 window.CartManager = {
   storageKey: 'antinna_cart_order',
   order: { "@context": "https://schema.org", "@type": "Order", "orderedItem": [], "totalPrice": 0, "priceCurrency": "INR" },
@@ -495,7 +564,17 @@ window.CartManager = {
         "seller": { "@type": (seller?.["@type"] || "Organization"), "name": seller?.name || "Seller", "url": seller?.url }
       });
     }
-    this.save(); this.updateFab(); window.showToast("Added to Cart", "success");
+    this.save(); this.updateFab(); window.showToast("Added to Shopping Cart", "success");
+  },
+  updateQuantity(idx, delta) {
+    const item = this.order.orderedItem[idx];
+    if (!item) return;
+    const inv = item.orderedItem.offers?.inventoryLevel?.value ?? Infinity;
+    const newVal = item.orderQuantity + delta;
+    if (newVal > inv) { window.showToast("Cannot exceed inventory!", "error"); return; }
+    if (newVal <= 0) { this.removeItem(idx); return; }
+    item.orderQuantity = newVal;
+    this.save(); this.updateFab(); this.showModal();
   },
   removeItem(idx) { this.order.orderedItem.splice(idx, 1); this.save(); this.updateFab(); this.showModal(); },
   save() {
@@ -504,38 +583,45 @@ window.CartManager = {
   },
   createFab() {
     const fab = document.createElement('div'); fab.id = 'cart-fab';
-    fab.style.cssText = 'position:fixed; bottom:30px; right:30px; width:64px; height:64px; background:var(--color-accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.3); z-index:1000; font-size:1.5rem;';
-    fab.innerHTML = '🛒 <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; border-radius:50%; width:24px; height:24px; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid #fff;">0</span>';
+    fab.style.cssText = 'position:fixed; bottom:30px; right:30px; width:64px; height:64px; background:var(--color-accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.3); z-index:1000; font-size:1.5rem; transition:transform 0.2s;';
+    fab.innerHTML = '🛒 <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; border-radius:50%; width:26px; height:26px; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid #fff; font-weight:800;">0</span>';
     fab.onclick = () => this.showModal();
     document.body.appendChild(fab); this.updateFab();
   },
   updateFab() {
-    const countEl = document.getElementById('cart-count');
-    if (countEl) countEl.textContent = this.order.orderedItem.reduce((s,i)=>s+i.orderQuantity, 0);
+    const count = this.order.orderedItem.reduce((s,i)=>s+i.orderQuantity, 0);
+    document.getElementById('cart-count').textContent = count;
+    document.getElementById('cart-fab').style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
   },
   showModal() {
     const m = document.getElementById('cart-modal-backdrop');
     const list = document.getElementById('cart-items-list');
     list.innerHTML = this.order.orderedItem.map((i, idx) => `
-      <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid var(--border-ui); align-items:center;">
-        <img src="${(Array.isArray(i.orderedItem.image) ? i.orderedItem.image[0] : (i.orderedItem.image?.url || i.orderedItem.image || ''))}" style="width:60px; height:60px; border-radius:8px; object-fit:cover;"/>
+      <div style="display:flex; gap:15px; padding:20px; border-bottom:1px solid var(--border-ui); align-items:center;">
+        <img src="${(Array.isArray(i.orderedItem.image) ? i.orderedItem.image[0] : (i.orderedItem.image?.url || i.orderedItem.image || ''))}" style="width:70px; height:70px; border-radius:10px; object-fit:cover;"/>
         <div style="flex:1;">
-          <div style="font-weight:700; font-size:1rem;">${sanitize(i.orderedItem.name)}</div>
-          <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">${i.orderedItem.offers?.priceCurrency || 'INR'} ${i.orderedItem.offers?.price || '0'} x ${i.orderQuantity}</div>
+          <div style="font-weight:700; font-size:1rem; margin-bottom:5px;">${sanitize(i.orderedItem.name)}</div>
+          <div style="font-size:0.9rem; color:var(--color-accent); font-weight:800;">${i.orderedItem.offers?.priceCurrency || 'INR'} ${i.orderedItem.offers?.price || '0'}</div>
+          <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
+             <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQuantity(${idx}, -1)">-</button>
+             <span style="font-weight:800;">${i.orderQuantity}</span>
+             <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQuantity(${idx}, 1)">+</button>
+          </div>
         </div>
-        <button onclick="window.CartManager.removeItem(${idx})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem; padding:10px;">×</button>
+        <button onclick="window.CartManager.removeItem(${idx})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.8rem; padding:5px;">×</button>
       </div>
-    `).join('') || '<div style="text-align:center; padding:50px; color:var(--text-muted); font-weight:600;">Your cart is currently empty.</div>';
+    `).join('') || '<div style="text-align:center; padding:60px; color:var(--text-muted); font-weight:600; font-size:1.1rem;">Your cart is empty.</div>';
     document.getElementById('cart-total-price').textContent = `${this.order.priceCurrency} ${this.order.totalPrice}`;
     m.classList.add('active');
   },
-  placeOrder() { alert("Ready to serialize order: " + JSON.stringify(this.order)); }
+  placeOrder() { alert("Finalizing Order Schema: " + JSON.stringify(this.order, null, 2)); }
 };
 
+/** AUTH **/
 function renderAuth(user) {
   const footer = document.getElementById('auth-footer');
   if (!user) {
-    footer.innerHTML = `<button class="btn-google-login" id="login-btn">Continue with Google</button>`;
+    footer.innerHTML = `<button class="btn-google-login" id="login-btn"><span>Continue with Google</span></button>`;
     document.getElementById('login-btn').onclick = () => signInWithPopup(auth, provider);
   } else {
     footer.innerHTML = `
@@ -546,17 +632,17 @@ function renderAuth(user) {
           <span class="user-display-role">${sanitize(user.email)}</span>
         </div>
       </div>
-      <button class="v-btn" style="border:none; background:none; font-size:1.2rem; color:rgba(255,255,255,0.6);" id="settings-trigger">⚙</button>
+      <button class="v-btn" style="border:none; background:none; font-size:1.4rem; color:rgba(255,255,255,0.5);" id="settings-trigger">⚙</button>
     `;
     document.getElementById('settings-trigger').onclick = () => document.getElementById('account-settings-modal-backdrop').classList.add('active');
     document.getElementById('modal-content-auth').innerHTML = `
       <div style="text-align:center; margin-bottom:25px;">
-        <img src="${user.photoURL}" style="width:90px; height:90px; border-radius:50%; margin-bottom:15px; border:3px solid var(--color-accent); padding:3px;"/>
-        <h2 style="margin:0;">${sanitize(user.displayName)}</h2>
-        <p style="color:var(--text-muted); margin-top:5px;">${sanitize(user.email)}</p>
+        <img src="${user.photoURL}" style="width:100px; height:100px; border-radius:50%; margin-bottom:15px; border:4px solid var(--color-accent); padding:4px;"/>
+        <h2 style="margin:0; font-size:1.5rem;">${sanitize(user.displayName)}</h2>
+        <p style="color:var(--text-muted); margin-top:5px; font-size:1rem;">${sanitize(user.email)}</p>
       </div>
-      <div style="background:var(--bg-surface); padding:15px; border-radius:12px; font-family:monospace; font-size:0.85rem; border:1px solid var(--border-ui);">
-        <div style="color:var(--text-muted); font-weight:700; margin-bottom:5px; font-size:0.7rem; text-transform:uppercase;">Account ID</div>
+      <div style="background:var(--bg-surface); padding:20px; border-radius:15px; font-family:monospace; font-size:0.9rem; border:1px solid var(--border-ui);">
+        <div style="color:var(--text-muted); font-weight:800; margin-bottom:8px; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Internal Trace ID</div>
         <div style="word-break:break-all;">${user.uid}</div>
       </div>
     `;
@@ -564,22 +650,44 @@ function renderAuth(user) {
   }
 }
 
+/** GRID **/
 function initGrid() {
   const cards = document.querySelectorAll('.card');
-  cards.forEach(card => {
-    const raw = card.querySelector('.grid-data');
-    const data = engine.extractJsonLd(raw.textContent);
-    if (data) {
-      const type = data['@type'];
-      card.querySelector('.card-badge').textContent = (type === 'ProductGroup' || type === 'Product') ? 'Product' : (['Service', 'LocalBusiness'].includes(type) ? 'Service' : type);
-      const v = data.hasVariant ? data.hasVariant[0] : data;
-      if (v.offers) card.querySelector('.card-price').textContent = `${v.offers.priceCurrency || ''} ${v.offers.price || ''}`;
-      const img = Array.isArray(data.image) ? data.image[0] : data.image;
-      if (img) card.querySelector('.card-img').src = img.url || img;
-    }
+  const feedUrl = '/feeds/posts/default?alt=json&max-results=50';
+
+  fetch(feedUrl).then(r=>r.json()).then(feed => {
+    const entries = feed.feed.entry || [];
+    cards.forEach(card => {
+       const url = card.href.split('?')[0].split('#')[0];
+       const entry = entries.find(e => e.link.some(l=>l.rel==='alternate' && l.href.includes(url)));
+       let data = null;
+       if (entry) data = engine.extractJsonLd(entry.content.$t);
+       if (!data) data = engine.extractJsonLd(card.querySelector('.grid-data').textContent);
+
+       if (data) {
+         const type = data['@type'];
+         const badge = card.querySelector('.card-badge');
+         badge.textContent = (type === 'ProductGroup' || type === 'Product') ? 'Product' : (['Service', 'LocalBusiness'].includes(type) ? 'Service' : type);
+         const v = data.hasVariant ? data.hasVariant[0] : data;
+         if (v.offers) card.querySelector('.card-price').textContent = `${v.offers.priceCurrency || 'INR'} ${v.offers.price || '0'}`;
+         const img = Array.isArray(data.image) ? data.image[0] : data.image;
+         if (img) card.querySelector('.card-img').src = img.url || img;
+       }
+    });
+  }).catch(() => {
+    // Fallback if fetch fails
+    cards.forEach(card => {
+      const data = engine.extractJsonLd(card.querySelector('.grid-data').textContent);
+      if (data) {
+        card.querySelector('.card-badge').textContent = data['@type'];
+        const v = data.hasVariant ? data.hasVariant[0] : data;
+        if (v.offers) card.querySelector('.card-price').textContent = `${v.offers.priceCurrency} ${v.offers.price}`;
+      }
+    });
   });
 }
 
+/** BOOTSTRAP **/
 document.addEventListener('DOMContentLoaded', () => {
   window.CartManager.init();
   onAuthStateChanged(auth, renderAuth);

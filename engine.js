@@ -11,7 +11,7 @@ export function decodeEntities(text) {
                .replace(/&#39;/g, "'");
   }
   const textArea = document.createElement('textarea');
-  textArea.innerHTML = text;
+  textArea.innerHTML = text || '';
   return textArea.value;
 }
 
@@ -52,10 +52,8 @@ export async function TypeRouter(data, SchemaTypes, renderers) {
 
   if (SchemaTypes && SchemaTypes[type]) {
     try {
-      const validator = SchemaTypes[type];
-      if (validator.validate(data)) {
-        hydratedData = validator.deserialize(data);
-      }
+      const v = SchemaTypes[type];
+      if (v.validate(data)) hydratedData = v.deserialize(data);
     } catch (e) {
       console.warn("Hydration failed", e);
     }
