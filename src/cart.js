@@ -65,8 +65,35 @@ export class CartManager {
     const item = this.order.orderedItem?.[idx];
     if (!item) return;
     item.orderQuantity += delta;
-    if (item.orderQuantity <= 0) this.order.orderedItem.splice(idx, 1);
+    if (item.orderQuantity <= 0) {
+      this.removeItem(idx);
+      return;
+    }
     this.save(); this.updateUI(); this.showModal();
+  }
+
+  removeItem(idx) {
+    const item = this.order.orderedItem[idx];
+    if (!item) return;
+
+    const name = item.orderedItem.name;
+    // Cascading Removal Logic
+    const dependents = this.order.orderedItem
+      .map((it, i) => (it.orderedItem.parentProductName === name ? i : -1))
+      .filter(i => i !== -1)
+      .sort((a, b) => b - a); // Remove from end to start to maintain index stability
+
+    this.order.orderedItem.splice(idx, 1);
+
+    // Remove dependents
+    dependents.forEach(depIdx => {
+      // Adjusted index if the original item was after the dependent
+      const actualIdx = depIdx > idx ? depIdx - 1 : depIdx;
+      this.order.orderedItem.splice(actualIdx, 1);
+    });
+
+    this.save(); this.updateUI(); this.showModal();
+    if (dependents.length > 0) window.showToast?.(`Removed ${dependents.length} linked services.`, "info");
   }
 
   renderFab() {

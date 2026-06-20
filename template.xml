@@ -775,11 +775,29 @@
           const cartItem = ser.itemOffered ? { ...ser.itemOffered } : (typeof ser === 'object' ? { ...ser } : { name: ser });
           if (!cartItem.offers) cartItem.offers = { "@type": "Offer", price: price, priceCurrency: curr };
 
+          // Dependency Check
+          const isAddon = ser.isLinkedAddon || ser.itemOffered?.isLinkedAddon;
+          const parentName = ser.parentProductName || ser.itemOffered?.parentProductName;
+          let buttonHtml = `<button class="v-btn" style="width:100%; padding:8px; font-size:0.85rem;" onclick="window.CartManager.addItem(${JSON.stringify(cartItem).replace(/"/g, '&quot;')}, ${JSON.stringify(s).replace(/"/g, '&quot;')})">Add Service</button>`;
+          let disclaimer = '';
+
+          if (isAddon && parentName) {
+            const hasParent = window.CartManager.order.orderedItem.some(i => i.orderedItem.name === parentName);
+            if (!hasParent) {
+              buttonHtml = `<button class="v-btn" style="width:100%; padding:8px; font-size:0.85rem; opacity:0.5;" disabled>Requires ${parentName}</button>`;
+              disclaimer = `<div style="font-size:0.7rem; color:red; margin-top:5px;">Only available with ${parentName}</div>`;
+            } else {
+              // Mark item so CartManager knows it's a dependent
+              cartItem.parentProductName = parentName;
+            }
+          }
+
           return `
             <div class="h-card">
               <div style="font-weight:700; margin-bottom:10px; height:3em; overflow:hidden;">${name}</div>
               <div class="price" style="font-size:1.2rem; margin-bottom:15px;">${price ? curr + ' ' + price : 'Free/Included'}</div>
-              <button class="v-btn" style="width:100%; padding:8px; font-size:0.85rem;" onclick="window.CartManager.addItem(${JSON.stringify(cartItem).replace(/"/g, '&quot;')}, ${JSON.stringify(s).replace(/"/g, '&quot;')})">Add Service</button>
+              ${buttonHtml}
+              ${disclaimer}
             </div>
           `;
         }).join('');
@@ -800,6 +818,10 @@
       addItem(item, seller) {
         const existing = this.order.orderedItem.find(i => i.orderedItem.name === item.name);
         if (existing) {
+          if (item.maxQuantity === 1 || item.itemOffered?.maxQuantity === 1) {
+            window.showToast?.("This item can only be added once.", "error");
+            return;
+          }
           existing.orderQuantity++;
         } else {
           // Extract specifications
@@ -828,7 +850,23 @@
         const item = this.order.orderedItem[idx];
         if (!item) return;
         item.orderQuantity += delta;
-        if (item.orderQuantity <= 0) this.order.orderedItem.splice(idx, 1);
+        if (item.orderQuantity <= 0) { this.removeItem(idx); return; }
+        this.save(); this.updateUI(); this.showModal();
+      },
+      removeItem(idx) {
+        const item = this.order.orderedItem[idx];
+        if (!item) return;
+        const name = item.orderedItem.name;
+        // Cascading removal of dependent services
+        this.order.orderedItem = this.order.orderedItem.filter(i => i.orderedItem.parentProductName !== name);
+        // Find new index since filtered list might have changed
+        const newIdx = this.order.orderedItem.indexOf(item);
+        if (newIdx > -1) this.order.orderedItem.splice(newIdx, 1);
+        else {
+           // If item was already removed by filter (though shouldn't happen for the parent itself unless it is its own parent)
+           // we just ensure it is gone.
+           this.order.orderedItem = this.order.orderedItem.filter(i => i !== item);
+        }
         this.save(); this.updateUI(); this.showModal();
       },
       save() {
