@@ -1,49 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <html b:css="false" b:defaultwidgetversion="2" b:layoutsversion="3" b:responsive="true" expr:dir="data:blog.languageDirection" expr:lang="data:blog.locale" xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://www.google.com/2005/gml/b" xmlns:data="http://www.google.com/2005/gml/data" xmlns:expr="http://www.google.com/2005/gml/expr">
 <head>
-<script type="text/javascript">//<![CDATA[
-(function() {
-  var cachedTheme = localStorage.getItem('antinna-theme');
-  var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (cachedTheme === 'dark' || (!cachedTheme && systemPrefersDark)) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-})();
-//]]></script>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<b:include name="all-head-content" data="blog"/>
-<title><data:blog.title.escaped/></title>
-
-<b:skin><![CDATA[
-/_ Fresh Start CSS _/
-:root {
---primary: #2c3e50;
---accent: #e67e22;
---bg: #f8f9fa;
---card: #ffffff;
---text: #333333;
---radius: 12px;
---shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
---header-height: 64px;
-}
-
-html.dark {
---primary: #ecf0f1;
---bg: #0f172a;
---card: #1e293b;
---text: #f8fafc;
---shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
-}
+  <meta content='width=device-width, initial-scale=1' name='viewport'/>
+  <b:include name="all-head-content" data="blog"/>
+  <title><data:blog.pageTitle/></title>
+  <b:skin><![CDATA[
+    /* Fresh Start CSS */
+    :root {
+      --primary: #2c3e50;
+      --accent: #e67e22;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #333333;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
       margin: 0;
       line-height: 1.5;
-      overflow-x: hidden;
     }
 
     .container {
@@ -54,7 +32,7 @@ html.dark {
 
     /* Navbar */
     .nav {
-      background: var(--card);
+      background: #fff;
       padding: 15px 0;
       box-shadow: var(--shadow);
       position: sticky;
@@ -71,8 +49,8 @@ html.dark {
     }
 
     .cat-bar {
-      background: var(--card);
-      border-top: 1px solid rgba(0,0,0,0.05);
+      background: #fff;
+      border-top: 1px solid #eee;
       padding: 10px 0;
       overflow-x: auto;
       white-space: nowrap;
@@ -87,20 +65,19 @@ html.dark {
     }
     .cat-link {
       text-decoration: none;
-      color: var(--text);
-      opacity: 0.7;
+      color: #666;
       font-size: 0.85rem;
       font-weight: 600;
-      padding: 6px 15px;
+      padding: 5px 12px;
       border-radius: 20px;
-      background: rgba(0,0,0,0.05);
+      background: #f0f0f0;
       transition: all 0.2s;
     }
-    .cat-link:hover, .cat-link.active { background: var(--accent); color: #fff; opacity: 1; }
+    .cat-link:hover, .cat-link.active { background: var(--accent); color: #fff; }
     .brand {
       font-size: 1.5rem;
       font-weight: 800;
-      color: var(--accent);
+      color: var(--primary);
       text-decoration: none;
     }
 
@@ -120,7 +97,6 @@ html.dark {
       transition: transform 0.3s;
       text-decoration: none;
       color: inherit;
-      display: block;
     }
     .card:hover { transform: translateY(-5px); }
 
@@ -131,24 +107,22 @@ html.dark {
       object-fit: cover;
     }
     .card-body { padding: 15px; }
-    .card-title { font-weight: 700; margin: 0 0 10px; font-size: 1.1rem; height: 2.8em; overflow: hidden; }
+    .card-title { font-weight: 700; margin: 0 0 10px; }
     .card-badge {
       display: inline-block;
       padding: 2px 8px;
       border-radius: 4px;
       font-size: 0.7rem;
-      background: rgba(0,0,0,0.05);
+      background: #eee;
       margin-bottom: 8px;
-      font-weight: 700;
     }
-    .card-price { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
 
-    /* Single Page Layout */
+    /* Single Page Components */
     .product-layout {
       display: grid;
       grid-template-columns: 1fr;
       gap: 40px;
-      background: var(--card);
+      background: #fff;
       padding: 30px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -194,62 +168,77 @@ html.dark {
 
     /* Variants */
     .variants { margin: 20px 0; }
-    .v-group { margin-bottom: 20px; }
-    .v-label { font-weight: 700; font-size: 0.85rem; margin-bottom: 10px; display: block; text-transform: uppercase; opacity: 0.7; }
+    .v-group { margin-bottom: 15px; }
+    .v-label { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; display: block; }
     .v-options { display: flex; gap: 10px; flex-wrap: wrap; }
     .v-btn {
-      padding: 12px 20px;
-      border: 2px solid rgba(0,0,0,0.1);
-      border-radius: 10px;
-      background: var(--card);
-      color: var(--text);
+      padding: 10px 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.2s;
     }
     .v-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; }
     .v-btn:disabled { opacity: 0.3; cursor: not-allowed; border-style: dashed; }
-    .v-color { width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 2px solid #ddd; }
+    .v-color { width: 35px; height: 35px; padding: 0; border-radius: 50%; border: 2px solid #ddd; }
     .v-color.active { outline: 3px solid var(--accent); outline-offset: 2px; border-color: #fff; }
-
-    /* Controls */
-    .qty-controls { display: flex; align-items: center; gap: 15px; margin: 25px 0; }
-    .qty-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.1); background: var(--card); color: var(--text); cursor: pointer; font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     /* Seller & GEO */
     .seller-box {
       margin-top: 30px;
-      padding: 25px;
-      border: 1px solid rgba(0,0,0,0.05);
+      padding: 20px;
+      border: 1px solid #eee;
       border-radius: var(--radius);
-      background: rgba(0,0,0,0.02);
     }
     .geo-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       background: #e1f5fe;
       color: #0288d1;
-      padding: 8px 16px;
+      padding: 5px 12px;
       border-radius: 20px;
-      font-size: 0.85rem;
-      margin-top: 15px;
-      font-weight: 700;
+      font-size: 0.8rem;
+      margin-top: 10px;
       text-decoration: none;
+      font-weight: 700;
     }
 
+    .social-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+    .social-link {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: #fff;
+      background: var(--primary);
+      padding: 4px 10px;
+      border-radius: 4px;
+      transition: opacity 0.2s;
+    }
+    .social-link:hover { opacity: 0.8; }
+
+    /* Horizontal Scroll for Services */
     .h-scroll {
       display: flex;
       overflow-x: auto;
-      gap: 15px;
+      gap: 20px;
       padding: 10px 0;
       scrollbar-width: none;
     }
+    .h-card {
+      min-width: 240px;
+      background: #fff;
+      padding: 15px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border-top: 4px solid var(--accent);
+    }
+
     .thumb {
-      width: 70px;
-      height: 70px;
-      border-radius: 10px;
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
       cursor: pointer;
       border: 2px solid transparent;
       object-fit: cover;
@@ -257,50 +246,64 @@ html.dark {
     }
     .thumb.active { border-color: var(--accent); }
 
-    .price { font-size: 2.2rem; font-weight: 800; color: var(--accent); transition: filter 0.3s; }
-    .price.blurry { filter: blur(4px); opacity: 0.5; }
-    .stock-badge { display: inline-block; padding: 5px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; margin-left: 15px; }
+    .price { font-size: 1.5rem; font-weight: 800; color: var(--accent); transition: filter 0.3s; }
+    .price.blurry { filter: blur(4px); opacity: 0.5; pointer-events: none; }
+    .stock-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; margin-left: 10px; }
     .in-stock { background: #e8f5e9; color: #2e7d32; }
     .out-stock { background: #ffebee; color: #c62828; }
-
-    .section-title { font-size: 1.5rem; margin: 40px 0 20px; border-left: 6px solid var(--accent); padding-left: 20px; font-weight: 800; }
+    .instore-only { background: #fffde7; color: #fbc02d; }
+    .pre-order { background: #e3f2fd; color: #1976d2; }
+    .section-title { font-size: 1.3rem; margin: 30px 0 15px; border-left: 5px solid var(--accent); padding-left: 15px; }
     .hidden { display: none !important; }
 
-    /* Modals */
-    .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
-    .modal-backdrop.active { display: flex; }
-    .modal { background: var(--card); border-radius: 20px; width: 95%; max-width: 480px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; }
-    .modal-header { padding: 20px 25px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-    .modal-body { padding: 20px; flex: 1; overflow-y: auto; }
-    .modal-footer { padding: 20px 25px; border-top: 1px solid rgba(0,0,0,0.05); }
+    /* Cart UI */
+    .qty-controls { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
+    .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    .cart-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 25px rgba(230, 126, 34, 0.4); z-index: 1000; font-size: 1.5rem; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .cart-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+    .cart-backdrop.active { display: flex; }
+    .cart-modal { background: #fff; border-radius: 20px; width: 95%; max-width: 480px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; }
+    .cart-header { padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .cart-body { padding: 20px; flex: 1; overflow-y: auto; }
+    .cart-footer { padding: 20px 25px; border-top: 1px solid #eee; }
+
+    .cart-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 25px rgba(230, 126, 34, 0.4); z-index: 1000; font-size: 1.5rem; transition: transform 0.3s; }
     .cart-count { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; display: flex; align-items: center; justify-content: center; border: 2.5px solid #fff; font-weight: 900; }
 
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-]]></b:skin>
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+  ]]></b:skin>
 </head>
 <body>
-  <nav class='nav'>
-    <div class='nav-inner'>
-      <a class='brand' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
-      <div style="display:flex; gap:15px; align-items:center;">
-        <button id="theme-toggle" class="qty-btn" style="border:none; background:none; font-size:1.4rem;">☾</button>
-      </div>
-    </div>
-  </nav>
+  <b:section id='header-section' showaddelement='no'>
+    <b:widget id='Header1' locked='true' title='Header' type='Header'>
+      <b:includable id='main'>
+        <nav class='nav'>
+          <div class='nav-inner'>
+            <a class='brand' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
+          </div>
+        </nav>
+      </b:includable>
+    </b:widget>
+  </b:section>
 
   <b:section id='category-section' showaddelement='no'>
     <b:widget id='Label1' locked='true' title='Categories' type='Label'>
       <b:includable id='main'>
-        <div class='cat-bar'>
-          <div class='cat-inner'>
-            <a expr:class='data:view.isHomepage ? "cat-link active" : "cat-link"' expr:href='data:blog.homepageUrl'>All Collections</a>
-            <b:loop values='data:labels' var='label'>
-              <a expr:class='data:view.search.label == data:label.name ? "cat-link active" : "cat-link"' expr:href='data:label.url'><data:label.name/></a>
-            </b:loop>
+        <b:if cond='data:view.isMultipleItems'>
+          <div class='cat-bar'>
+            <div class='cat-inner'>
+              <a expr:class='data:view.isHomepage ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:blog.homepageUrl'>All</a>
+              <b:loop values='data:labels' var='label'>
+                <a expr:class='data:view.search.label == data:label.name ? &quot;cat-link active&quot; : &quot;cat-link&quot;' expr:href='data:label.url'><data:label.name/></a>
+              </b:loop>
+            </div>
           </div>
-        </div>
+        </b:if>
       </b:includable>
     </b:widget>
   </b:section>
@@ -308,258 +311,495 @@ html.dark {
   <div class='container'>
     <b:section id='main-section' showaddelement='yes'>
       <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'>
+        <b:includable id='postCard' var='post'>
+          <a class='card' expr:href='data:post.url' expr:id='&quot;card-&quot; + data:post.id'>
+            <img class='card-img' expr:src='data:post.featuredImage ?: &quot;https://via.placeholder.com/400x300?text=Antinna&quot;' loading='lazy'/>
+            <div class='card-body'>
+              <div class='card-badge'>Loading...</div>
+              <h3 class='card-title'><data:post.title/></h3>
+              <div class='card-price'>--</div>
+            </div>
+            <div class='hidden grid-data'><data:post.body/></div>
+          </a>
+        </b:includable>
+
         <b:includable id='main' var='top'>
-          <b:if cond='data:view.isSingleItem'>
-            <b:loop values='data:posts' var='post'>
-              <div id='main-renderer'>
-                 <div style="padding:100px; text-align:center;">
-                   <div class="v-btn" style="cursor:default; border:none; animation: pulse 1.5s infinite; font-size:1.2rem;">Initializing Engine...</div>
-                 </div>
-              </div>
-              <div class="hidden" id="post-body-raw"><data:post.body/></div>
-            </b:loop>
-          <b:else/>
-            <b:if cond='data:view.isHomepage'><h2 class='section-title'>Featured Selection</h2></b:if>
+          <b:if cond='data:view.isHomepage'>
+             <b:if cond='data:posts and data:posts any (p => p.labels and p.labels any (l => l.name == "featured" or l.name == "popular"))'>
+               <h2 class='section-title'>Featured Selection</h2>
+               <div class='grid' id='featured-grid'>
+                 <b:loop values='data:posts' var='post'>
+                   <b:if cond='data:post.labels and data:post.labels any (l => l.name == "featured" or l.name == "popular")'>
+                     <b:include data='post' name='postCard'/>
+                   </b:if>
+                 </b:loop>
+               </div>
+             </b:if>
+             <h2 class='section-title'>Latest Arrivals</h2>
+          </b:if>
+
+          <b:if cond='data:view.isMultipleItems'>
             <div class='grid' id='app-grid'>
               <b:loop values='data:posts' var='post'>
-                <a class='card' expr:href='data:post.url' expr:id='"card-" + data:post.id'>
-                  <img class='card-img' expr:src='data:post.featuredImage ?: "https://via.placeholder.com/400x300?text=Antinna"' loading='lazy'/>
-                  <div class='card-body'>
-                    <div class='card-badge'>Loading...</div>
-                    <h3 class='card-title'><data:post.title/></h3>
-                    <div class='card-price'>--</div>
-                  </div>
-                  <div class='hidden grid-data'><data:post.body/></div>
-                </a>
+                <b:include data='post' name='postCard'/>
               </b:loop>
             </div>
+
+            <div class='blog-pager' style='text-align:center; margin-top:40px;'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='v-btn' expr:href='data:newerPageUrl' style='text-decoration:none;'>&#171; Newer</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='v-btn' expr:href='data:olderPageUrl' style='text-decoration:none; margin-left:10px;'>Older &#187;</a>
+              </b:if>
+            </div>
+          <b:else/>
+            <b:loop values='data:posts' var='post'>
+              <div id='app-item'>
+                 <div class='breadcrumb' style='margin-bottom:20px; font-size:0.9rem;'>
+                   <a expr:href='data:blog.homepageUrl'>Home</a> /
+                   <b:if cond='data:post.labels'>
+                     <b:loop index='i' values='data:post.labels' var='label'>
+                       <a expr:href='data:label.url'><data:label.name/></a>
+                       <b:if cond='data:i &lt; data:post.labels.size - 1'>, </b:if>
+                     </b:loop>
+                     /
+                   </b:if>
+                   <data:post.title/>
+                 </div>
+
+                 <div class='product-layout' id='main-renderer' style='min-height: 400px;'>
+                    <div id='initializing-state' style='padding:40px; text-align:center; grid-column: 1 / -1;'>
+                       <div class='v-btn' style='display:inline-block; cursor:default; animation: pulse 1.5s infinite;'>Initializing Data Engine...</div>
+                    </div>
+
+                    <div class='carousel-container hidden' id='carousel-section'>
+                       <div class='carousel' id='main-carousel'>
+                          <div class='carousel-inner' id='carousel-inner'></div>
+                          <button class='carousel-btn' onclick='prevSlide()' style='left:10px;'>&#10094;</button>
+                          <button class='carousel-btn' onclick='nextSlide()' style='right:10px;'>&#10095;</button>
+                       </div>
+                       <div class='h-scroll' id='thumbnail-row' style='margin-top:10px; gap:10px;'></div>
+                    </div>
+
+                    <div class='details-container hidden' id='details-section'>
+                       <h1 id='p-name'><data:post.title/></h1>
+                       <div id='p-sku' style='font-size:0.75rem; color:#888; margin-bottom:10px;'></div>
+                       <div class='price' id='p-price'>--</div>
+                       <p id='p-desc' style='color:#666;'></p>
+
+                       <div class='variants' id='p-variants'></div>
+
+                       <div class='qty-controls'>
+                         <button class='qty-btn' id='qty-minus'>-</button>
+                         <span id='qty-val' style='font-weight:900; font-size:1.2rem; min-width:30px; text-align:center;'>1</span>
+                         <button class='qty-btn' id='qty-plus'>+</button>
+                       </div>
+
+                       <button class='v-btn active' id='add-to-cart-btn' style='width:100%; padding:18px; font-size:1.1rem; border-radius:12px; margin-top:25px;'>Add to Shopping Bag</button>
+
+                       <div id='p-order-info' style='margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px; display:none;'>
+                          <h4 style='margin:0 0 10px;'>Order & Delivery Information</h4>
+                          <div id='order-info-list' style='font-size:0.85rem; line-height:1.8;'></div>
+                       </div>
+
+                       <div id='p-specs' style='margin-top:20px; display:none;'>
+                          <h4 style='margin:0 0 10px; border-bottom:1px solid #eee; padding-bottom:5px;'>Product Specifications</h4>
+                          <div id='specs-list' style='font-size:0.9rem;'></div>
+                       </div>
+
+                       <div class='seller-box' id='p-seller'>
+                          <h4 style='margin:0 0 10px;'>Seller Details</h4>
+                          <div id='seller-info'></div>
+                          <div style='display:flex; align-items:center; gap:10px; flex-wrap:wrap;'>
+                             <div class='geo-badge' id='geo-info'>
+                                &#128205; <span id='geo-text'>GEO Points Present</span>
+                             </div>
+                             <a class='social-link' id='maps-link' style='background:#34495e; display:none;' target='_blank'>Open in Maps</a>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div id='other-services' style='margin-top:50px; display:none;'>
+                    <h2 style='margin-bottom:20px;'>Optional Product-Related Services</h2>
+                    <div class='h-scroll' id='other-services-list'></div>
+                 </div>
+              </div>
+
+              <div class='hidden' id='post-body-raw'><data:post.body/></div>
+            </b:loop>
           </b:if>
         </b:includable>
       </b:widget>
     </b:section>
   </div>
 
-  <!-- Cart Modal -->
-  <div class="modal-backdrop" id="cart-modal-backdrop">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 style="margin:0;">Your Shopping Bag</h3>
-        <button class="qty-btn" style="border:none; font-size:1.8rem;" onclick="document.getElementById('cart-modal-backdrop').classList.remove('active')">×</button>
+  <div class="cart-backdrop" id="cart-modal-backdrop">
+    <div class="cart-modal">
+      <div class="cart-header">
+        <h3 style="margin:0;">Your Bag</h3>
+        <button class="qty-btn" style="border:none; font-size:1.5rem;" onclick="document.getElementById('cart-modal-backdrop').classList.remove('active')">×</button>
       </div>
-      <div class="modal-body" id="cart-items-list"></div>
-      <div class="modal-footer">
-        <div style="display:flex; justify-content:space-between; font-weight:900; font-size:1.3rem; margin-bottom:20px;">
-          <span>Total</span>
+      <div class="cart-body" id="cart-items-list"></div>
+      <div class="cart-footer">
+        <div style="display:flex; justify-content:space-between; font-weight:900; font-size:1.2rem; margin-bottom:20px;">
+          <span>Estimated Total</span>
           <span id="cart-total-price">--</span>
         </div>
-        <button class="v-btn active" style="width:100%; padding:18px; font-size:1.1rem;" onclick="window.CartManager.checkout()">Confirm Order</button>
+        <button class="v-btn active" style="width:100%; padding:18px; font-size:1.1rem; border-radius:15px;" onclick="window.CartManager.placeOrder()">Place Order</button>
       </div>
     </div>
   </div>
 
   <div id="cart-fab-container"></div>
 
-  <script type="module">//<![CDATA[
-    import * as SchemaTypes from 'https://unpkg.com/@antinna/schema-ld-types@1.0.0/dist/index.mjs';
-
-    /** ENGINE **/
-    const engine = {
-      decodeEntities(text) {
-        const textArea = document.createElement('textarea');
-        textArea.innerHTML = text || '';
-        return textArea.value;
-      },
-      extractJsonLd(sourceText) {
-        if (!sourceText) return null;
-        const scriptMatch = sourceText.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
-        let jsonStr = scriptMatch ? scriptMatch[1] : sourceText;
-        let decoded = this.decodeEntities(jsonStr);
-        if (decoded && decoded.includes('&quot;')) decoded = this.decodeEntities(decoded);
-        try {
-          const cleanJson = (decoded || "").replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
-          return JSON.parse(cleanJson);
-        } catch (e) {
-          const jsonBlock = decoded.match(/\{[\s\S]*\}/);
-          if (jsonBlock) try { return JSON.parse(jsonBlock[0]); } catch (e2) {}
-          return null;
-        }
-      },
-      async route(data, SchemaTypes, renderers) {
-        if (!data || !data['@type']) return;
-        const type = data['@type'];
-        let hydrated = data;
-        if (SchemaTypes && SchemaTypes[type]) {
-          try { if (SchemaTypes[type].validate(data)) hydrated = SchemaTypes[type].deserialize(data); } catch(e) {}
-        }
-        if (type === 'ProductGroup') renderers.productGroup(hydrated);
-        else if (['Product', 'Service', 'LocalBusiness', 'ProfessionalService'].includes(type)) renderers.product(hydrated);
-        else renderers.generic(hydrated);
-      }
+  <script type='text/javascript'>//<![CDATA[
+    let state = {
+      product: null,
+      service: null,
+      selected: {},
+      slide: 0,
+      qty: 1
     };
 
-    /** RENDERERS **/
-    const renderers = {
-      productGroup(pg) {
-        const container = document.getElementById('main-renderer');
-        container.innerHTML = `
-          <div class="product-layout">
-            <div>
-              <div class="carousel" id="p-carousel">
-                <div class="carousel-inner" id="p-carousel-inner"></div>
-                <button class="carousel-btn" style="left:10px;" id="p-prev">&#10094;</button>
-                <button class="carousel-btn" style="right:10px;" id="p-next">&#10095;</button>
-              </div>
-              <div class="h-scroll" id="p-thumbs" style="margin-top:20px;"></div>
-            </div>
-            <div class="details-container">
-              <div id="p-sku" style="font-size:0.75rem; color:var(--text); opacity:0.6; font-weight:800; margin-bottom:5px;"></div>
-              <h1 style="margin:0 0 10px; font-size:2rem; font-weight:900;">${pg.name}</h1>
-              <div style="font-weight:700; opacity:0.7; margin-bottom:15px;">${pg.brand?.name || pg.brand || ''}</div>
-              <div style="display:flex; align-items:center; margin-bottom:25px;">
-                <div id="p-price" class="price">--</div>
-                <div id="p-stock" class="stock-badge"></div>
-              </div>
-              <p style="color:var(--text); opacity:0.8; line-height:1.8; margin-bottom:30px;">${pg.description || ''}</p>
-              <div id="p-variants"></div>
-              <div class="qty-controls">
-                <button class="qty-btn" id="q-minus">-</button>
-                <span id="q-val" style="font-weight:900; font-size:1.4rem; min-width:40px; text-align:center;">1</span>
-                <button class="qty-btn" id="q-plus">+</button>
-              </div>
-              <button class="v-btn active" id="add-btn" style="width:100%; padding:20px; font-size:1.2rem; border-radius:15px; margin-top:10px;">Add to Bag</button>
-              <div id="p-seller"></div>
-              <div id="p-specs" style="margin-top:40px; border-top:2px solid rgba(0,0,0,0.05); padding-top:25px;"></div>
-            </div>
-          </div>
-        `;
+    document.addEventListener('DOMContentLoaded', () => {
+      window.CartManager.init();
+      setTimeout(() => {
+        if (document.getElementById('post-body-raw')) initItem();
+        if (document.getElementById('app-grid')) initGrid();
+      }, 100);
+    });
 
-        let selected = {};
-        let qty = 1;
-        const vars = pg.hasVariant || [];
+    function initGrid() {
+      const cards = document.querySelectorAll('.card');
+      if (cards.length === 0) return;
+      const feedUrl = '/feeds/posts/default?alt=json&max-results=50';
 
-        const update = () => {
-          const v = vars.find(v => Object.entries(selected).every(([k, val]) => v[k] === val)) || vars[0];
-          if (!v) return;
+      fetch(feedUrl).then(r => r.json()).then(feedData => {
+        const entries = feedData.feed.entry || [];
+        cards.forEach(card => {
+           const cardUrl = card.href.split('?')[0].split('#')[0];
+           const entry = entries.find(e => e.link.some(l => l.rel === 'alternate' && l.href.includes(cardUrl)));
+           const data = entry ? parseJSON(entry.content.$t) : parseJSON(card.querySelector('.grid-data').textContent);
+           if (data) renderCardData(card, data);
+        });
+      }).catch(() => {
+        cards.forEach(card => {
+          const data = parseJSON(card.querySelector('.grid-data').textContent);
+          if (data) renderCardData(card, data);
+        });
+      });
+    }
 
-          const off = v.offers || pg.offers || {};
-          document.getElementById('p-price').textContent = `${off.priceCurrency || 'INR'} ${off.price || '0'}`;
-          document.getElementById('p-sku').textContent = v.sku ? 'SKU: ' + v.sku : '';
+    function renderCardData(card, data) {
+      const badge = card.querySelector('.card-badge');
+      const price = card.querySelector('.card-price');
+      const img = card.querySelector('.card-img');
 
-          const stock = document.getElementById('p-stock');
-          const isOut = off.availability === 'https://schema.org/OutOfStock';
-          stock.className = 'stock-badge ' + (isOut ? 'out-stock' : 'in-stock');
-          stock.textContent = isOut ? 'Out of Stock' : 'In Stock';
-          document.getElementById('add-btn').disabled = isOut;
-
-          const inner = document.getElementById('p-carousel-inner');
-          const thumbs = document.getElementById('p-thumbs');
-          inner.innerHTML = ''; thumbs.innerHTML = '';
-          const imgs = Array.isArray(v.image || pg.image) ? (v.image || pg.image) : [v.image || pg.image];
-          let slideIdx = 0;
-          const count = imgs.filter(Boolean).length;
-
-          const goToSlide = (idx) => {
-            slideIdx = (idx + count) % count;
-            inner.style.transform = `translateX(-${slideIdx * 100}%)`;
-            thumbs.querySelectorAll('.thumb').forEach((el, i) => el.classList.toggle('active', i === slideIdx));
-          };
-
-          imgs.filter(Boolean).forEach((img, idx) => {
-            const url = img.url || img;
-            const item = document.createElement('div'); item.className = 'carousel-item';
-            item.innerHTML = `<img src="${url}"/>`;
-            inner.appendChild(item);
-
-            const t = document.createElement('img'); t.className = 'thumb' + (idx===0?' active':'');
-            t.src = url;
-            t.onclick = () => goToSlide(idx);
-            thumbs.appendChild(t);
-          });
-
-          document.getElementById('p-prev').onclick = () => goToSlide(slideIdx - 1);
-          document.getElementById('p-next').onclick = () => goToSlide(slideIdx + 1);
-
-          this.renderSeller(off.seller || pg.seller || pg.provider);
-
-          const specs = document.getElementById('p-specs');
-          specs.innerHTML = '<h4 style="text-transform:uppercase; font-size:0.8rem; letter-spacing:1px; margin-bottom:15px;">Product Specifications</h4>';
-          ['material', 'color', 'size', 'gtin13', 'weight', 'height', 'width', 'depth'].forEach(f => {
-             const val = v[f] || pg[f];
-             if (val) specs.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.03); font-size:0.95rem;"><span style="opacity:0.6; text-transform:capitalize;">${f}</span><span style="font-weight:700;">${val}</span></div>`;
-          });
-
-          document.getElementById('add-btn').onclick = () => {
-             for(let i=0; i<qty; i++) window.CartManager.add(v, off.seller || pg.seller || pg.provider);
-          };
-        };
-
-        document.getElementById('q-plus').onclick = () => { qty++; document.getElementById('q-val').textContent = qty; };
-        document.getElementById('q-minus').onclick = () => { if(qty > 1) { qty--; document.getElementById('q-val').textContent = qty; } };
-
-        if (pg.variesBy) {
-          pg.variesBy.forEach(url => {
-            const attr = url.split(/[\/#]/).pop();
-            const vals = [...new Set(vars.map(v => v[attr]).filter(Boolean))];
-            const wrap = document.createElement('div'); wrap.className = 'v-group';
-            wrap.innerHTML = `<span class="v-label">Choose ${attr}</span>`;
-            const opts = document.createElement('div'); opts.className = 'v-options';
-            vals.forEach(val => {
-               const b = document.createElement('button'); b.className = 'v-btn';
-               if (attr.toLowerCase() === 'color') { b.classList.add('v-color'); b.style.background = val; b.title = val; }
-               else { b.textContent = val; }
-               b.onclick = () => {
-                 selected[attr] = val;
-                 opts.querySelectorAll('.v-btn').forEach(btn => btn.classList.remove('active'));
-                 b.classList.add('active');
-                 update();
-               };
-               opts.appendChild(b);
-            });
-            wrap.appendChild(opts); document.getElementById('p-variants').appendChild(wrap);
-            selected[attr] = vals[0]; if (opts.firstChild) opts.firstChild.classList.add('active');
-          });
-        }
-        update();
-      },
-
-      renderSeller(s) {
-        const wrap = document.getElementById('p-seller');
-        if (!s) { wrap.innerHTML = ''; return; }
-        wrap.innerHTML = `
-          <div class="seller-box">
-            <h4 style="text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:10px; opacity:0.6;">Fulfilled By</h4>
-            <div style="font-weight:900; font-size:1.2rem;">${s.name || 'Antinna Official'}</div>
-            ${s.address ? `<div style="margin-top:10px; opacity:0.8;">📍 ${s.address.streetAddress || ''}, ${s.address.addressLocality || ''}</div>` : ''}
-            ${s.geo ? `<a href="https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}" target="_blank" class="geo-badge">📍 Map Location</a>` : ''}
-          </div>
-        `;
-      },
-
-      product(p) {
-        const container = document.getElementById('main-renderer');
-        const img = Array.isArray(p.image) ? p.image[0] : p.image;
-        container.innerHTML = `
-          <div class="product-layout" style="display:block; max-width:800px; margin:0 auto;">
-             <div class="carousel" style="height:450px; margin-bottom:30px;"><div class="carousel-inner"><div class="carousel-item"><img src="${img?.url || img || ''}"/></div></div></div>
-             <h1 style="font-size:2.5rem; font-weight:900; margin-bottom:10px;">${p.name}</h1>
-             <div class="price" style="margin:20px 0;">${p.offers?.priceCurrency || 'INR'} ${p.offers?.price || '0'}</div>
-             <p style="line-height:1.8; opacity:0.8; font-size:1.1rem; margin-bottom:40px;">${p.description || ''}</p>
-             <button class="v-btn active" id="add-btn" style="width:100%; padding:22px; font-size:1.3rem; border-radius:18px;">Order Now</button>
-             <div id="p-seller"></div>
-          </div>
-        `;
-        this.renderSeller(p.offers?.seller || p.seller || p.provider);
-        document.getElementById('add-btn').onclick = () => window.CartManager.add(p, p.offers?.seller || p.seller || p.provider);
-      },
-
-      generic(data) {
-        const container = document.getElementById('main-renderer');
-        container.innerHTML = `<div style="background:var(--card); padding:40px; border-radius:25px; box-shadow:var(--shadow);">
-          <h1 style="font-size:2.2rem; font-weight:900; margin-bottom:20px; color:var(--accent); border-bottom:4px solid var(--accent); padding-bottom:15px; display:inline-block;">${data.name || data['@type']}</h1>
-          <pre style="white-space:pre-wrap; font-family:'Courier New', monospace; font-size:0.9rem; background:rgba(0,0,0,0.03); padding:25px; border-radius:15px; margin-top:20px;">${JSON.stringify(data, null, 2)}</pre>
-        </div>`;
+      if (data['@type'] === 'ProductGroup' || data['@type'] === 'Product') {
+        badge.textContent = 'Product';
+        const variants = data.hasVariant || [data];
+        const first = variants[0];
+        if (first.offers) price.textContent = (first.offers.priceCurrency || 'INR') + ' ' + (first.offers.price || '');
+        const imageSource = data.image || first.image;
+        if (imageSource) img.src = Array.isArray(imageSource) ? imageSource[0] : (imageSource.url || imageSource);
+      } else if (data['@type'] === 'Service' || data['@type'] === 'LocalBusiness') {
+        badge.textContent = 'Service';
+        if (data.offers) price.textContent = (data.offers.priceCurrency || 'INR') + ' ' + (data.offers.price || '');
+        if (data.image) img.src = Array.isArray(data.image) ? data.image[0] : (data.image.url || data.image);
       }
+    }
+
+    function initItem() {
+      const rawEl = document.getElementById('post-body-raw');
+      let data = parseJSON(rawEl.textContent);
+
+      if (!data) {
+        const allScripts = document.querySelectorAll('script[type="application/ld+json"]');
+        for (let s of allScripts) {
+          data = parseJSON(s.textContent);
+          if (data && (data['@type'] === 'ProductGroup' || data['@type'] === 'Service' || data['@type'] === 'LocalBusiness' || data['@type'] === 'Product')) break;
+        }
+      }
+
+      if (!data) {
+        const initEl = document.getElementById('initializing-state');
+        if (initEl) initEl.innerHTML = '<div style="color:red; font-weight:bold;">Error: No valid Data Engine source found.</div>';
+        return;
+      }
+
+      if (data['@type'] === 'ProductGroup') {
+        state.product = data;
+        renderProduct();
+      } else if (data['@type'] === 'Service' || data['@type'] === 'LocalBusiness') {
+        state.service = data;
+        renderService();
+      } else if (data['@type'] === 'Product') {
+        state.product = data;
+        renderProduct();
+      }
+
+      document.getElementById('initializing-state')?.classList.add('hidden');
+      document.getElementById('carousel-section')?.classList.remove('hidden');
+      document.getElementById('details-section')?.classList.remove('hidden');
+    }
+
+    function decodeEntities(text) {
+      const textArea = document.createElement('textarea');
+      textArea.innerHTML = text;
+      return textArea.value;
+    }
+
+    function parseJSON(text) {
+      if (!text) return null;
+      const scriptMatch = text.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+      let jsonStr = scriptMatch ? scriptMatch[1] : text;
+      let decoded = decodeEntities(jsonStr);
+      if (decoded.includes('&quot;')) decoded = decodeEntities(decoded);
+      try {
+        const cleanJson = decoded.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
+        return JSON.parse(cleanJson);
+      } catch (e) {
+        const jsonBlock = decoded.match(/\{[\s\S]*\}/);
+        if (jsonBlock) try { return JSON.parse(jsonBlock[0]); } catch (e2) {}
+        return null;
+      }
+    }
+
+    function renderProduct() {
+      const p = state.product;
+      document.getElementById('p-name').textContent = p.name;
+      document.getElementById('p-desc').textContent = p.description || '';
+
+      const brandDiv = document.getElementById('p-brand');
+      brandDiv.textContent = typeof p.brand === 'string' ? p.brand : (p.brand?.name || '');
+
+      const vars = document.getElementById('p-variants');
+      vars.innerHTML = '';
+
+      if (p.variesBy) {
+        p.variesBy.forEach(vUrl => {
+          const attr = vUrl.split(/[\/#]/).pop();
+          const values = [...new Set(p.hasVariant.map(v => v[attr]).filter(Boolean))];
+
+          const group = document.createElement('div');
+          group.className = 'v-group';
+          group.innerHTML = `<span class="v-label">Select ${attr}:</span>`;
+          const opts = document.createElement('div');
+          opts.className = 'v-options';
+
+          values.forEach(val => {
+            const btn = document.createElement('button');
+            btn.className = 'v-btn';
+            btn.dataset.attr = attr;
+            btn.dataset.val = val;
+
+            if (attr.toLowerCase() === 'color') {
+              btn.classList.add('v-color');
+              btn.style.backgroundColor = val;
+              btn.title = val;
+            } else {
+              btn.textContent = val;
+            }
+            btn.onclick = () => {
+              state.selected[attr] = val;
+              updateProductView(attr);
+              checkAvailability();
+            };
+            opts.appendChild(btn);
+          });
+          group.appendChild(opts);
+          vars.appendChild(group);
+          state.selected[attr] = values[0];
+        });
+      }
+
+      document.getElementById('qty-plus').onclick = () => { state.qty++; document.getElementById('qty-val').textContent = state.qty; };
+      document.getElementById('qty-minus').onclick = () => { if(state.qty > 1) { state.qty--; document.getElementById('qty-val').textContent = state.qty; } };
+
+      updateProductView();
+      checkAvailability();
+    }
+
+    function checkAvailability() {
+      const p = state.product;
+      if (!p.hasVariant) return;
+      document.querySelectorAll('.v-btn[data-attr]').forEach(btn => {
+        const attr = btn.dataset.attr;
+        const val = btn.dataset.val;
+        const testSelected = { ...state.selected, [attr]: val };
+        const matchingVariant = p.hasVariant.find(v =>
+          Object.entries(testSelected).every(([k, vVal]) => !v[k] || v[k] === vVal)
+        );
+        const outOfStock = matchingVariant && matchingVariant.offers && matchingVariant.offers.availability === 'https://schema.org/OutOfStock';
+        btn.style.opacity = !matchingVariant ? '0.3' : (outOfStock ? '0.6' : '1');
+        btn.style.borderStyle = !matchingVariant ? 'dashed' : 'solid';
+      });
+    }
+
+    function formatValue(v) {
+      if (!v) return '';
+      if (typeof v === 'string') return v;
+      if (v['@type'] === 'QuantitativeValue') return `${v.value} ${v.unitCode || v.unitText || ''}`;
+      return v.value || '';
+    }
+
+    function updateProductView(pivotAttr) {
+      const p = state.product;
+      const variants = p.hasVariant || [p];
+      let variant = variants.find(v =>
+        Object.entries(state.selected).every(([key, val]) => v[key] === val)
+      );
+
+      if (!variant && pivotAttr) {
+         variant = variants.find(v => v[pivotAttr] === state.selected[pivotAttr]) || variants[0];
+         if (p.variesBy) {
+           p.variesBy.forEach(vUrl => {
+             const attr = vUrl.split(/[\/#]/).pop();
+             if (variant[attr]) state.selected[attr] = variant[attr];
+           });
+         }
+      } else if (!variant) {
+        variant = variants[0];
+      }
+
+      document.getElementById('p-sku').textContent = variant.sku ? 'SKU: ' + variant.sku : '';
+      const off = variant.offers || p.offers;
+      if (off) {
+        const priceEl = document.getElementById('p-price');
+        priceEl.textContent = (off.priceCurrency || 'INR') + ' ' + (off.price || '');
+        priceEl.classList.toggle('blurry', off.availability === 'https://schema.org/OutOfStock');
+
+        let badge = document.getElementById('stock-indicator');
+        if (!badge) {
+          badge = document.createElement('span'); badge.id = 'stock-indicator';
+          document.getElementById('stock-badge-container').appendChild(badge);
+        }
+        badge.className = 'stock-badge ' + (off.availability === 'https://schema.org/InStock' ? 'in-stock' : 'out-stock');
+        badge.textContent = off.availability === 'https://schema.org/InStock' ? 'In Stock' : 'Out of Stock';
+
+        // Order Info
+        const orderSection = document.getElementById('p-order-info');
+        const orderList = document.getElementById('order-info-list');
+        let orderHtml = '';
+        if (off.deliveryLeadTime) orderHtml += `<div>&#128666; <b>Delivery:</b> ~${formatValue(off.deliveryLeadTime)}</div>`;
+        if (off.acceptedPaymentMethod) orderHtml += `<div>&#128179; <b>Payments:</b> ${Array.isArray(off.acceptedPaymentMethod) ? off.acceptedPaymentMethod.map(pm => pm.split('/').pop()).join(', ') : off.acceptedPaymentMethod.split('/').pop()}</div>`;
+        if (orderHtml) { orderSection.style.display = 'block'; orderList.innerHTML = orderHtml; } else { orderSection.style.display = 'none'; }
+
+        renderSeller(off.seller || p.seller || p.provider);
+      }
+
+      const vImgs = Array.isArray(variant.image) ? variant.image : (variant.image ? [variant.image] : []);
+      const pImgs = Array.isArray(p.image) ? p.image : (p.image ? [p.image] : []);
+      renderCarousel(vImgs.length > 0 ? vImgs : pImgs);
+
+      const specs = document.getElementById('p-specs');
+      const list = document.getElementById('specs-list');
+      const fields = { 'Model': variant.model || p.model, 'Material': variant.material || p.material, 'GTIN': variant.gtin13 || variant.gtin8 || '', 'Weight': formatValue(variant.weight || p.weight), 'Color': variant.color || p.color };
+      let specsHtml = '';
+      for (let [label, val] of Object.entries(fields)) {
+        if (val) specsHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;"><span style="color:#888;">${label}</span><span style="font-weight:600;">${val}</span></div>`;
+      }
+      if (specsHtml) { specs.style.display = 'block'; list.innerHTML = specsHtml; } else { specs.style.display = 'none'; }
+
+      document.querySelectorAll('.v-btn').forEach(btn => {
+        const attr = btn.dataset.attr;
+        const val = btn.dataset.val || btn.textContent;
+        btn.classList.toggle('active', state.selected[attr] === val);
+      });
+
+      document.getElementById('add-to-cart-btn').onclick = () => {
+         for(let i=0; i<state.qty; i++) window.CartManager.addItem(variant, off?.seller || p.seller || p.provider);
+      };
+    }
+
+    function renderService() {
+      const s = state.service;
+      document.getElementById('p-name').textContent = s.name;
+      document.getElementById('p-desc').textContent = s.description;
+
+      if (s.areaServed) {
+        const area = typeof s.areaServed === 'string' ? s.areaServed : (s.areaServed.name || 'Local');
+        const badge = document.createElement('div');
+        badge.className = 'geo-badge';
+        badge.innerHTML = '&#127760; Area Served: ' + area;
+        document.getElementById('p-desc').after(badge);
+      }
+
+      if (s.hasOfferCatalog) {
+        const vars = document.getElementById('p-variants');
+        vars.innerHTML = '<h4>Available Options</h4>';
+        const opts = document.createElement('div');
+        opts.className = 'v-options';
+        s.hasOfferCatalog.itemListElement.forEach(offer => {
+          const btn = document.createElement('button');
+          btn.className = 'v-btn';
+          btn.innerHTML = `${offer.itemOffered.name} <br/> <b>${offer.priceCurrency} ${offer.price}</b>`;
+          btn.onclick = () => {
+            document.getElementById('p-price').textContent = `${offer.priceCurrency} ${offer.price}`;
+            document.querySelectorAll('.v-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          };
+          opts.appendChild(btn);
+        });
+        vars.appendChild(opts);
+        opts.firstChild.click();
+      }
+
+      renderCarousel(s.image);
+      renderSeller(s.provider || s);
+    }
+
+    function renderCarousel(images) {
+      const inner = document.getElementById('carousel-inner');
+      const thumbRow = document.getElementById('thumbnail-row');
+      inner.innerHTML = ''; if (thumbRow) thumbRow.innerHTML = '';
+      const list = images.filter(Boolean);
+      list.forEach((src, idx) => {
+        const url = src.url || src;
+        const div = document.createElement('div'); div.className = 'carousel-item';
+        div.innerHTML = `<img src="${url}"/>`;
+        inner.appendChild(div);
+        if (thumbRow && list.length > 1) {
+          const thumb = document.createElement('img');
+          thumb.className = 'thumb' + (idx === 0 ? ' active' : '');
+          thumb.src = url;
+          thumb.onclick = () => goToSlide(idx);
+          thumbRow.appendChild(thumb);
+        }
+      });
+      state.slide = 0; inner.style.transform = 'translateX(0)';
+    }
+
+    window.goToSlide = (idx) => {
+      const inner = document.getElementById('carousel-inner');
+      const count = document.querySelectorAll('.carousel-item').length;
+      if (idx < 0) idx = count - 1; if (idx >= count) idx = 0;
+      state.slide = idx;
+      if (inner) inner.style.transform = `translateX(-${idx * 100}%)`;
+      document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
     };
+    window.nextSlide = () => goToSlide(state.slide + 1);
+    window.prevSlide = () => goToSlide(state.slide - 1);
+
+    function renderSeller(s) {
+      const box = document.getElementById('p-seller');
+      const info = document.getElementById('seller-info');
+      if (!s) { box.style.display = 'none'; return; }
+      box.style.display = 'block';
+      let html = `<strong>${s.name || 'Official Seller'}</strong><br/>`;
+      if (s.telephone) html += `&#128222; ${s.telephone}<br/>`;
+      if (s.email) html += `&#128231; <a href="mailto:${s.email}">${s.email}</a><br/>`;
+      if (s.address) html += `&#128205; ${s.address.streetAddress || ''}, ${s.address.addressLocality || ''}`;
+      info.innerHTML = html;
+
+      const maps = document.getElementById('maps-link');
+      if (s.geo) {
+        maps.style.display = 'inline-flex';
+        maps.href = `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`;
+      } else maps.style.display = 'none';
+    }
 
     /** CART **/
     window.CartManager = {
@@ -570,11 +810,12 @@ html.dark {
         if (saved) try { this.order = JSON.parse(saved); } catch(e){}
         this.renderFab();
       },
-      add(item, seller) {
+      addItem(item, seller) {
         const existing = this.order.orderedItem.find(i => i.orderedItem.name === item.name);
         if (existing) existing.orderQuantity++;
         else this.order.orderedItem.push({ "@type": "OrderItem", "orderedItem": { name: item.name, image: item.image, offers: item.offers }, "orderQuantity": 1, "seller": seller });
         this.save(); this.updateUI();
+        window.showToast?.("Added to Bag", "success");
       },
       updateQty(idx, delta) {
         const item = this.order.orderedItem[idx];
@@ -603,56 +844,32 @@ html.dark {
         const m = document.getElementById('cart-modal-backdrop');
         const list = document.getElementById('cart-items-list');
         list.innerHTML = this.order.orderedItem.map((i, idx) => `
-          <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid rgba(0,0,0,0.05); align-items:center;">
+          <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid #eee; align-items:center;">
              <img src="${i.orderedItem.image?.url || i.orderedItem.image || ''}" style="width:60px; height:60px; border-radius:10px; object-fit:cover;"/>
              <div style="flex:1;">
                 <div style="font-weight:700;">${i.orderedItem.name}</div>
                 <div style="color:var(--accent); font-weight:800; font-size:0.9rem; margin-top:4px;">${i.orderedItem.offers?.priceCurrency || 'INR'} ${i.orderedItem.offers?.price || '0'}</div>
-                <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+                <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
                    <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx}, -1)">-</button>
                    <span style="font-weight:800;">${i.orderQuantity}</span>
                    <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx}, 1)">+</button>
                 </div>
              </div>
           </div>
-        `).join('') || '<div style="text-align:center; padding:50px; opacity:0.5;">Your bag is empty</div>';
+        `).join('') || '<div style="text-align:center; padding:50px; opacity:0.5; font-weight:700;">Bag is empty</div>';
         document.getElementById('cart-total-price').textContent = `${this.order.priceCurrency} ${this.order.totalPrice}`;
         m.classList.add('active');
       },
-      checkout() { alert("Order Data: " + JSON.stringify(this.order)); }
+      placeOrder() { alert("Confirming Order Schema: " + JSON.stringify(this.order)); }
     };
 
-    /** INITIALIZE **/
-    document.addEventListener('DOMContentLoaded', () => {
-      window.CartManager.init();
-      const raw = document.getElementById('post-body-raw');
-      if (raw) {
-        const data = engine.extractJsonLd(raw.textContent);
-        if (data) engine.route(data, SchemaTypes, renderers);
-      }
-
-      const cards = document.querySelectorAll('.card');
-      cards.forEach(card => {
-        const data = engine.extractJsonLd(card.querySelector('.grid-data').textContent);
-        if (data) {
-          card.querySelector('.card-badge').textContent = data['@type'];
-          const v = data.hasVariant ? data.hasVariant[0] : data;
-          if (v.offers) card.querySelector('.card-price').textContent = `${v.offers.priceCurrency || 'INR'} ${v.offers.price || '0'}`;
-          const img = Array.isArray(data.image) ? data.image[0] : data.image;
-          if (img) card.querySelector('.card-img').src = img.url || img;
-        }
-      });
-
-      document.getElementById('theme-toggle').onclick = () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('antinna-theme', isDark ? 'dark' : 'light');
-        document.getElementById('theme-toggle').textContent = isDark ? '☼' : '☾';
-      };
-    });
-
-    window.toggleSidebarDrawer = () => {
-      document.getElementById('sidebar-drawer').classList.toggle('drawer-open');
-      document.getElementById('sidebar-backdrop').classList.toggle('backdrop-active');
+    window.showToast = (msg, type) => {
+       const t = document.createElement('div'); t.className = 'toast';
+       t.style.background = type === 'success' ? '#10b981' : '#ef4444';
+       t.style.cssText = `position:fixed; bottom:24px; right:24px; color:white; padding:12px 24px; border-radius:10px; font-weight:600; z-index:3000; transition: opacity 0.3s;`;
+       t.textContent = msg;
+       document.body.appendChild(t);
+       setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
     };
   //]]></script>
 </body>
