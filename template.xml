@@ -186,8 +186,9 @@
     }
     .v-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; }
     .v-btn:disabled { opacity: 0.3; cursor: not-allowed; border-style: dashed; }
-    .v-color { width: 35px; height: 35px; padding: 0; border-radius: 50%; border: 2px solid #ddd; }
-    .v-color.active { outline: 3px solid var(--accent); outline-offset: 2px; border-color: #fff; }
+    .v-color { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #eee; padding: 0; background-size: cover; background-position: center; transition: transform 0.2s; position: relative; overflow: hidden; }
+    .v-color:hover { transform: scale(1.1); }
+    .v-color.active { outline: 3px solid var(--accent); outline-offset: 2px; border-color: #fff; z-index: 2; }
 
     /* Seller & GEO */
     .seller-box {
@@ -568,8 +569,21 @@
               btn.className = 'v-btn';
               btn.dataset.attr = attr;
               btn.dataset.val = val;
-              if (attr.toLowerCase() === 'color') { btn.classList.add('v-color'); btn.style.backgroundColor = val; }
-              else { btn.textContent = val; }
+            if (attr.toLowerCase() === 'color') {
+              btn.classList.add('v-color');
+              // Image Swatch Logic: Find a variant with this color and use its image
+              const colorVariant = p.hasVariant.find(v => v[attr] === val);
+              const colorImg = colorVariant && (Array.isArray(colorVariant.image) ? colorVariant.image[0] : colorVariant.image);
+              if (colorImg) {
+                const imgUrl = colorImg.url || colorImg;
+                btn.style.backgroundImage = `url('${imgUrl}')`;
+                btn.style.backgroundSize = 'cover';
+                btn.style.backgroundPosition = 'center';
+              } else {
+                btn.style.backgroundColor = val;
+              }
+              btn.title = val;
+            } else { btn.textContent = val; }
               btn.onclick = () => {
                 state.selected[attr] = val;
                 updateProductView(attr);
@@ -616,13 +630,17 @@
         priceEl.textContent = (off.priceCurrency || 'INR') + ' ' + (off.price || '');
         priceEl.classList.toggle('blurry', off.availability === 'https://schema.org/OutOfStock');
         const stCont = document.getElementById('stock-badge-container');
-        if (stCont) {
-          const av = off.availability;
-          const isIn = av === 'https://schema.org/InStock';
-          stCont.innerHTML = `<span class="stock-badge ${isIn?'in-stock':'out-stock'}">${isIn?'In Stock':'Out of Stock'}</span>`;
-        }
+        const av = off.availability;
         const addBtn = document.getElementById('add-to-cart-btn');
-        if (addBtn) addBtn.disabled = off.availability === 'https://schema.org/OutOfStock';
+
+        let label = 'Out of Stock', cls = 'out-stock', canAdd = false;
+        if (av === 'https://schema.org/InStock' || av === 'https://schema.org/OnlineOnly') { label = 'In Stock'; cls = 'in-stock'; canAdd = true; }
+        else if (av === 'https://schema.org/InStoreOnly') { label = 'In-Store Only'; cls = 'instore-only'; canAdd = false; }
+        else if (av === 'https://schema.org/PreOrder') { label = 'Pre-Order'; cls = 'pre-order'; canAdd = true; }
+        else if (av === 'https://schema.org/LimitedAvailability') { label = 'Limited Stock'; cls = 'in-stock'; canAdd = true; }
+
+        if (stCont) stCont.innerHTML = `<span class="stock-badge ${cls}">${label}</span>`;
+        if (addBtn) addBtn.disabled = !canAdd;
         renderSeller(off.seller || p.seller || p.provider);
       }
 

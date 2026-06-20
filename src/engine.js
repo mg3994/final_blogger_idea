@@ -4,7 +4,13 @@
 
 export const engine = {
   decodeEntities(text) {
-    if (typeof document === 'undefined') return text || '';
+    if (typeof document === 'undefined' || !document.createElement) {
+      return (text || "").replace(/&quot;/g, '"')
+               .replace(/&lt;/g, '<')
+               .replace(/&gt;/g, '>')
+               .replace(/&amp;/g, '&')
+               .replace(/&#39;/g, "'");
+    }
     const textArea = document.createElement('textarea');
     textArea.innerHTML = text || '';
     return textArea.value;
@@ -15,7 +21,7 @@ export const engine = {
       const scriptMatch = String(sourceText).match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
       let jsonStr = scriptMatch ? scriptMatch[1] : sourceText;
       let decoded = this.decodeEntities(jsonStr);
-      if (decoded.includes('&quot;')) decoded = this.decodeEntities(decoded);
+      if (decoded && decoded.includes('&quot;')) decoded = this.decodeEntities(decoded);
 
       const clean = decoded.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').trim();
       return JSON.parse(clean);

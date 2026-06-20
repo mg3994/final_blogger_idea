@@ -1,5 +1,5 @@
-import { engine } from './engine.js';
-import { renderers } from './renderers.js';
+import { engine } from './src/engine.js';
+import { renderers } from './src/renderers.js';
 
 const mockElement = () => ({
   innerHTML: '',
@@ -16,7 +16,8 @@ const mockElement = () => ({
 
 global.document = {
   getElementById: (id) => mockElement(),
-  createElement: () => mockElement()
+  createElement: () => mockElement(),
+  querySelectorAll: () => [mockElement()]
 };
 global.window = {};
 
@@ -27,8 +28,8 @@ async function runTests() {
   if (data && data.name === "Test") console.log("✅ extractJsonLd passed");
 
   console.log("Testing renderers...");
-  await engine.route(data, null, renderers);
-  console.log("✅ route simulation finished");
+  renderers.renderProduct(data, { selected: {} }, null);
+  console.log("✅ renderProduct simulation finished");
 }
 
 runTests().catch(console.error);
