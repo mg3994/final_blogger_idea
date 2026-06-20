@@ -754,8 +754,10 @@
       if (s.address) html += `📍 ${s.address.streetAddress || ''}, ${s.address.addressLocality || ''}`;
       if (info) info.innerHTML = html;
       if (maps) {
-        if (s.geo) { maps.style.display = 'inline-flex'; maps.href = `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`; }
-        else { maps.style.display = 'none'; }
+        if (s.hasMap || s.geo) {
+          maps.style.display = 'inline-flex';
+          maps.href = s.hasMap || `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`;
+        } else { maps.style.display = 'none'; }
       }
 
       // Optional Paid Services logic

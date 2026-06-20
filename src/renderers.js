@@ -125,9 +125,9 @@ export const renderers = {
     box.style.display = "block";
     inf.innerHTML = `<strong>${sanitize(s.name || "Antinna")}</strong><br/>${s.telephone ? `&#128222; ${sanitize(s.telephone)}<br/>` : ""}${s.email ? `&#128231; <a href="mailto:${s.email}">${sanitize(s.email)}</a><br/>` : ""}${s.address ? `📍 ${sanitize(s.address.streetAddress || "")}, ${sanitize(s.address.addressLocality || "")}` : ""}`;
     if (maps) {
-      if (s.geo) {
+      if (s.hasMap || s.geo) {
         maps.style.display = "inline-flex";
-        maps.href = `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`;
+        maps.href = s.hasMap || `https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`;
       } else maps.style.display = "none";
     }
   }

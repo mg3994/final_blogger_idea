@@ -311,7 +311,7 @@
       renderSeller(s) {
         const box=document.getElementById("p-seller"); const inf=document.getElementById("seller-info"); const maps=document.getElementById("maps-link"); if(!box||!inf)return; if(!s){box.style.display="none"; return} box.style.display="block";
         inf.innerHTML=`<div style="font-weight:800; font-size:1.1rem;">${s.name||"Antinna"}</div>${s.telephone?`<div style="margin-top:5px; font-size:0.9rem;">📞 ${s.telephone}</div>`:""}${s.email?`<div style="margin-top:5px; font-size:0.9rem;">📧 ${s.email}</div>`:""}${s.address?`<div style="margin-top:5px; font-size:0.9rem;">📍 ${s.address.streetAddress||""}, ${s.address.addressLocality||""}</div>`:""}`;
-        if(maps){if(s.geo){maps.style.display="inline-flex"; maps.href=`https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`}else maps.style.display="none"}
+        if(maps){if(s.hasMap||s.geo){maps.style.display="inline-flex"; maps.href=s.hasMap||`https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`}else maps.style.display="none"}
         const otherSec=document.getElementById("other-services"); const otherList=document.getElementById("other-services-list");
         let svcs=[]; if(s.hasOfferCatalog&&s.hasOfferCatalog.itemListElement)svcs=s.hasOfferCatalog.itemListElement; else if(s.knowsAbout)svcs=Array.isArray(s.knowsAbout)?s.knowsAbout:[s.knowsAbout];
         if(svcs.length>0&&otherSec&&otherList){
