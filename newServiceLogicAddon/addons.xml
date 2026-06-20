@@ -75,7 +75,7 @@
     .v-color.active { outline: 3px solid var(--accent); outline-offset: 2px; border-color: #fff; z-index: 2; }
 
     .qty-controls { display: flex; align-items: center; gap: 15px; margin: 25px 0; }
-    .qty-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ddd; background: #fff; cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .qty-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ddd; background: #fff; color: var(--text); cursor: pointer; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
     .seller-box { margin-top: 30px; padding: 25px; border: 1px solid #eee; border-radius: var(--radius); background: #fafafa; }
     .geo-badge { display: inline-flex; align-items: center; gap: 8px; background: #e1f5fe; color: #0288d1; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; margin-top: 15px; text-decoration: none; font-weight: 700; }
@@ -98,7 +98,7 @@
     .thumb.active { border-color: var(--accent); }
 
     .hidden { display: none !important; }
-    .section-title { font-size: 1.3rem; margin: 30px 0 15px; border-left: 5px solid var(--accent); padding-left: 15px; font-weight: 800; }
+    .section-title { font-size: 1.5rem; margin: 40px 0 20px; border-left: 6px solid var(--accent); padding-left: 15px; font-weight: 800; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
   ]]></b:skin>
 </head>
@@ -231,8 +231,6 @@
   <div id="cart-fab-container"></div>
 
   <script type="module">//<![CDATA[
-    import * as SchemaTypes from 'https://unpkg.com/@antinna/schema-ld-types@1.0.0/dist/index.mjs';
-
     let state = { product: null, selected: {}, slide: 0, qty: 1 };
 
     const engine = {
@@ -253,11 +251,14 @@
 
     const renderers = {
       renderProduct(p, state) {
-        if(!p)return; const v=p.hasVariant?p.hasVariant.find(x=>Object.entries(state.selected||{}).every(([k,v])=>x[k]===v))||p.hasVariant[0]:p;
+        if(!p)return;
+        const variants = p.hasVariant || [p];
+        let variant = variants.find(v => Object.entries(state.selected).every(([k,val]) => v[k] === val)) || variants[0];
+
         const el=(id)=>document.getElementById(id); const set=(id,v)=>{const e=el(id); if(e)e.textContent=v||""};
-        set("p-name",v.name||p.name); set("p-desc",v.description||p.description); set("p-sku",v.sku?"SKU: "+v.sku:"");
-        const b=typeof(v.brand||p.brand)==="string"?(v.brand||p.brand):(v.brand?.name||p.brand?.name); set("p-brand",b);
-        const o=v.offers||p.offers; const pr=el("p-price"); if(pr && o){pr.textContent=(o.priceCurrency||"INR")+" "+(o.price||"0"); pr.classList.toggle("blurry",o.availability==="https://schema.org/OutOfStock")}
+        set("p-name",variant.name||p.name); set("p-desc",variant.description||p.description); set("p-sku",variant.sku?"SKU: "+variant.sku:"");
+        const b=typeof(variant.brand||p.brand)==="string"?(variant.brand||p.brand):(variant.brand?.name||p.brand?.name); set("p-brand",b);
+        const o=variant.offers||p.offers; const pr=el("p-price"); if(pr && o){pr.textContent=(o.priceCurrency||"INR")+" "+(o.price||"0"); pr.classList.toggle("blurry",o.availability==="https://schema.org/OutOfStock")}
         const st=el("stock-badge-container"); if(st && o){
           const av=o.availability; let l='Out of Stock', c='out-stock', a=false;
           if(av==='https://schema.org/InStock'||av==='https://schema.org/OnlineOnly'){l='In Stock'; c='in-stock'; a=true}
@@ -266,10 +267,11 @@
           st.innerHTML=`<span class="stock-badge ${c}">${l}</span>`;
           const ad=el("add-to-cart-btn"); if(ad)ad.disabled=!a;
         }
-        const im=Array.isArray(v.image||p.image)?(v.image||p.image):[v.image||p.image]; this.renderCarousel(im.filter(Boolean), state);
+        const im=Array.isArray(variant.image||p.image)?(variant.image||p.image):[variant.image||p.image]; this.renderCarousel(im.filter(Boolean), state);
         const vc=el("p-variants"); if(vc && p.variesBy && !vc.children.length){
           p.variesBy.forEach(u=>{
             const a=u.split(/[\/#]/).pop(); const vals=[...new Set(p.hasVariant.map(x=>x[a]).filter(Boolean))];
+            if(vals.length === 0) return;
             const g=document.createElement("div"); g.className="v-group"; g.innerHTML=`<span class="v-label">Select ${a}</span>`;
             const os=document.createElement("div"); os.className="v-options";
             vals.forEach(vl=>{
@@ -287,8 +289,8 @@
         document.querySelectorAll(".v-btn[data-attr]").forEach(btn=>{const a=btn.dataset.attr; const vL=btn.dataset.val||btn.textContent; btn.classList.toggle("active",state.selected[a]===vL)});
         this.renderSeller(o?.seller||p.seller||p.provider);
         const sp=el("p-specs"); const sl=el("specs-list"); if(sp && sl){
-          const flds={'Model':v.model||p.model,'Material':v.material||p.material,'GTIN':v.gtin13||v.gtin8||'','Weight':(v.weight||p.weight)?.value||(v.weight||p.weight)};
-          let h=''; for(let[l,k] of Object.entries(flds)){if(k)h+=`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;"><span style="opacity:0.6;">${l}</span><span style="font-weight:700;">${k}</span></div>`}
+          const flds={'Model':variant.model||p.model,'Material':variant.material||p.material,'GTIN':variant.gtin13||variant.gtin8||'','Weight':(variant.weight||p.weight)?.value||(variant.weight||p.weight)};
+          let h=''; for(let[l,k] of Object.entries(flds)){if(k)h+=`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;"><span style="opacity:0.6;">${l}</span><span style="font-weight:800;">${k}</span></div>`}
           if(h){sp.style.display="block"; sl.innerHTML=h}else{sp.style.display="none"}
         }
       },
@@ -302,15 +304,14 @@
       },
       renderSeller(s) {
         const box=document.getElementById("p-seller"); const inf=document.getElementById("seller-info"); const maps=document.getElementById("maps-link"); if(!box||!inf)return; if(!s){box.style.display="none"; return} box.style.display="block";
-        inf.innerHTML=`<strong>${s.name||"Antinna"}</strong><br/>${s.telephone?`&#128222; ${s.telephone}<br/>`:""}${s.email?`&#128231; <a href="mailto:${s.email}">${s.email}</a><br/>`:""}${s.address?`📍 ${s.address.streetAddress||""}, ${s.address.addressLocality||""}`:""}`;
+        inf.innerHTML=`<div style="font-weight:800; font-size:1.1rem;">${s.name||"Antinna"}</div>${s.telephone?`<div style="margin-top:5px; font-size:0.9rem;">📞 ${s.telephone}</div>`:""}${s.email?`<div style="margin-top:5px; font-size:0.9rem;">📧 ${s.email}</div>`:""}${s.address?`📍 ${s.address.streetAddress||""}, ${s.address.addressLocality||""}</div>`:""}`;
         if(maps){if(s.hasMap||s.geo){maps.style.display="inline-flex"; maps.href=s.hasMap||`https://www.google.com/maps/search/?api=1&query=${s.geo.latitude},${s.geo.longitude}`}else maps.style.display="none"}
-
         const otherSec=document.getElementById("other-services"); const otherList=document.getElementById("other-services-list");
         let svcs=[]; if(s.hasOfferCatalog&&s.hasOfferCatalog.itemListElement)svcs=s.hasOfferCatalog.itemListElement; else if(s.knowsAbout)svcs=Array.isArray(s.knowsAbout)?s.knowsAbout:[s.knowsAbout];
         if(svcs.length>0&&otherSec&&otherList){
           otherSec.style.display="block";
           otherList.innerHTML=svcs.map(ser=>{
-            const n=ser.name||ser.itemOffered?.name||ser; const pr=ser.price||ser.itemOffered?.offers?.price||ser.itemOffered?.price||''; const cr=ser.priceCurrency||ser.itemOffered?.offers?.priceCurrency||ser.itemOffered?.priceCurrency||'INR';
+            const n=ser.name||ser.itemOffered?.name||ser; const pr=ser.price||ser.itemOffered?.offers?.price||''; const cr=ser.priceCurrency||'INR';
             const ci=ser.itemOffered?{...ser.itemOffered}:(typeof ser==='object'?{...ser}:{name:ser}); if(!ci.offers)ci.offers={"@type":"Offer",price:pr,priceCurrency:cr};
             return `<div class="h-card"><div style="font-weight:700;margin-bottom:10px;height:3em;overflow:hidden;">${n}</div><div class="price" style="font-size:1.2rem;margin-bottom:15px;">${pr?cr+' '+pr:'Free/Included'}</div><button class="v-btn" style="width:100%;padding:10px;font-size:0.85rem;" onclick="window.CartManager.addItem(${JSON.stringify(ci).replace(/"/g,'&quot;')}, ${JSON.stringify(s).replace(/"/g,'&quot;')})">Add Service</button></div>`;
           }).join('');
@@ -323,9 +324,9 @@
       init() { const s=localStorage.getItem("antinna_cart_order"); if(s)try{this.order=JSON.parse(s)}catch(e){} this.renderFab(); },
       addItem(item, seller) {
         const iS=this.order.orderedItem; const ex=iS.find(x=>x.orderedItem.name===item.name);
-        if(ex){if(item.maxQuantity===1){window.showToast("Item already in bag","error"); return} ex.orderQuantity++}
+        if(ex){if(item.maxQuantity===1){window.showToast("Limit reached (1)","error"); return} ex.orderQuantity++}
         else{ const specs={}; ['material','color','size','gtin13','sku','weight','height','width','depth'].forEach(f=>{if(item[f])specs[f]=item[f]}); iS.push({"@type":"OrderItem","orderedItem":{"@type":item["@type"]||"Product","name":item.name,"image":item.image,"offers":item.offers,...specs},"orderQuantity":1,"seller":seller})}
-        this.save(); this.updateUI(); window.showToast("Added to Bag","success");
+        this.save(); this.updateUI(); window.showToast("Item added","success");
       },
       removeItem(idx) {
         const item=this.order.orderedItem[idx]; if(!item)return; const name=item.orderedItem.name;
@@ -340,28 +341,28 @@
       showModal() {
         const b=document.getElementById("cart-modal-backdrop"); const d=document.getElementById("cart-drawer"); const l=document.getElementById("cart-items-list"); if(!l)return;
         l.innerHTML=this.order.orderedItem.map((i,idx)=>`
-          <div style="display:flex; gap:15px; padding:15px; border-bottom:1px solid #eee; align-items:center;">
-             <img src="${(Array.isArray(i.orderedItem.image)?i.orderedItem.image[0]:(i.orderedItem.image?.url||i.orderedItem.image||''))}" style="width:60px; height:60px; border-radius:10px; object-fit:cover;"/>
+          <div style="display:flex;gap:15px;padding:20px;border-bottom:1px solid #eee;align-items:center;">
+             <img src="${(Array.isArray(i.orderedItem.image)?i.orderedItem.image[0]:(i.orderedItem.image?.url||i.orderedItem.image||''))}" style="width:70px;height:70px;border-radius:10px;object-fit:cover;"/>
              <div style="flex:1;">
-                <div style="font-weight:700;">${i.orderedItem.name}</div>
-                <div style="color:var(--accent); font-weight:800; margin-top:4px;">${i.orderedItem.offers?.priceCurrency||'INR'} ${i.orderedItem.offers?.price||'0'}</div>
-                <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-                   <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx},-1)">-</button>
-                   <span style="font-weight:800;">${i.orderQuantity}</span>
-                   <button class="qty-btn" style="width:24px; height:24px; font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx},1)">+</button>
+                <div style="font-weight:700; font-size:0.95rem;">${i.orderedItem.name}</div>
+                <div style="color:var(--accent);font-weight:800;margin-top:4px;">${i.orderedItem.offers?.priceCurrency||'INR'} ${i.orderedItem.offers?.price||'0'}</div>
+                <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
+                   <button class="qty-btn" style="width:24px;height:24px;font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx},-1)">-</button>
+                   <span style="font-weight:800;font-size:0.9rem;">${i.orderQuantity}</span>
+                   <button class="qty-btn" style="width:24px;height:24px;font-size:0.8rem;" onclick="window.CartManager.updateQty(${idx},1)">+</button>
                 </div>
              </div>
-             <button onclick="window.CartManager.updateQty(${idx},-${i.orderQuantity})" style="background:none;border:none;color:#ff3b30;cursor:pointer;font-size:1.2rem;padding:10px;">×</button>
+             <button onclick="window.CartManager.updateQty(${idx},-${i.orderQuantity})" style="background:none;border:none;color:#ff3b30;cursor:pointer;font-size:1.4rem;padding:5px;">×</button>
           </div>
-        `).join("")||'<div style="text-align:center; padding:50px; opacity:0.5;">Bag is empty</div>';
+        `).join("")||'<div style="text-align:center;padding:60px;opacity:0.4;font-weight:700;">BAG IS EMPTY</div>';
         document.getElementById("cart-total-price").textContent=`${this.order.priceCurrency} ${this.order.totalPrice}`; b.classList.add("active"); d.classList.add("active");
       },
       hideModal() { document.getElementById("cart-modal-backdrop").classList.remove("active"); document.getElementById("cart-drawer").classList.remove("active"); },
-      placeOrder() { alert("Confirming Order Schema: "+JSON.stringify(this.order)); }
+      placeOrder() { alert("CONFIRMING ORDER:\n"+JSON.stringify(this.order,null,2)); }
     };
 
     window.syncDots = (el) => { const idx = Math.round(el.scrollLeft / el.offsetWidth); const dots = el.parentElement.querySelectorAll('.dot'); dots.forEach((d, i) => d.classList.toggle('active', i === idx)); };
-    window.showToast=(m,t)=>{const e=document.createElement("div"); e.style.cssText="position:fixed;bottom:24px;right:24px;color:white;padding:12px 24px;border-radius:10px;font-weight:600;z-index:3000;background:"+(t==="success"?"#10b981":"#ef4444"); e.textContent=m; document.body.appendChild(e); setTimeout(()=>{e.style.opacity="0";setTimeout(()=>e.remove(),300)},3000)};
+    window.showToast=(m,t)=>{const e=document.createElement("div"); e.className="toast"; e.style.background=t==="success"?"#10b981":"#ef4444"; e.textContent=m; document.body.appendChild(e); setTimeout(()=>{e.style.opacity="0";setTimeout(()=>e.remove(),300)},3000)};
     window.nextSlide=()=>window.goToSlide(state.slide+1); window.prevSlide=()=>window.goToSlide(state.slide-1);
     window.goToSlide=(i)=>{const n=document.getElementById("carousel-inner"); const c=document.querySelectorAll(".carousel-item").length; if(i<0)i=c-1; if(i>=c)i=0; state.slide=i; if(n)n.style.transform=`translateX(-${i*100}%)`; document.querySelectorAll(".thumb").forEach((t,x)=>t.classList.toggle("active",x===i))};
 
