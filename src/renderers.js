@@ -134,13 +134,17 @@ export const renderers = {
       otherSection.style.display = 'block';
       otherList.innerHTML = services.map((ser, idx) => {
         const name = ser.name || ser.itemOffered?.name || ser;
-        const price = ser.price || ser.itemOffered?.offers?.price || '';
-        const curr = ser.priceCurrency || ser.itemOffered?.offers?.priceCurrency || 'INR';
+        const price = ser.price || ser.itemOffered?.offers?.price || ser.itemOffered?.price || '';
+        const curr = ser.priceCurrency || ser.itemOffered?.offers?.priceCurrency || ser.itemOffered?.priceCurrency || 'INR';
+
+        const cartItem = ser.itemOffered ? { ...ser.itemOffered } : (typeof ser === 'object' ? { ...ser } : { name: ser });
+        if (!cartItem.offers) cartItem.offers = { "@type": "Offer", price: price, priceCurrency: curr };
+
         return `
           <div class="h-card">
             <div style="font-weight:700; margin-bottom:10px; height:3em; overflow:hidden;">${name}</div>
             <div class="price" style="font-size:1.2rem; margin-bottom:15px;">${price ? curr + ' ' + price : 'Free/Included'}</div>
-            <button class="v-btn" style="width:100%; padding:8px; font-size:0.85rem;" onclick="window.CartManager.addItem(${JSON.stringify(ser.itemOffered || {name:ser}).replace(/"/g, '&quot;')}, ${JSON.stringify(s).replace(/"/g, '&quot;')})">Add Service</button>
+            <button class="v-btn" style="width:100%; padding:8px; font-size:0.85rem;" onclick="window.CartManager.addItem(${JSON.stringify(cartItem).replace(/"/g, '&quot;')}, ${JSON.stringify(s).replace(/"/g, '&quot;')})">Add Service</button>
           </div>
         `;
       }).join('');
