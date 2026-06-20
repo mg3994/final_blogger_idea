@@ -260,7 +260,7 @@
       <div class="cart-body" id="cart-items-list"></div>
       <div class="cart-footer">
         <div style="display:flex; justify-content:space-between; font-weight:900; font-size:1.2rem; margin-bottom:20px;"><span>Total</span><span id="cart-total-price">--</span></div>
-        <button class="v-btn active" style="width:100%; padding:18px; font-size:1.1rem; border-radius:12px;" onclick="window.CartManager.placeOrder()">Confirm Order</button>
+        <button class="v-btn active" id="cart-confirm-btn" style="width:100%; padding:18px; font-size:1.1rem; border-radius:12px;" onclick="window.CartManager.placeOrder()">Confirm Order</button>
       </div>
   </div>
   <div id="cart-fab-container"></div>
@@ -286,6 +286,7 @@
     const renderers = {
       renderProduct(p, state) {
         if(!p)return;
+        const isSvc = p['@type']?.includes('Service') || p['@type']?.includes('Business');
         const variants = p.hasVariant || [p];
 
         let variant = variants.find(v => Object.entries(state.selected).every(([k,val]) => v[k] === val));
@@ -298,6 +299,8 @@
         set("p-name",variant.name||p.name); set("p-desc",variant.description||p.description); set("p-sku",variant.sku?"SKU: "+variant.sku:"");
         const b=typeof(variant.brand||p.brand)==="string"?(variant.brand||p.brand):(variant.brand?.name||p.brand?.name); set("p-brand",b);
         const o=variant.offers||p.offers; const pr=el("p-price"); if(pr && o){pr.textContent=(o.priceCurrency||"INR")+" "+(o.price||"0"); pr.classList.toggle("blurry",o.availability==="https://schema.org/OutOfStock")}
+
+        // Stock/Availability
         const st=el("stock-badge-container"); if(st && o){
           const av=o.availability; let l='Out of Stock', c='out-stock', a=false;
           if(av==='https://schema.org/InStock'||av==='https://schema.org/OnlineOnly'){l='In Stock'; c='in-stock'; a=true}
@@ -306,24 +309,53 @@
           st.innerHTML=`<span class="stock-badge ${c}">${l}</span>`;
           const ad=el("add-to-cart-btn"); if(ad)ad.disabled=!a;
         }
+
+        // Area Served for Services
+        const pDesc = el('p-desc');
+        if(isSvc && p.areaServed && pDesc){
+           const area = typeof p.areaServed === 'string' ? p.areaServed : (p.areaServed.name || p.areaServed['@type']);
+           const existingArea = el('svc-area-badge'); if(existingArea) existingArea.remove();
+           const ab = document.createElement('div'); ab.id='svc-area-badge'; ab.className='geo-badge'; ab.style.background='#e8f5e9'; ab.style.color='#2e7d32'; ab.style.marginBottom='15px';
+           ab.innerHTML = `&#127760; <b>Area Served:</b> ${area}`;
+           pDesc.before(ab);
+        }
+
         const im=Array.isArray(variant.image||p.image)?(variant.image||p.image):[variant.image||p.image]; this.renderCarousel(im.filter(Boolean), state);
-        const vc=el("p-variants"); if(vc && p.variesBy && !vc.children.length){
-          p.variesBy.forEach(u=>{
-            const a=u.split(/[\/#]/).pop(); const vals=[...new Set(p.hasVariant.map(x=>x[a]).filter(Boolean))];
-            if(vals.length === 0) return;
-            const g=document.createElement("div"); g.className="v-group"; g.innerHTML=`<span class="v-label">Select ${a}</span>`;
-            const os=document.createElement("div"); os.className="v-options";
-            vals.forEach(vl=>{
-              const btn=document.createElement("button"); btn.className="v-btn"; btn.dataset.attr=a; btn.dataset.val=vl;
-              if(a.toLowerCase()==="color"){
-                btn.classList.add("v-color"); const vm=p.hasVariant.find(x=>x[a]===vl); const vi=vm&&(Array.isArray(vm.image)?vm.image[0]:vm.image);
-                if(vi){const url=vi.url||vi; btn.style.backgroundImage=`url('${url}')`}else{btn.style.backgroundColor=vl}
-                btn.title=vl;
-              }else{btn.textContent=vl}
-              btn.onclick=()=>{ state.selected[a]=vl; state.lastClickedAttr=a; this.renderProduct(p, state); this.checkAvailability(); }; os.appendChild(btn);
+
+        const vc=el("p-variants"); if(vc && !vc.children.length){
+          if(p.variesBy) {
+            p.variesBy.forEach(u=>{
+              const a=u.split(/[\/#]/).pop(); const vals=[...new Set(p.hasVariant.map(x=>x[a]).filter(Boolean))];
+              if(vals.length === 0) return;
+              const g=document.createElement("div"); g.className="v-group"; g.innerHTML=`<span class="v-label">Select ${a}</span>`;
+              const os=document.createElement("div"); os.className="v-options";
+              vals.forEach(vl=>{
+                const btn=document.createElement("button"); btn.className="v-btn"; btn.dataset.attr=a; btn.dataset.val=vl;
+                if(a.toLowerCase()==="color"){
+                  btn.classList.add("v-color"); const vm=p.hasVariant.find(x=>x[a]===vl); const vi=vm&&(Array.isArray(vm.image)?vm.image[0]:vm.image);
+                  if(vi){const url=vi.url||vi; btn.style.backgroundImage=`url('${url}')`}else{btn.style.backgroundColor=vl}
+                  btn.title=vl;
+                }else{btn.textContent=vl}
+                btn.onclick=()=>{ state.selected[a]=vl; state.lastClickedAttr=a; this.renderProduct(p, state); this.checkAvailability(); }; os.appendChild(btn);
+              });
+              g.appendChild(os); vc.appendChild(g); if(!state.selected[a])state.selected[a]=vals[0];
             });
-            g.appendChild(os); vc.appendChild(g); if(!state.selected[a])state.selected[a]=vals[0];
-          });
+          } else if (p.hasOfferCatalog) {
+             const g=document.createElement("div"); g.className="v-group"; g.innerHTML=`<span class="v-label">Available Packages</span>`;
+             const os=document.createElement("div"); os.className="v-options";
+             p.hasOfferCatalog.itemListElement.forEach(off => {
+                const btn=document.createElement("button"); btn.className="v-btn";
+                btn.innerHTML=`${off.itemOffered?.name || off.name}<br/><small>${off.priceCurrency || "INR"} ${off.price}</small>`;
+                btn.onclick=()=>{
+                   state.selectedPackage = off;
+                   document.getElementById('p-price').textContent = `${off.priceCurrency} ${off.price}`;
+                   document.querySelectorAll('.v-btn').forEach(b=>b.classList.remove('active'));
+                   btn.classList.add('active');
+                };
+                os.appendChild(btn);
+             });
+             g.appendChild(os); vc.appendChild(g);
+          }
         }
         document.querySelectorAll(".v-btn[data-attr]").forEach(btn=>{const a=btn.dataset.attr; const vL=btn.dataset.val||btn.textContent; btn.classList.toggle("active",state.selected[a]===vL)});
         this.renderSeller(o?.seller||p.seller||p.provider);
@@ -393,7 +425,11 @@
       updateQty(idx, d) { const i=this.order.orderedItem[idx]; if(!i)return; i.orderQuantity+=d; if(i.orderQuantity<=0){this.removeItem(idx); return} this.save(); this.updateUI(); this.showModal(); },
       save() { this.order.totalPrice=this.order.orderedItem.reduce((s,x)=>s+(parseFloat(x.orderedItem.offers?.price||0)*x.orderQuantity),0); localStorage.setItem("antinna_cart_order", JSON.stringify(this.order)); },
       renderFab() { const c=document.getElementById("cart-fab-container"); if(!c)return; const f=document.createElement("div"); f.id="cart-fab"; f.className="cart-fab"; f.onclick=()=>this.showModal(); c.appendChild(f); this.updateUI(); },
-      updateUI() { const c=this.order.orderedItem.reduce((s,x)=>s+x.orderQuantity,0); const f=document.getElementById("cart-fab"); if(f){f.innerHTML=`🛒 <span class="cart-count">${c}</span>`; f.style.transform=c>0?"scale(1)":"scale(0)"} },
+      updateUI() {
+        const c=this.order.orderedItem.reduce((s,x)=>s+x.orderQuantity,0);
+        const f=document.getElementById("cart-fab"); if(f){f.innerHTML=`🛒 <span class="cart-count">${c}</span>`; f.style.transform=c>0?"scale(1)":"scale(0)"}
+        const cb=document.getElementById("cart-confirm-btn"); if(cb) cb.disabled = c===0;
+      },
       showModal() {
         const b=document.getElementById("cart-modal-backdrop"); const d=document.getElementById("cart-drawer"); const l=document.getElementById("cart-items-list"); if(!l)return;
         l.innerHTML=this.order.orderedItem.map((i,idx)=>`
@@ -445,7 +481,14 @@
       document.getElementById("theme-toggle").onclick=()=>{const d=document.documentElement.classList.toggle("dark"); localStorage.setItem("antinna-theme",d?"dark":"light"); document.getElementById("theme-toggle").textContent=d?"☼":"☾"};
       document.getElementById("qty-plus").onclick=()=>{state.qty++; document.getElementById("qty-val").textContent=state.qty};
       document.getElementById("qty-minus").onclick=()=>{if(state.qty>1){state.qty--; document.getElementById("qty-val").textContent=state.qty}};
-      document.getElementById("add-to-cart-btn").onclick=()=>{const p=state.product; if(!p)return; const v=p.hasVariant?p.hasVariant.find(x=>Object.entries(state.selected||{}).every(([k,v])=>x[k]===v))||p.hasVariant[0]:p; for(let i=0;i<state.qty;i++)window.CartManager.addItem(v,v.offers?.seller||p.seller||p.provider)};
+      document.getElementById("add-to-cart-btn").onclick=()=>{
+        const p=state.product; if(!p)return;
+        let v = p.hasVariant?p.hasVariant.find(x=>Object.entries(state.selected||{}).every(([k,v])=>x[k]===v))||p.hasVariant[0]:p;
+        if(state.selectedPackage) {
+           v = { ...v, name: state.selectedPackage.itemOffered?.name || state.selectedPackage.name, offers: { price: state.selectedPackage.price, priceCurrency: state.selectedPackage.priceCurrency } };
+        }
+        for(let i=0;i<state.qty;i++) window.CartManager.addItem(v,v.offers?.seller||p.seller||p.provider);
+      };
     });
   //]]></script>
 </body>
